@@ -15,6 +15,13 @@ export default function Footer() {
       >
         sb-edit
       </a>
+      <a
+        className="link"
+        href="https://github.com/PullJosh/scratch-js-website"
+        target="_blank"
+      >
+        scratch-js-website
+      </a>
 
       <style jsx>
         {`
