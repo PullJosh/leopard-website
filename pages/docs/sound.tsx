@@ -10,12 +10,12 @@ export default function Sound() {
         <TranslationGrid>
           <h3>Play sound until done</h3>
           <Translation blockImg="sound/playSoundUntilDone.svg">
-            {`// Current API requires passing URL of sound (can be relative).\n// This may change in the future.\nyield* this.playSound("https://example.com/meow.mp3");`}
+            yield* this.playSoundUntilDone("meow");
           </Translation>
 
           <h3>Play sound</h3>
           <Translation blockImg="sound/playSound.svg">
-            {`// Current API requires passing URL of sound (can be relative).\n// This may change in the future.\nthis.playSound("https://example.com/meow.mp3");`}
+            this.startSound("meow");
           </Translation>
 
           <h3>Stop all sounds</h3>
