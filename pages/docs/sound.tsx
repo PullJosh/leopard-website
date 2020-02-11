@@ -15,7 +15,7 @@ export default function Sound() {
 
           <h3>Play sound</h3>
           <Translation blockImg="sound/playSound.svg">
-            this.startSound("meow");
+            yield* this.startSound("meow");
           </Translation>
 
           <h3>Stop all sounds</h3>
@@ -24,24 +24,40 @@ export default function Sound() {
           </Translation>
 
           <h3>Change effect</h3>
-          <Translation blockImg="sound/changePitchEffect.svg" />
-          <Translation blockImg="sound/changePanEffect.svg" />
+          <Translation blockImg="sound/changePitchEffect.svg">
+            this.audioEffects.pitch += 10;
+          </Translation>
+          <Translation blockImg="sound/changePanEffect.svg">
+            this.audioEffects.pan += 10;
+          </Translation>
 
           <h3>Set effect</h3>
-          <Translation blockImg="sound/setPitchEffect.svg" />
-          <Translation blockImg="sound/setPanEffect.svg" />
+          <Translation blockImg="sound/setPitchEffect.svg">
+            this.audioEffects.pitch = 100;
+          </Translation>
+          <Translation blockImg="sound/setPanEffect.svg">
+            this.audioEffects.pan = 100;
+          </Translation>
 
           <h3>Clear sound effects</h3>
-          <Translation blockImg="sound/clearSoundEffects.svg" />
+          <Translation blockImg="sound/clearSoundEffects.svg">
+            this.audioEffects.clear();
+          </Translation>
 
           <h3>Change volume</h3>
-          <Translation blockImg="sound/changeVolume.svg" />
+          <Translation blockImg="sound/changeVolume.svg">
+            this.audioEffects.volume += 10;
+          </Translation>
 
           <h3>Set volume</h3>
-          <Translation blockImg="sound/setVolume.svg" />
+          <Translation blockImg="sound/setVolume.svg">
+            this.audioEffects.volume = 100;
+          </Translation>
 
           <h3>Volume</h3>
-          <Translation blockImg="sound/volume.svg" />
+          <Translation blockImg="sound/volume.svg">
+            this.audioEffects.volume
+          </Translation>
         </TranslationGrid>
       </>
     </DocsPage>
