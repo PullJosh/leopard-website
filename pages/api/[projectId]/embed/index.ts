@@ -23,7 +23,7 @@ export default async (req, res) => {
     <div id="project"></div>
 
     <script type="module">
-      import project from "/api/${projectId}/embed/index/index.mjs";
+      import project from "/api/${projectId}/embed/index/index.js";
     
       project.attach("#project");${
         controls

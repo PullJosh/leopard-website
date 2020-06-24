@@ -12,6 +12,8 @@
   "license": "ISC",
   "dependencies": {
     "classnames": "^2.2.6",
+    "codesandbox": "^2.1.16",
+    "form-data": "^3.0.0",
     "isomorphic-unfetch": "^3.0.0",
     "jszip": "^3.2.2",
     "next": "^9.3.2",

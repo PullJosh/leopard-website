@@ -19,7 +19,7 @@ export default async (req, res) => {
   let zip;
   try {
     const project = await Project.fromSb3JSON(projectJSON, {
-      getAsset: async ({ md5, ext }) => {
+      getAsset: ({ md5, ext }) => {
         return fetch(
           `https://assets.scratch.mit.edu/internalapi/asset/${md5}.${ext}/get/`
         ).then(res => res.buffer());

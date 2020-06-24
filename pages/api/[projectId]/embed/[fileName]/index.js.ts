@@ -23,7 +23,7 @@ export default async (req, res) => {
     {
       scratchJSURL:
         "https://pulljosh.github.io/scratch-js/scratch-js/index.mjs",
-      getTargetURL: ({ name }) => `../${name}/index.mjs`,
+      getTargetURL: ({ name }) => `../${name}/index.js`,
       getAssetURL: ({ md5, ext }) =>
         `https://assets.scratch.mit.edu/internalapi/asset/${md5}.${ext}/get/`,
       autoplay: false
@@ -33,8 +33,8 @@ export default async (req, res) => {
 
   res.setHeader("Content-Type", "application/javascript");
   if (fileName === "index") {
-    return res.end(converted["index.mjs"]);
+    return res.end(converted["index.js"]);
   } else {
-    return res.end(converted[`${fileName}/${fileName}.mjs`]);
+    return res.end(converted[`${fileName}/${fileName}.js`]);
   }
 };

@@ -19,28 +19,37 @@ function Index({ id }) {
             </Link>
           </nav>
           <p>
-            scratch-js is a javascript library for making games that is designed
-            to closely mimic{" "}
+            scratch-js converts your{" "}
             <a href="https://scratch.mit.edu/" target="_blank">
               Scratch
-            </a>
-            .
+            </a>{" "}
+            projects to JavaScript!
           </p>
-
           <img
             src="/translation-example.png"
             alt="Example of Scratch blocks translated to Javascript"
           />
+          <p style={{ fontSize: "0.8em" }}>
+            Scratch is great, but it can be limiting. With JavaScript, you
+            get...
+            <ul>
+              <li>
+                <b>Features:</b> Cool tricks that Scratch just can't do.
+              </li>
+              <li>
+                <b>Speed:</b> Faster projects let you do more.
+              </li>
+              <li>
+                <b>Publishing options:</b> Run your projects on <i>any</i>{" "}
+                website, not just Scratch.
+              </li>
+            </ul>
+          </p>
         </div>
       </header>
 
       <div className="center">
         <Preview id={id} />
-        <p style={{ color: "hsl(354, 85%, 44%)" }}>
-          <b>Warning:</b> Most projects still won't work, but relatively simple
-          Scratch 3.0 creations should translate just fine. You can even
-          translate unshared projects, if you'd like. Have fun! ;)
-        </p>
         <Footer />
       </div>
 
