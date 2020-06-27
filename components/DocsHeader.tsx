@@ -11,8 +11,8 @@ export default function DocsHeader({ palette }: { palette?: string }) {
             <a>scratch-js</a>
           </Link>
         </h1>
-        <Link href="/docs">
-          <a className="nav-link">Docs</a>
+        <Link href="/translations/motion">
+          <a className="nav-link">Block Translations</a>
         </Link>
       </div>
       <nav className="palette-nav">
@@ -22,7 +22,7 @@ export default function DocsHeader({ palette }: { palette?: string }) {
             return (
               <Link
                 key={name}
-                href={`/docs/${name.toLowerCase().replace(/ /g, "-")}`}
+                href={`/translations/${name.toLowerCase().replace(/ /g, "-")}`}
               >
                 <a
                   className={classNames("palette-nav__link", {
