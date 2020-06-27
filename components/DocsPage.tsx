@@ -1,6 +1,5 @@
-import Head from "next/head";
-
 import DocsHeader from "./DocsHeader";
+import Title from "./Title";
 
 export default function DocsPage({
   palette,
@@ -11,6 +10,7 @@ export default function DocsPage({
 }) {
   return (
     <div className="page">
+      <Title>{palette}</Title>
       <DocsHeader palette={palette} />
       <div className="content">{children}</div>
       <style jsx global>

@@ -2,10 +2,12 @@ import Link from "next/link";
 
 import Preview from "../components/Preview";
 import Footer from "../components/Footer";
+import Title from "../components/Title";
 
 function Index({ id }) {
   return (
     <div className="Page">
+      <Title />
       <header className="header">
         <div className="center">
           <nav className="nav">
