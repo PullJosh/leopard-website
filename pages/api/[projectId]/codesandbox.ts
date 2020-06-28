@@ -26,7 +26,7 @@ export default async (req, res) => {
     const converted = project.toScratchJS(
       {
         scratchJSURL:
-          "https://pulljosh.github.io/scratch-js/scratch-js/index.mjs"
+          "https://pulljosh.github.io/scratch-js/scratch-js/index.js"
       },
       { printWidth: 100 }
     );
