@@ -8,7 +8,7 @@ export default function DocsHeader({ palette }: { palette?: string }) {
       <div className="site-header__inner">
         <h1 className="site-title">
           <Link href="/">
-            <a>scratch-js</a>
+            <a>Leopard</a>
           </Link>
         </h1>
         <Link href="/translations/motion">

@@ -3,10 +3,10 @@ export default function Footer() {
     <footer className="footer">
       <a
         className="link"
-        href="https://github.com/PullJosh/scratch-js"
+        href="https://github.com/PullJosh/leopard"
         target="_blank"
       >
-        scratch-js
+        leopard
       </a>
       <a
         className="link"

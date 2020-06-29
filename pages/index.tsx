@@ -13,7 +13,7 @@ function Index({ id }) {
           <nav className="nav">
             <h1 className="site-title">
               <Link href="/">
-                <a>scratch-js</a>
+                <a>Leopard</a>
               </Link>
             </h1>
             <Link href="/translations/motion">
@@ -21,7 +21,7 @@ function Index({ id }) {
             </Link>
           </nav>
           <p>
-            scratch-js converts your{" "}
+            Leopard converts your{" "}
             <a href="https://scratch.mit.edu/" target="_blank">
               Scratch
             </a>{" "}
