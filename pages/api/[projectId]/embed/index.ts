@@ -16,7 +16,7 @@ export default async (req, res) => {
         background: #fff;
       }
     </style>
-    <link rel="stylesheet" href="https://pulljosh.github.io/scratch-js/scratch-js/index.css" />
+    <link rel="stylesheet" href="https://pulljosh.github.io/scratch-js/src/index.css" />
   </head>
   <body>
     ${controls ? `<button id="greenFlag">Green Flag</button>` : ""}

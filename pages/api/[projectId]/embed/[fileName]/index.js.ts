@@ -21,7 +21,7 @@ export default async (req, res) => {
 
   const converted = project.toScratchJS(
     {
-      scratchJSURL: "https://pulljosh.github.io/scratch-js/scratch-js/index.js",
+      scratchJSURL: "https://pulljosh.github.io/scratch-js/src/index.js",
       getTargetURL: ({ name }) => `../${name}/index.js`,
       getAssetURL: ({ md5, ext }) =>
         `https://assets.scratch.mit.edu/internalapi/asset/${md5}.${ext}/get/`,
