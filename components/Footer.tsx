@@ -17,10 +17,10 @@ export default function Footer() {
       </a>
       <a
         className="link"
-        href="https://github.com/PullJosh/scratch-js-website"
+        href="https://github.com/PullJosh/leopard-website"
         target="_blank"
       >
-        scratch-js-website
+        leopard-website
       </a>
 
       <style jsx>
