@@ -19,9 +19,8 @@ export default async (req, res) => {
     getAsset: async () => "yo"
   });
 
-  const converted = project.toScratchJS(
+  const converted = project.toLeopard(
     {
-      scratchJSURL: "https://pulljosh.github.io/leopard/src/index.js",
       getTargetURL: ({ name }) => `../${name}/index.js`,
       getAssetURL: ({ md5, ext }) =>
         `https://assets.scratch.mit.edu/internalapi/asset/${md5}.${ext}/get/`,

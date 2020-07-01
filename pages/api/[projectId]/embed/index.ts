@@ -16,7 +16,7 @@ export default async (req, res) => {
         background: #fff;
       }
     </style>
-    <link rel="stylesheet" href="https://pulljosh.github.io/leopard/src/index.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leopard@^1/dist/index.min.css" />
   </head>
   <body>
     ${controls ? `<button id="greenFlag">Green Flag</button>` : ""}

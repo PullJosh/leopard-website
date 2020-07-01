@@ -26,12 +26,7 @@ export default async (req, res) => {
       }
     });
 
-    const converted = project.toScratchJS(
-      {
-        scratchJSURL: "https://pulljosh.github.io/leopard/src/index.js"
-      },
-      { printWidth: 100 }
-    );
+    const converted = project.toLeopard({}, { printWidth: 100 });
 
     zip = new JSZip();
     for (const [name, content] of Object.entries(converted)) {
