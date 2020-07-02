@@ -23,7 +23,7 @@ export default async (req, res) => {
         `https://assets.scratch.mit.edu/internalapi/asset/${md5}.${ext}/get/`
     });
 
-    const converted = project.toLeopard({}, { printWidth: 100 });
+    const converted = project.toLeopard({});
 
     let files = {};
 

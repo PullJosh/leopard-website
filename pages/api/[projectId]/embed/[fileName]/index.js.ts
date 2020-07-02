@@ -19,15 +19,12 @@ export default async (req, res) => {
     getAsset: async () => "yo"
   });
 
-  const converted = project.toLeopard(
-    {
-      getTargetURL: ({ name }) => `../${name}/index.js`,
-      getAssetURL: ({ md5, ext }) =>
-        `https://assets.scratch.mit.edu/internalapi/asset/${md5}.${ext}/get/`,
-      autoplay: false
-    },
-    { printWidth: 100 }
-  );
+  const converted = project.toLeopard({
+    getTargetURL: ({ name }) => `../${name}/index.js`,
+    getAssetURL: ({ md5, ext }) =>
+      `https://assets.scratch.mit.edu/internalapi/asset/${md5}.${ext}/get/`,
+    autoplay: false
+  });
 
   res.setHeader("Content-Type", "application/javascript");
   if (fileName === "index") {
