@@ -7,7 +7,7 @@ export default function MyBlocks() {
     <DocsPage palette="My Blocks">
       <>
         <PaletteHeader>My Blocks</PaletteHeader>
-        <p>
+        <p className="mb-4">
           Custom blocks are created by adding additional methods (scripts) to a
           sprite.
         </p>

@@ -1,6 +1,9 @@
 import DocsPage from "../../components/DocsPage";
 import PaletteHeader from "../../components/PaletteHeader";
-import Translation, { TranslationGrid } from "../../components/Translation";
+import Translation, {
+  TranslationGrid,
+  TranslationHeader
+} from "../../components/Translation";
 
 export default function Looks() {
   return (
@@ -8,37 +11,37 @@ export default function Looks() {
       <>
         <PaletteHeader>Looks</PaletteHeader>
         <TranslationGrid>
-          <h3>Say for seconds</h3>
+          <TranslationHeader>Say for seconds</TranslationHeader>
           <Translation blockImg="looks/sayForSecs.svg">
             yield* this.sayAndWait("Hello!", 2);
           </Translation>
 
-          <h3>Say</h3>
+          <TranslationHeader>Say</TranslationHeader>
           <Translation blockImg="looks/say.svg">
             this.say("Hello!");
           </Translation>
 
-          <h3>Think for seconds</h3>
+          <TranslationHeader>Think for seconds</TranslationHeader>
           <Translation blockImg="looks/thinkForSecs.svg">
             yield* this.thinkAndWait("Hello!", 2);
           </Translation>
 
-          <h3>Think</h3>
+          <TranslationHeader>Think</TranslationHeader>
           <Translation blockImg="looks/think.svg">
             this.think("Hello!");
           </Translation>
 
-          <h3>Switch costume</h3>
+          <TranslationHeader>Switch costume</TranslationHeader>
           <Translation blockImg="looks/switchCostume.svg">
             {`this.costume = "costume1";\n\n// Or switch to costume number\nthis.costumeNumber = 3;`}
           </Translation>
 
-          <h3>Next costume</h3>
+          <TranslationHeader>Next costume</TranslationHeader>
           <Translation blockImg="looks/nextCostume.svg">
             this.costumeNumber++;
           </Translation>
 
-          <h3>Switch backdrop</h3>
+          <TranslationHeader>Switch backdrop</TranslationHeader>
           <Translation blockImg="looks/switchBackdropToName.svg">
             {`// In a sprite:\nthis.stage.costume = "backdrop1";\n\n// In the stage:\nthis.costume = "backdrop1";`}
           </Translation>
@@ -50,22 +53,22 @@ export default function Looks() {
           </Translation>
           <Translation blockImg="looks/switchBackdropToRandom.svg"></Translation>
 
-          <h3>Next Backdrop</h3>
+          <TranslationHeader>Next Backdrop</TranslationHeader>
           <Translation blockImg="looks/nextBackdrop.svg">
             {`// In a sprite:\nthis.stage.costumeNumber++;\n\n// In the stage:\nthis.costumeNumber++;`}
           </Translation>
 
-          <h3>Change size</h3>
+          <TranslationHeader>Change size</TranslationHeader>
           <Translation blockImg="looks/changeSize.svg">
             this.size += 10;
           </Translation>
 
-          <h3>Set size</h3>
+          <TranslationHeader>Set size</TranslationHeader>
           <Translation blockImg="looks/setSize.svg">
             this.size = 100;
           </Translation>
 
-          <h3>Change graphic effect</h3>
+          <TranslationHeader>Change graphic effect</TranslationHeader>
           <Translation blockImg="looks/changeColorEffect.svg">
             this.effects.color += 25;
           </Translation>
@@ -88,7 +91,7 @@ export default function Looks() {
             this.effects.ghost += 25;
           </Translation>
 
-          <h3>Set graphic effect</h3>
+          <TranslationHeader>Set graphic effect</TranslationHeader>
           <Translation blockImg="looks/setColorEffect.svg">
             this.effects.color = 100;
           </Translation>
@@ -111,30 +114,30 @@ export default function Looks() {
             this.effects.ghost = 100;
           </Translation>
 
-          <h3>Clear graphic effects</h3>
+          <TranslationHeader>Clear graphic effects</TranslationHeader>
           <Translation blockImg="looks/clearGraphicEffects.svg">
             this.effects.clear();
           </Translation>
 
-          <h3>Show</h3>
+          <TranslationHeader>Show</TranslationHeader>
           <Translation blockImg="looks/show.svg">
             this.visible = true;
           </Translation>
 
-          <h3>Hide</h3>
+          <TranslationHeader>Hide</TranslationHeader>
           <Translation blockImg="looks/hide.svg">
             this.visible = false;
           </Translation>
 
-          <h3>Go to layer</h3>
+          <TranslationHeader>Go to layer</TranslationHeader>
           <Translation blockImg="looks/goToFront.svg" />
           <Translation blockImg="looks/goToBack.svg" />
 
-          <h3>Go forward/backward layers</h3>
+          <TranslationHeader>Go forward/backward layers</TranslationHeader>
           <Translation blockImg="looks/goForwardLayers.svg" />
           <Translation blockImg="looks/goBackwardLayers.svg" />
 
-          <h3>Costume number/name</h3>
+          <TranslationHeader>Costume number/name</TranslationHeader>
           <Translation blockImg="looks/costumeNumber.svg">
             this.costumeNumber
           </Translation>
@@ -142,7 +145,7 @@ export default function Looks() {
             this.costume
           </Translation>
 
-          <h3>Backdrop number/name</h3>
+          <TranslationHeader>Backdrop number/name</TranslationHeader>
           <Translation blockImg="looks/backdropNumber.svg">
             {`// In a sprite:\nthis.stage.costumeNumber\n\n// In the stage:\nthis.costumeNumber`}
           </Translation>
@@ -150,7 +153,7 @@ export default function Looks() {
             {`// In a sprite:\nthis.stage.costume\n\n// In the stage:\nthis.costume`}
           </Translation>
 
-          <h3>Size</h3>
+          <TranslationHeader>Size</TranslationHeader>
           <Translation blockImg="looks/size.svg">this.size</Translation>
         </TranslationGrid>
       </>

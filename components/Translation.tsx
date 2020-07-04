@@ -65,3 +65,9 @@ export function TranslationGrid({ children }) {
     </div>
   );
 }
+
+export function TranslationHeader({ children }) {
+  return (
+    <h3 className="my-2 text-lg font-semibold text-gray-800">{children}</h3>
+  );
+}

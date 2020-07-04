@@ -21,81 +21,44 @@ export default function Preview({ id }) {
   };
 
   return (
-    <div className="Preview">
-      <img className="convertText" src="/convert-text.svg" />
-
-      <input
-        type="text"
-        className="projectInput"
-        placeholder="https://scratch.mit.edu/projects/345789566/"
-        value={projectURL}
-        onChange={e => {
-          setProjectURL(e.target.value);
-        }}
-        onBlur={() => {
-          let id = getProjectId(projectURL);
-          if (id === null) id = defaultProject;
-          setProjectURL(getProjectURL(id));
-          router.push(id === defaultProject ? "/" : `/?id=${id}`);
-        }}
+    <div className="flex flex-col mx-auto" style={{ maxWidth: 480 }}>
+      <img
+        className="absolute"
+        style={{ transform: "translate(-105%, -65%)" }}
+        src="/convert-text.svg"
       />
 
-      <iframe
-        className="previewFrame"
-        src={`/api/${projectId}/embed`}
-        scrolling="no"
-      />
+      <div className="flex flex-col">
+        <input
+          type="text"
+          className="w-full px-4 py-2 mb-4 text-xl text-indigo-800 bg-indigo-100 border-2 border-indigo-600 rounded"
+          placeholder="https://scratch.mit.edu/projects/345789566/"
+          value={projectURL}
+          onChange={e => {
+            setProjectURL(e.target.value);
+          }}
+          onBlur={() => {
+            let id = getProjectId(projectURL);
+            if (id === null) id = defaultProject;
+            setProjectURL(getProjectURL(id));
+            router.push(id === defaultProject ? "/" : `/?id=${id}`);
+          }}
+        />
 
-      <div className="edit">
-        <EditButton projectId={projectId} />
+        <div className="w-full mx-auto" style={{ maxWidth: 480 }}>
+          <div className="relative w-full" style={{ paddingTop: "75%" }}>
+            <iframe
+              className="absolute inset-0 w-full h-full rounded-md shadow-lg"
+              src={`/api/${projectId}/embed`}
+              scrolling="no"
+            />
+          </div>
+        </div>
       </div>
 
-      <style jsx>
-        {`
-          .Preview {
-            display: flex;
-            flex-direction: column;
-            position: relative;
-
-            perspective: 2000px;
-          }
-
-          .convertText {
-            position: absolute;
-            top: -64px;
-            left: -16px;
-            transform: translate(-100%, 0);
-            user-select: none;
-            pointer-events: none;
-          }
-
-          .projectInput {
-            background: hsl(212, 33%, 89%);
-            box-shadow: inset 0 2px 3px hsl(210, 31%, 80%);
-            border: none;
-            border-radius: 8px;
-            padding: 16px 24px;
-            margin-bottom: 16px;
-            font-size: 20px;
-          }
-
-          .previewFrame {
-            width: 480px;
-            height: 360px;
-            border: none;
-            border-radius: 8px;
-            background: hsl(212, 33%, 89%);
-            overflow: hidden;
-          }
-
-          .edit {
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            margin-top: 16px;
-          }
-        `}
-      </style>
+      <div className="flex justify-end pt-4">
+        <EditButton projectId={projectId} />
+      </div>
     </div>
   );
 }

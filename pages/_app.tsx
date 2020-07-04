@@ -1,6 +1,8 @@
 import React from "react";
 import App from "next/app";
 
+import "../tailwind.css";
+
 class MyApp extends App {
   render() {
     const { Component, pageProps } = this.props;
@@ -10,23 +12,6 @@ class MyApp extends App {
           {`
             * {
               box-sizing: border-box;
-            }
-
-            body {
-              font-size: 16px;
-              font-family: -apple-system, Segoe UI, Roboto, Noto Sans, Ubuntu,
-                Cantarell, Helvetica Neue;
-              line-height: 1.6;
-            }
-
-            a {
-              color: hsl(245, 79%, 52%);
-              text-decoration: none;
-            }
-
-            a:hover,
-            a:active {
-              text-decoration: underline;
             }
 
             ::selection {

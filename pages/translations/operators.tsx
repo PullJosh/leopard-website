@@ -1,6 +1,9 @@
 import DocsPage from "../../components/DocsPage";
 import PaletteHeader from "../../components/PaletteHeader";
-import Translation, { TranslationGrid } from "../../components/Translation";
+import Translation, {
+  TranslationGrid,
+  TranslationHeader
+} from "../../components/Translation";
 
 export default function Operators() {
   return (
@@ -8,52 +11,52 @@ export default function Operators() {
       <>
         <PaletteHeader>Operators</PaletteHeader>
         <TranslationGrid>
-          <h3>Add (+)</h3>
+          <TranslationHeader>Add (+)</TranslationHeader>
           <Translation blockImg="operators/add.svg">6 + 2</Translation>
 
-          <h3>Subtract (-)</h3>
+          <TranslationHeader>Subtract (-)</TranslationHeader>
           <Translation blockImg="operators/subtract.svg">6 - 2</Translation>
 
-          <h3>Multiply (&times;)</h3>
+          <TranslationHeader>Multiply (&times;)</TranslationHeader>
           <Translation blockImg="operators/multiply.svg">6 * 2</Translation>
 
-          <h3>Divide (&divide;)</h3>
+          <TranslationHeader>Divide (&divide;)</TranslationHeader>
           <Translation blockImg="operators/divide.svg">6 / 2</Translation>
 
-          <h3>Pick random</h3>
+          <TranslationHeader>Pick random</TranslationHeader>
           <Translation blockImg="operators/pickRandom.svg">
             this.random(1, 10)
           </Translation>
 
-          <h3>Greater than (&gt;)</h3>
+          <TranslationHeader>Greater than (&gt;)</TranslationHeader>
           <Translation blockImg="operators/greaterThan.svg">
             20 &gt; 25
           </Translation>
 
-          <h3>Less than (&lt;)</h3>
+          <TranslationHeader>Less than (&lt;)</TranslationHeader>
           <Translation blockImg="operators/lessThan.svg">
             15 &lt; 20
           </Translation>
 
-          <h3>Equal (=)</h3>
+          <TranslationHeader>Equal (=)</TranslationHeader>
           <Translation blockImg="operators/equal.svg">15 == 15</Translation>
 
-          <h3>And</h3>
+          <TranslationHeader>And</TranslationHeader>
           <Translation blockImg="operators/and.svg">
             (/* condition 1 */) && (/* condition 2 */)
           </Translation>
 
-          <h3>Or</h3>
+          <TranslationHeader>Or</TranslationHeader>
           <Translation blockImg="operators/or.svg">
             (/* condition 1 */) || (/* condition 2 */)
           </Translation>
 
-          <h3>Not</h3>
+          <TranslationHeader>Not</TranslationHeader>
           <Translation blockImg="operators/not.svg">
             !(/* condition */)
           </Translation>
 
-          <h3>Join</h3>
+          <TranslationHeader>Join</TranslationHeader>
           <Translation blockImg="operators/join.svg">
             "scratch" + "js"
           </Translation>
@@ -62,7 +65,7 @@ export default function Operators() {
             them
           </Translation>
 
-          <h3>Letter of string</h3>
+          <TranslationHeader>Letter of string</TranslationHeader>
           <Translation blockImg="operators/letter1.svg">
             "abcd"[0] // Start counting from 0
           </Translation>
@@ -73,25 +76,25 @@ export default function Operators() {
             "abcd"[this.x - 1] // You can subtract inside the brackets if needed
           </Translation>
 
-          <h3>Length of string</h3>
+          <TranslationHeader>Length of string</TranslationHeader>
           <Translation blockImg="operators/length.svg">
             "abcd".length
           </Translation>
 
-          <h3>Contains</h3>
+          <TranslationHeader>Contains</TranslationHeader>
           <Translation blockImg="operators/contains.svg">
             "apple".includes("a")
           </Translation>
 
-          <h3>Modulo (mod)</h3>
+          <TranslationHeader>Modulo (mod)</TranslationHeader>
           <Translation blockImg="operators/mod.svg">7 % 3</Translation>
 
-          <h3>Round</h3>
+          <TranslationHeader>Round</TranslationHeader>
           <Translation blockImg="operators/round.svg">
             Math.round(3.5)
           </Translation>
 
-          <h3>Math "of"</h3>
+          <TranslationHeader>Math "of"</TranslationHeader>
           <Translation blockImg="operators/absOf.svg">
             Math.abs(-10)
           </Translation>

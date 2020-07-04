@@ -4,76 +4,51 @@ import palettes from "../lib/palettes";
 
 export default function DocsHeader({ palette }: { palette?: string }) {
   return (
-    <header className="site-header">
-      <div className="site-header__inner">
-        <h1 className="site-title">
+    <header className="sticky top-0 bg-white border-t-8 border-indigo-600 shadow-md">
+      <div className="flex items-center max-w-4xl px-4 py-6 mx-auto">
+        <h1 className="mr-12 text-3xl">
           <Link href="/">
-            <a>Leopard</a>
+            <a className="font-bold text-gray-800 hover:underline">Leopard</a>
           </Link>
         </h1>
         <Link href="/translations/motion">
-          <a className="nav-link">Block Translations</a>
+          <a className="text-xl text-indigo-800 hover:underline">
+            Block Translations
+          </a>
         </Link>
       </div>
-      <nav className="palette-nav">
-        <div className="palette-nav__inner">
-          {palettes.map(({ name, color }) => {
-            const active = name === palette;
-            return (
-              <Link
-                key={name}
-                href={`/translations/${name.toLowerCase().replace(/ /g, "-")}`}
-              >
-                <a
-                  className={classNames("palette-nav__link", {
-                    "palette-nav__link--active": active
-                  })}
-                  style={
-                    {
-                      "--paletteColor": color.join(", ")
-                    } as React.CSSProperties
-                  }
+      <nav className="border-t">
+        <div className="max-w-4xl px-4 mx-auto">
+          <div className="-mx-4">
+            {palettes.map(({ name, color }) => {
+              const active = name === palette;
+              return (
+                <Link
+                  key={name}
+                  href={`/translations/${name
+                    .toLowerCase()
+                    .replace(/ /g, "-")}`}
                 >
-                  {name}
-                </a>
-              </Link>
-            );
-          })}
+                  <a
+                    className={classNames("palette-nav__link", {
+                      "palette-nav__link--active": active
+                    })}
+                    style={
+                      {
+                        "--paletteColor": color.join(", ")
+                      } as React.CSSProperties
+                    }
+                  >
+                    {name}
+                  </a>
+                </Link>
+              );
+            })}
+          </div>
         </div>
       </nav>
       <style jsx>
         {`
-          .site-header {
-            position: sticky;
-            top: 0;
-            background: #fff;
-            border-top: 8px solid hsl(243, 94%, 66%);
-            border-bottom: 1px solid #ddd;
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
-          }
-          .site-header__inner {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 0 16px;
-            display: flex;
-            align-items: center;
-          }
-          .palette-nav__inner {
-            max-width: 1000px;
-            margin: 0 auto;
-          }
-
-          .site-title {
-            font-size: 24px;
-            margin-right: 32px;
-          }
-          .site-title a {
-            color: hsl(211, 39%, 23%);
-          }
-
-          .palette-nav {
-            border-top: 1px solid #ddd;
-          }
           .palette-nav__link {
             display: inline-block;
             padding: 8px 16px;

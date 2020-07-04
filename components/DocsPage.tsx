@@ -12,7 +12,7 @@ export default function DocsPage({
     <div className="page">
       <Title>{palette}</Title>
       <DocsHeader palette={palette} />
-      <div className="content">{children}</div>
+      <div className="max-w-4xl px-4 mx-auto">{children}</div>
       <style jsx global>
         {`
           body {

@@ -1,6 +1,9 @@
 import DocsPage from "../../components/DocsPage";
 import PaletteHeader from "../../components/PaletteHeader";
-import Translation, { TranslationGrid } from "../../components/Translation";
+import Translation, {
+  TranslationGrid,
+  TranslationHeader
+} from "../../components/Translation";
 
 export default function Motion() {
   return (
@@ -8,22 +11,22 @@ export default function Motion() {
       <>
         <PaletteHeader>Motion</PaletteHeader>
         <TranslationGrid>
-          <h3>Move steps</h3>
+          <TranslationHeader>Move steps</TranslationHeader>
           <Translation blockImg="motion/moveSteps.svg">
             this.move(10);
           </Translation>
 
-          <h3>Turn right</h3>
+          <TranslationHeader>Turn right</TranslationHeader>
           <Translation blockImg="motion/turnRight.svg">
             this.direction += 15;
           </Translation>
 
-          <h3>Turn Left</h3>
+          <TranslationHeader>Turn Left</TranslationHeader>
           <Translation blockImg="motion/turnLeft.svg">
             this.direction -= 15;
           </Translation>
 
-          <h3>Go to target</h3>
+          <TranslationHeader>Go to target</TranslationHeader>
           <Translation blockImg="motion/goToRandom.svg">
             this.goto(this.random(-240, 240), this.random(-180, 180));
           </Translation>
@@ -34,12 +37,12 @@ export default function Motion() {
             this.goto(this.sprites.sprite1.x, this.sprites.sprite1.y);
           </Translation>
 
-          <h3>Go to x y</h3>
+          <TranslationHeader>Go to x y</TranslationHeader>
           <Translation blockImg="motion/goToXY.svg">
             this.goto(200, 100);
           </Translation>
 
-          <h3>Glide to target</h3>
+          <TranslationHeader>Glide to target</TranslationHeader>
           <Translation blockImg="motion/glideToRandom.svg">
             yield* this.glide(1, this.random(-240, 240), this.random(-180,
             180));
@@ -52,17 +55,17 @@ export default function Motion() {
             this.sprites.sprite1.y);
           </Translation>
 
-          <h3>Glide to x y</h3>
+          <TranslationHeader>Glide to x y</TranslationHeader>
           <Translation blockImg="motion/glideToXY.svg">
             yield* this.glide(1, 200, 100);
           </Translation>
 
-          <h3>Point in direction</h3>
+          <TranslationHeader>Point in direction</TranslationHeader>
           <Translation blockImg="motion/pointInDirection.svg">
             this.direction = 90;
           </Translation>
 
-          <h3>Point towards</h3>
+          <TranslationHeader>Point towards</TranslationHeader>
           <Translation blockImg="motion/pointTowardsMouse.svg">
             this.direction = this.radToScratch(Math.atan2(this.mouse.y - this.y,
             this.mouse.x - this.x));
@@ -72,26 +75,26 @@ export default function Motion() {
             - this.y, this.sprites.sprite1.x - this.x));
           </Translation>
 
-          <h3>Change x by</h3>
+          <TranslationHeader>Change x by</TranslationHeader>
           <Translation blockImg="motion/changeXBy.svg">
             this.x += 10;
           </Translation>
 
-          <h3>Set x to</h3>
+          <TranslationHeader>Set x to</TranslationHeader>
           <Translation blockImg="motion/setXTo.svg">this.x = 0;</Translation>
 
-          <h3>Change y by</h3>
+          <TranslationHeader>Change y by</TranslationHeader>
           <Translation blockImg="motion/changeYBy.svg">
             this.y += 10;
           </Translation>
 
-          <h3>Set y to</h3>
+          <TranslationHeader>Set y to</TranslationHeader>
           <Translation blockImg="motion/setYTo.svg">this.y = 0;</Translation>
 
-          <h3>If on edge, bounce</h3>
+          <TranslationHeader>If on edge, bounce</TranslationHeader>
           <Translation blockImg="motion/ifOnEdgeBounce.svg" />
 
-          <h3>Set rotation style</h3>
+          <TranslationHeader>Set rotation style</TranslationHeader>
           <Translation blockImg="motion/setRotationStyleLeftRight.svg">
             this.rotationStyle = Sprite.RotationStyle.LEFT_RIGHT;
           </Translation>
@@ -102,13 +105,13 @@ export default function Motion() {
             this.rotationStyle = Sprite.RotationStyle.ALL_AROUND;
           </Translation>
 
-          <h3>X position</h3>
+          <TranslationHeader>X position</TranslationHeader>
           <Translation blockImg="motion/xPosition.svg">this.x</Translation>
 
-          <h3>Y position</h3>
+          <TranslationHeader>Y position</TranslationHeader>
           <Translation blockImg="motion/yPosition.svg">this.y</Translation>
 
-          <h3>Direction</h3>
+          <TranslationHeader>Direction</TranslationHeader>
           <Translation blockImg="motion/direction.svg">
             this.direction
           </Translation>

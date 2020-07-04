@@ -1,6 +1,9 @@
 import DocsPage from "../../components/DocsPage";
 import PaletteHeader from "../../components/PaletteHeader";
-import Translation, { TranslationGrid } from "../../components/Translation";
+import Translation, {
+  TranslationGrid,
+  TranslationHeader
+} from "../../components/Translation";
 
 export default function Sensing() {
   return (
@@ -8,7 +11,7 @@ export default function Sensing() {
       <>
         <PaletteHeader>Sensing</PaletteHeader>
         <TranslationGrid>
-          <h3>Touching target</h3>
+          <TranslationHeader>Touching target</TranslationHeader>
           <Translation blockImg="sensing/touchingMouse.svg">
             this.touching("mouse")
           </Translation>
@@ -17,17 +20,17 @@ export default function Sensing() {
             this.touching(this.sprites.sprite1.andClones())
           </Translation>
 
-          <h3>Touching color</h3>
+          <TranslationHeader>Touching color</TranslationHeader>
           <Translation blockImg="sensing/touchingColor.svg">
             this.touching(Color.hsv(11, 90, 100))
           </Translation>
 
-          <h3>Color touching color</h3>
+          <TranslationHeader>Color touching color</TranslationHeader>
           <Translation blockImg="sensing/colorTouchingColor.svg">
             this.colorTouching(Color.hsv(11, 90, 100), Color.hsv(60, 70, 100))
           </Translation>
 
-          <h3>Distance to target</h3>
+          <TranslationHeader>Distance to target</TranslationHeader>
           <Translation blockImg="sensing/distanceToMouse.svg">
             Math.hypot(this.mouse.x - this.x, this.mouse.y - this.y)
           </Translation>
@@ -36,15 +39,15 @@ export default function Sensing() {
             this.y)
           </Translation>
 
-          <h3>Ask and wait</h3>
+          <TranslationHeader>Ask and wait</TranslationHeader>
           <Translation blockImg="sensing/askAndWait.svg">
             yield* this.askAndWait("What's your name?");
           </Translation>
 
-          <h3>Answer</h3>
+          <TranslationHeader>Answer</TranslationHeader>
           <Translation blockImg="sensing/answer.svg">this.answer</Translation>
 
-          <h3>Key pressed</h3>
+          <TranslationHeader>Key pressed</TranslationHeader>
           <Translation blockImg="sensing/keySpacePressed.svg">
             this.keyPressed("space")
           </Translation>
@@ -61,33 +64,33 @@ export default function Sensing() {
             this.keyPressed("1")
           </Translation>
 
-          <h3>Mouse down</h3>
+          <TranslationHeader>Mouse down</TranslationHeader>
           <Translation blockImg="sensing/mouseDown.svg">
             this.mouse.down
           </Translation>
 
-          <h3>Mouse x</h3>
+          <TranslationHeader>Mouse x</TranslationHeader>
           <Translation blockImg="sensing/mouseX.svg">this.mouse.x</Translation>
 
-          <h3>Mouse y</h3>
+          <TranslationHeader>Mouse y</TranslationHeader>
           <Translation blockImg="sensing/mouseY.svg">this.mouse.y</Translation>
 
-          <h3>Set drag mode</h3>
+          <TranslationHeader>Set drag mode</TranslationHeader>
           <Translation blockImg="sensing/setDragModeDraggable.svg" />
           <Translation blockImg="sensing/setDragModeNotDraggable.svg" />
 
-          <h3>Loudness</h3>
+          <TranslationHeader>Loudness</TranslationHeader>
           <Translation blockImg="sensing/loudness.svg" />
 
-          <h3>Timer</h3>
+          <TranslationHeader>Timer</TranslationHeader>
           <Translation blockImg="sensing/timer.svg">this.timer</Translation>
 
-          <h3>Reset timer</h3>
+          <TranslationHeader>Reset timer</TranslationHeader>
           <Translation blockImg="sensing/resetTimer.svg">
             this.restartTimer();
           </Translation>
 
-          <h3>Property of target</h3>
+          <TranslationHeader>Property of target</TranslationHeader>
           <Translation blockImg="sensing/xOfSprite.svg">
             this.sprites.sprite1.x
           </Translation>
@@ -117,7 +120,7 @@ export default function Sensing() {
             this.sprites.sprite1.vars.myCoolVariable
           </Translation>
 
-          <h3>Current</h3>
+          <TranslationHeader>Current</TranslationHeader>
           <Translation blockImg="sensing/currentYear.svg">
             (new Date().getFullYear())
           </Translation>
@@ -140,12 +143,12 @@ export default function Sensing() {
             (new Date().getSeconds())
           </Translation>
 
-          <h3>Days since 2000</h3>
+          <TranslationHeader>Days since 2000</TranslationHeader>
           <Translation blockImg="sensing/daysSince2000.svg">
             {`// This one's pretty beefy:\n(((new Date().getTime() - new Date(2000, 0, 1)) / 1000 / 60 + new Date().getTimezoneOffset()) / 60 / 24)\n\n// FYI, you can get the milliseconds since 1970 (Unix time) like this:\nnew Date().getTime()`}
           </Translation>
 
-          <h3>Username</h3>
+          <TranslationHeader>Username</TranslationHeader>
           <Translation blockImg="sensing/username.svg" />
         </TranslationGrid>
       </>
