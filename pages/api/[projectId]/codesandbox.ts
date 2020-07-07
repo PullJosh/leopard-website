@@ -28,10 +28,14 @@ export default async (req, res) => {
     let files = {};
 
     for (const fileName in converted) {
-      files[fileName] = {
-        content: converted[fileName],
-        isBinary: false
-      };
+      let content = converted[fileName];
+
+      // Prepend sprite JS files with eslint-disable
+      if (/.+\/.+\.js/g.test(fileName)) {
+        content = "/* eslint-disable require-yield, eqeqeq */\n\n" + content;
+      }
+
+      files[fileName] = { content, isBinary: false };
     }
 
     for (const target of [project.stage, ...project.sprites]) {
