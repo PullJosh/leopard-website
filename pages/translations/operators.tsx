@@ -108,22 +108,22 @@ export default function Operators() {
             Math.sqrt(9)
           </Translation>
           <Translation blockImg="operators/sinOf.svg">
-            Math.sin(this.scratchToRad(90))
+            Math.sin(this.degToRad(90))
           </Translation>
           <Translation blockImg="operators/cosOf.svg">
-            Math.cos(this.scratchToRad(90))
+            Math.cos(this.degToRad(90))
           </Translation>
           <Translation blockImg="operators/tanOf.svg">
-            Math.tan(this.scratchToRad(45))
+            Math.tan(this.degToRad(45))
           </Translation>
           <Translation blockImg="operators/asinOf.svg">
-            this.radToScratch(Math.asin(1))
+            this.radToDeg(Math.asin(1))
           </Translation>
           <Translation blockImg="operators/acosOf.svg">
-            this.radToScratch(Math.acos(1))
+            this.radToDeg(Math.acos(1))
           </Translation>
           <Translation blockImg="operators/atanOf.svg">
-            this.radToScratch(Math.atan(1))
+            this.radToDeg(Math.atan(1))
           </Translation>
           <Translation blockImg="operators/lnOf.svg">Math.log(10)</Translation>
           <Translation blockImg="operators/logOf.svg">
