@@ -130,12 +130,20 @@ export default function Looks() {
           </Translation>
 
           <TranslationHeader>Go to layer</TranslationHeader>
-          <Translation blockImg="looks/goToFront.svg" />
-          <Translation blockImg="looks/goToBack.svg" />
+          <Translation blockImg="looks/goToFront.svg">
+            this.moveAhead();
+          </Translation>
+          <Translation blockImg="looks/goToBack.svg">
+            this.moveBehind();
+          </Translation>
 
           <TranslationHeader>Go forward/backward layers</TranslationHeader>
-          <Translation blockImg="looks/goForwardLayers.svg" />
-          <Translation blockImg="looks/goBackwardLayers.svg" />
+          <Translation blockImg="looks/goForwardLayers.svg">
+            this.moveAhead(1);
+          </Translation>
+          <Translation blockImg="looks/goBackwardLayers.svg">
+            this.moveBehind(1);
+          </Translation>
 
           <TranslationHeader>Costume number/name</TranslationHeader>
           <Translation blockImg="looks/costumeNumber.svg">
