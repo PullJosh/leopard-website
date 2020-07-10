@@ -51,7 +51,9 @@ export default function Looks() {
           <Translation blockImg="looks/switchBackdropToPrevious.svg">
             {`// In a sprite:\nthis.stage.costumeNumber--;\n\n// In the stage:\nthis.costumeNumber--;`}
           </Translation>
-          <Translation blockImg="looks/switchBackdropToRandom.svg"></Translation>
+          <Translation blockImg="looks/switchBackdropToRandom.svg">
+            {`// In a sprite: \nthis.stage.costume = "random backdrop";\n\n// In the stage:\nthis.costume = "random backdrop";`}
+          </Translation>
 
           <TranslationHeader>Next Backdrop</TranslationHeader>
           <Translation blockImg="looks/nextBackdrop.svg">
