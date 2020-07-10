@@ -39,13 +39,21 @@ export default function Variables() {
           <Translation blockImg="variables/changeCloudVar.svg" />
 
           <TranslationHeader>Show variable</TranslationHeader>
-          <Translation blockImg="variables/showGlobalVar.svg" />
-          <Translation blockImg="variables/showSpriteVar.svg" />
+          <Translation blockImg="variables/showGlobalVar.svg">
+            this.stage.watchers.myGlobalVar.visible = true;
+          </Translation>
+          <Translation blockImg="variables/showSpriteVar.svg">
+            this.watchers.mySpriteVar.visible = true;
+          </Translation>
           <Translation blockImg="variables/showCloudVar.svg" />
 
           <TranslationHeader>Hide variable</TranslationHeader>
-          <Translation blockImg="variables/hideGlobalVar.svg" />
-          <Translation blockImg="variables/hideSpriteVar.svg" />
+          <Translation blockImg="variables/hideGlobalVar.svg">
+            this.stage.watchers.myGlobalVar.visible = false;
+          </Translation>
+          <Translation blockImg="variables/hideSpriteVar.svg">
+            this.watchers.mySpriteVar.visible = false;
+          </Translation>
           <Translation blockImg="variables/hideCloudVar.svg" />
 
           <TranslationHeader>List</TranslationHeader>
@@ -131,12 +139,20 @@ export default function Variables() {
           </Translation>
 
           <TranslationHeader>Show list</TranslationHeader>
-          <Translation blockImg="variables/showGlobalList.svg" />
-          <Translation blockImg="variables/showSpriteList.svg" />
+          <Translation blockImg="variables/showGlobalList.svg">
+            this.stage.watchers.myGlobalList.visible = true;
+          </Translation>
+          <Translation blockImg="variables/showSpriteList.svg">
+            this.watchers.mySpriteList.visible = true;
+          </Translation>
 
           <TranslationHeader>Hide list</TranslationHeader>
-          <Translation blockImg="variables/hideGlobalList.svg" />
-          <Translation blockImg="variables/hideSpriteList.svg" />
+          <Translation blockImg="variables/hideGlobalList.svg">
+            this.stage.watchers.myGlobalList.visible = false;
+          </Translation>
+          <Translation blockImg="variables/hideSpriteList.svg">
+            this.watchers.mySpriteList.visible = false;
+          </Translation>
         </TranslationGrid>
       </>
     </DocsPage>
