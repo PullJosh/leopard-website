@@ -166,8 +166,8 @@ function Index({ id }) {
 
       <footer className="py-16 mt-16 bg-gray-300">
         <Center>
-          <div className="grid grid-cols-4 gap-4">
-            <div className="col-span-2">
+          <div className="flex flex-col sm:flex-row justify-between">
+            <div className="flex-grow max-w-xs mb-4">
               <Link href="/">
                 <a className="text-xl font-semibold text-gray-900 hover:underline">
                   Leopard
@@ -178,8 +178,8 @@ function Index({ id }) {
                 possible!
               </p>
             </div>
-            <div className="col-start-4">
-              <h5 className="mb-2 font-semibold text-gray-900">Source Code</h5>
+            <div className="flex-grow-0 flex-shrink-0">
+              <h5 className="mb-1 font-semibold text-gray-900">Source Code</h5>
               <ul>
                 <li>
                   <a
