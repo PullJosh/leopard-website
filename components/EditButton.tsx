@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import classNames from "classnames";
+import * as gtag from "../lib/gtag";
 
 export default function EditButton({ projectId }) {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -22,6 +23,13 @@ export default function EditButton({ projectId }) {
         className="flex items-center px-6 py-3 text-white bg-indigo-700 border-b-2 border-indigo-800 rounded-l"
         href={`/api/${projectId}/codesandbox`}
         download
+        onClick={() => {
+          gtag.event({
+            category: "Translate Project",
+            action: "Edit in CodeSandbox",
+            label: projectId
+          });
+        }}
       >
         <img
           className="mr-4 opacity-75"
@@ -52,6 +60,13 @@ export default function EditButton({ projectId }) {
             className="flex items-center px-4 py-2 hover:bg-gray-200"
             href={`/api/${projectId}/zip`}
             download
+            onClick={() => {
+              gtag.event({
+                category: "Translate Project",
+                action: "Download ZIP",
+                label: projectId
+              });
+            }}
           >
             <img className="mr-2" src="/download-icon.svg" alt="" />
             <span>Download ZIP</span>

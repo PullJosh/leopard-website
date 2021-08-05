@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
-import Link from "next/link";
+import * as gtag from "../lib/gtag";
 
 import EditButton from "./EditButton";
 
@@ -42,6 +42,12 @@ export default function Preview({ id }) {
             if (id === null) id = defaultProject;
             setProjectURL(getProjectURL(id));
             router.push(id === defaultProject ? "/" : `/?id=${id}`);
+
+            gtag.event({
+              category: "Translate Project",
+              action: "Preview",
+              label: id
+            });
           }}
         />
 
