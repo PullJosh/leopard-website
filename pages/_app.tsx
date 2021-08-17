@@ -17,21 +17,5 @@ export default function MyApp({ Component, pageProps }) {
     };
   }, [router.events]);
 
-  return (
-    <>
-      <style jsx global>
-        {`
-          * {
-            box-sizing: border-box;
-          }
-
-          ::selection {
-            background: hsl(243, 94%, 66%);
-            color: #fff;
-          }
-        `}
-      </style>
-      <Component {...pageProps} />
-    </>
-  );
+  return <Component {...pageProps} />;
 }

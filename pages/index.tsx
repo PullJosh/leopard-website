@@ -1,170 +1,104 @@
+import { useRef } from "react";
 import Link from "next/link";
-
-import Preview from "../components/Preview";
 import Title from "../components/Title";
+import TopBorder from "../components/TopBorder";
+import Center from "../components/Center";
+import Nav from "../components/Nav";
+import ConvertBox from "../components/ConvertBox";
 
-function Center({ children }) {
-  return <div className="container max-w-xl px-8 mx-auto">{children}</div>;
-}
+function Index() {
+  const bottomSectionRef = useRef(null);
 
-function Index({ id }) {
+  const scrollToBottom = () => {
+    bottomSectionRef.current.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+  };
+
   return (
-    <div className="bg-gray-200">
+    <>
       <Title />
-      <header className="py-8 pb-32 -mb-24 bg-white border-t-8 border-indigo-600">
+
+      <TopBorder />
+
+      <Center>
+        <div className="relative flex flex-col min-h-[100vh]">
+          <Nav />
+
+          <div className="py-12 flex-grow flex flex-col justify-center">
+            <h2 className="text-xl font-semibold text-center mb-3 text-gray-800">
+              Convert your Scratch projects to JavaScript!
+            </h2>
+            <ConvertBox />
+          </div>
+
+          <ScrollDownButton onClick={scrollToBottom} />
+        </div>
+      </Center>
+
+      <div ref={bottomSectionRef} className="bg-gray-200 py-16">
         <Center>
-          <nav className="flex items-center py-8">
-            <h1 className="text-3xl">
-              <Link href="/">
-                <a className="font-bold text-gray-800 hover:underline">
-                  Leopard
-                </a>
-              </Link>
-            </h1>
-            <div className="flex items-center ml-auto">
-              <Link href="/translations/motion">
-                <a className="text-xl text-indigo-800 hover:underline">
-                  Block Translations
-                </a>
-              </Link>
-            </div>
-          </nav>
-          <p className="text-xl text-gray-600">
-            Automatically convert{" "}
-            <a
-              href="https://scratch.mit.edu/"
-              target="_blank"
-              className="text-indigo-700 hover:underline"
-            >
-              Scratch
-            </a>{" "}
-            projects to JavaScript!
+          <h2 className="mb-2 text-2xl font-bold text-gray-800">
+            Scratch is great, but it can be limiting.
+          </h2>
+          <p className="mb-4 text-xl text-gray-700">
+            Leopard translates your Scratch projects to JavaScript, which opens
+            up a whole new world of programming possibilities.
           </p>
+
+          <div className="grid grid-cols-2 gap-4">
+            <Link href="https://youtu.be/qmM9OPWG5W4">
+              <a className="p-4 min-h-[11rem] bg-indigo-600 rounded-md">
+                <span className="text-xl font-semibold text-white">
+                  Introduction to Leopard
+                </span>
+                <p className="text-indigo-100">
+                  Learn the basics of Leopard in this video from PullJosh
+                </p>
+              </a>
+            </Link>
+            <Link href="/help/publish-with-vercel">
+              <a className="p-4 min-h-[11rem] bg-orange-600 rounded-md">
+                <span className="text-xl font-semibold text-white">
+                  Publish your project as a website
+                </span>
+                <p className="text-orange-100">
+                  You can publish Leopard projects anywhere!
+                </p>
+              </a>
+            </Link>
+            <Link href="https://scratch.mit.edu/discuss/topic/420162/">
+              <a className="col-span-2 p-4 bg-gray-900 rounded-md flex items-center">
+                <span className="font-semibold text-white">Need help?</span>
+                <span className="text-gray-100 mx-2">Ask on the forums!</span>
+                <svg viewBox="0 0 8 14" className="h-4 ml-auto text-white">
+                  <line
+                    x1="1"
+                    y1="1"
+                    x2="7"
+                    y2="7"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                  />
+                  <line
+                    x1="1"
+                    y1="13"
+                    x2="7"
+                    y2="7"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </a>
+            </Link>
+          </div>
         </Center>
-        <div className="py-8">
-          <img
-            className="max-w-full mx-auto"
-            src="/translation-example.png"
-            alt="Example of Scratch blocks translated to Javascript"
-          />
-        </div>
-      </header>
+      </div>
 
-      <Center>
-        <Preview id={id} />
-      </Center>
-
-      <Center>
-        <h2 className="mt-12 mb-2 text-2xl font-bold text-gray-800">
-          Scratch is great, but it can be limiting.
-        </h2>
-        <p className="mb-4 text-xl text-gray-700">
-          With JavaScript, you get...
-        </p>
-      </Center>
-
-      <ul className="grid max-w-3xl grid-cols-1 gap-4 px-8 mx-auto sm:grid-cols-3">
-        <li className="p-4 bg-white rounded shadow">
-          <svg
-            className="w-8 h-8 mb-2 text-white bg-indigo-600 rounded"
-            viewBox="0 0 32 32"
-          >
-            <path
-              d="m16 7 2.9389 4.9549 5.6206 1.2639-3.8042 4.3262 0.53478 5.7361-5.2901-2.2812-5.2901 2.2812 0.53478-5.7361-3.8042-4.3262 5.6206-1.2639z"
-              fill="none"
-              stroke="currentColor"
-              strokeLinejoin="round"
-              strokeWidth="2"
-            />
-          </svg>
-          <div>
-            <h4 className="text-xl font-semibold text-gray-900">Features</h4>
-            <div>Cool tricks that Scratch just can't do.</div>
-          </div>
-        </li>
-        <li className="p-4 bg-white rounded shadow">
-          <svg
-            className="w-8 h-8 mb-2 text-white bg-indigo-600 rounded"
-            viewBox="0 0 32 32"
-          >
-            <path
-              d="m17 7v7h4l-6 11v-7h-4z"
-              fill="none"
-              stroke="currentColor"
-              strokeLinejoin="round"
-              strokeWidth="2"
-            />
-          </svg>
-          <div>
-            <h4 className="text-xl font-semibold text-gray-900">Speed</h4>
-            <div>Bigger projects, without the lag.</div>
-          </div>
-        </li>
-        <li className="p-4 bg-white rounded shadow">
-          <svg
-            className="w-8 h-8 mb-2 text-white bg-indigo-600 rounded"
-            viewBox="0 0 32 32"
-          >
-            <g fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="16" cy="16" r="8" />
-              <ellipse cx="16" cy="16" rx="3" ry="8" />
-              <path d="m8 16h16" />
-            </g>
-          </svg>
-          <div>
-            <h4 className="text-xl font-semibold text-gray-900">
-              Publishing options
-            </h4>
-            <div>
-              Run your projects on <i>any</i> website, not just Scratch.
-            </div>
-          </div>
-        </li>
-      </ul>
-
-      <Center>
-        <h2 className="mt-12 mb-2 text-2xl font-bold text-gray-800">
-          Get the big-picture introduction
-        </h2>
-        <p className="mb-4 text-xl text-gray-700">
-          Who is Leopard for? How do you use it?{" "}
-          <a
-            href="https://scratch.mit.edu/users/PullJosh"
-            target="_blank"
-            className="text-indigo-700"
-          >
-            PullJosh
-          </a>{" "}
-          answers.
-        </p>
-        <div
-          className="relative w-full"
-          style={{ paddingTop: `${(9 / 16) * 100}%` }}
-        >
-          <iframe
-            className="absolute inset-0 w-full h-full rounded-lg"
-            src="https://www.youtube-nocookie.com/embed/qmM9OPWG5W4"
-            frameBorder="0"
-            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          ></iframe>
-        </div>
-      </Center>
-
-      <Center>
-        <h2 className="mt-12 mb-2 text-2xl font-bold text-gray-800">
-          Beyond the basics
-        </h2>
-        <div className="grid grid-cols-2 gap-4">
-          <Link href="/help/publish-with-vercel">
-            <a className="p-4 pb-24 text-xl font-semibold text-white bg-orange-600 rounded-md">
-              Publish your project as a website!
-            </a>
-          </Link>
-        </div>
-      </Center>
-
-      <footer className="py-16 mt-16 bg-gray-300">
+      <footer className="py-16 bg-gray-300">
         <Center>
           <div className="flex flex-col sm:flex-row justify-between">
             <div className="flex-grow max-w-xs mb-4">
@@ -213,18 +147,38 @@ function Index({ id }) {
           </div>
         </Center>
       </footer>
-    </div>
+    </>
   );
 }
 
-Index.getInitialProps = ({ query }) => {
-  let { id } = query;
-  if (id === undefined) {
-    id = null;
-  } else {
-    id = parseInt(id, 10);
-  }
-  return { id };
-};
-
 export default Index;
+
+function ScrollDownButton({ onClick }) {
+  return (
+    <button
+      className="absolute bottom-4 p-4 left-1/2 -translate-x-1/2"
+      onClick={onClick}
+    >
+      <svg viewBox="0 0 16 9" className="w-6 text-gray-800">
+        <line
+          x1={1}
+          y1={1}
+          x2={8}
+          y2={8}
+          stroke="currentColor"
+          strokeWidth={2}
+          strokeLinecap="round"
+        />
+        <line
+          x1={15}
+          y1={1}
+          x2={8}
+          y2={8}
+          stroke="currentColor"
+          strokeWidth={2}
+          strokeLinecap="round"
+        />
+      </svg>
+    </button>
+  );
+}

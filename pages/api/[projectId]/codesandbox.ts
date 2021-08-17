@@ -30,6 +30,23 @@ export default async (req, res) => {
     for (const fileName in converted) {
       let content = converted[fileName];
 
+      // Prepend index.html with a comment
+      if (fileName === "index.html") {
+        content = `<!--
+  Congratulations! Your project has been converted to JavaScript!
+
+  You should see a working preview of your project on the right side of
+  the screen. If not, it means something went wrong.
+
+  Your project's code is all stored in the files on the left side of the
+  screen. You can edit the JavaScript code and your project will change.
+  But you have to save your changes using File > Save or Ctrl+S on your
+  keyboard before the project preview will update.
+-->
+
+${content}`;
+      }
+
       // Prepend sprite JS files with eslint-disable
       if (/.+\/.+\.js/g.test(fileName)) {
         content = "/* eslint-disable require-yield, eqeqeq */\n\n" + content;
@@ -64,11 +81,8 @@ export default async (req, res) => {
       }
     );
 
-    res.status(302);
-    res.setHeader("Location", result.url);
-    res.end();
-  } catch (e) {
-    console.error(e);
-    return res.status(400).json({ error: "Failed to convert project" });
+    res.status(200).json({ url: result.url });
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
   }
 };

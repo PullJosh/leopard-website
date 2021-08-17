@@ -1,46 +1,29 @@
-import Code from "../components/Code";
+import dynamic from "next/dynamic";
+import Code from "./Code";
+
+const ScratchBlocks = dynamic(() => import("./ScratchBlocks"), { ssr: false });
 
 export default function Translation({
-  blockImg,
-  children
+  scratch,
+  js
 }: {
-  blockImg: string;
-  children?: string;
+  scratch: string;
+  js?: string;
 }) {
   return (
     <>
-      <div className="blocks">
-        <img className="blocks__image" src={`/scriptImg/${blockImg}`} />
+      <div>
+        <ScratchBlocks scale={0.9}>{scratch}</ScratchBlocks>
       </div>
-      {children ? (
-        <div className="javascript">
-          <Code language="javascript">{children}</Code>
+      {js ? (
+        <div className="bg-gray-200 px-2 py-1 rounded overflow-hidden">
+          <Code language="javascript">{js}</Code>
         </div>
       ) : (
-        <div className="javascript--empty">No translation available.</div>
+        <div className="self-center italic text-lg text-gray-700">
+          No translation available.
+        </div>
       )}
-
-      <style jsx>
-        {`
-          .javascript {
-            background: #eee;
-            border-radius: 4px;
-            overflow: hidden;
-            margin-bottom: 32px;
-          }
-          .javascript > :global(pre) {
-            padding: 16px !important;
-            margin: 0;
-            font-size: 20px;
-          }
-          .javascript--empty {
-            font-style: italic;
-            font-size: 20px;
-            color: #888;
-            padding: 16px 0;
-          }
-        `}
-      </style>
     </>
   );
 }
@@ -56,6 +39,7 @@ export function TranslationGrid({ children }) {
             grid-template-columns: auto 1fr;
             align-items: start;
             grid-column-gap: 32px;
+            grid-row-gap: 4px;
           }
           .translationGrid > :global(h3) {
             grid-column-end: span 2;
