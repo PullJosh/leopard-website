@@ -24,6 +24,9 @@ export default class MyDocument extends Document {
           `
             }}
           />
+
+          {/* Favicon */}
+          <link rel="icon" type="image/svg+xml" href="/leopard-logo.svg" />
         </Head>
         <body>
           <Main />
