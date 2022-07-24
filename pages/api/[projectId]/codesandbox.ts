@@ -20,7 +20,7 @@ export default async (req, res) => {
   try {
     const project = await Project.fromSb3JSON(projectJSON, {
       getAsset: async ({ md5, ext }) =>
-        `https://assets.scratch.mit.edu/internalapi/asset/${md5}.${ext}/get/`
+        `https://assets.scratch.mit.edu/internalapi/asset/${md5}.${ext}/get/`,
     });
 
     const converted = project.toLeopard({});
@@ -59,13 +59,13 @@ ${content}`;
       for (const costume of target.costumes) {
         files[`${target.name}/costumes/${costume.name}.${costume.ext}`] = {
           content: costume.asset,
-          isBinary: true
+          isBinary: true,
         };
       }
       for (const sound of target.sounds) {
         files[`${target.name}/sounds/${sound.name}.${sound.ext}`] = {
           content: sound.asset,
-          isBinary: true
+          isBinary: true,
         };
       }
     }
@@ -77,7 +77,7 @@ ${content}`;
       "https://codesandbox.io/api/v1/sandboxes/define",
       {
         method: "POST",
-        body: formData
+        body: formData,
       }
     );
 

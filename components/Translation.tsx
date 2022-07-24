@@ -5,7 +5,7 @@ const ScratchBlocks = dynamic(() => import("./ScratchBlocks"), { ssr: false });
 
 export default function Translation({
   scratch,
-  js
+  js,
 }: {
   scratch: string;
   js?: string;

@@ -12,7 +12,7 @@ function Index() {
   const scrollToBottom = () => {
     bottomSectionRef.current.scrollIntoView({
       behavior: "smooth",
-      block: "start"
+      block: "start",
     });
   };
 

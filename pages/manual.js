@@ -7,7 +7,7 @@ import Center from "../components/Center";
 import Nav from "../components/Nav";
 import Translation, {
   TranslationGrid,
-  TranslationHeader
+  TranslationHeader,
 } from "../components/Translation";
 import classNames from "classnames";
 
@@ -1140,9 +1140,9 @@ function PaletteTabs() {
     <nav
       className={classNames("bg-white border-t sticky -top-px", {
         "border-b": !isStickied,
-        shadow: isStickied
+        shadow: isStickied,
       })}
-      ref={elem => {
+      ref={(elem) => {
         setStickyElement(elem);
       }}
     >
@@ -1194,7 +1194,7 @@ function PaletteTab({ id, children, color }) {
         className="block relative px-4 py-2 font-medium"
         style={{
           color: color,
-          backgroundColor: selected ? `${color}33` : undefined
+          backgroundColor: selected ? `${color}33` : undefined,
         }}
       >
         {children}

@@ -43,7 +43,7 @@ function NavItem({ children, href = "/", current = false }) {
       <a
         className={classNames("px-5 py-2 rounded-full", {
           "hover:bg-gray-300": !current,
-          "bg-indigo-700 text-white": current
+          "bg-indigo-700 text-white": current,
         })}
       >
         {children}

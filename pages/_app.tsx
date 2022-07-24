@@ -8,7 +8,7 @@ export default function MyApp({ Component, pageProps }) {
   // Log route changes to Google Analytics
   const router = useRouter();
   useEffect(() => {
-    const handleRouteChange = url => {
+    const handleRouteChange = (url) => {
       gtag.pageview(url);
     };
     router.events.on("routeChangeComplete", handleRouteChange);

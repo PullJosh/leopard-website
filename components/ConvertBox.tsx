@@ -18,13 +18,13 @@ export default function ConvertBox() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const onSubmit = async event => {
+  const onSubmit = async (event) => {
     event.preventDefault();
 
     gtag.event({
       category: "Translate Project",
       action: "Edit in CodeSandbox",
-      label: projectId
+      label: projectId,
     });
 
     setLoading(true);
@@ -54,13 +54,15 @@ export default function ConvertBox() {
             className={classNames(
               "w-full px-5 py-3 text-lg rounded border-2 outline-none",
               {
-                "text-indigo-800 bg-indigo-100 border-indigo-600 placeholder-indigo-200": !error,
-                "text-red-800 bg-red-100 border-red-700 focus:border-red-900": error
+                "text-indigo-800 bg-indigo-100 border-indigo-600 placeholder-indigo-200":
+                  !error,
+                "text-red-800 bg-red-100 border-red-700 focus:border-red-900":
+                  error,
               }
             )}
             placeholder="https://scratch.mit.edu/projects/345789566/"
             value={projectURL}
-            onChange={e => {
+            onChange={(e) => {
               setProjectURL(e.target.value);
               setError(null);
             }}
@@ -82,7 +84,7 @@ export default function ConvertBox() {
       {/* Error box */}
       <div
         className={classNames("bg-red-200 rounded px-4 py-3 space-y-2", {
-          "hidden sm:block sm:invisible": !error
+          "hidden sm:block sm:invisible": !error,
         })}
       >
         <p>
@@ -124,7 +126,7 @@ function ProgressButton({
         "relative flex items-center justify-center px-5 py-3 text-white text-lg rounded whitespace-nowrap disabled:cursor-not-allowed",
         {
           "bg-indigo-700": !error,
-          "bg-red-700": error
+          "bg-red-700": error,
         }
       )}
       {...props}
@@ -137,7 +139,7 @@ function ProgressButton({
               "origin-center w-8 h-8 border-4 rounded-full animate-spin",
               {
                 "border-indigo-200": !error,
-                "border-red-300": error
+                "border-red-300": error,
               }
             )}
             style={{ borderBottomColor: "transparent" }}
