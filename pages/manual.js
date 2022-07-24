@@ -449,8 +449,22 @@ this.costume`}
             <Translation scratch="when backdrop switches to [backdrop1 v]" />
 
             <TranslationHeader>When greater than</TranslationHeader>
-            <Translation scratch="when [loudness v] > (10)" />
-            <Translation scratch="when [timer v] > (10)" />
+            <Translation
+              scratch="when [loudness v] > (10)"
+              js="new Trigger(Trigger.LOUDNESS_GREATER_THAN, { VALUE: 10 }, this.whenLoudnessGreaterThan)"
+            />
+            <Translation
+              scratch="when [loudness v] > (amount)"
+              js="new Trigger(Trigger.LOUDNESS_GREATER_THAN, { VALUE: () => this.vars.amount }, this.whenLoudnessGreaterThan)"
+            />
+            <Translation
+              scratch="when [timer v] > (10)"
+              js="new Trigger(Trigger.TIMER_GREATER_THAN, { VALUE: 10 }, this.whenTimerGreaterThan)"
+            />
+            <Translation
+              scratch="when [timer v] > ((amount) / (2))"
+              js="new Trigger(Trigger.TIMER_GREATER_THAN, { VALUE: () => this.vars.amount / 2 }, this.whenTimerGreaterThan)"
+            />
 
             <TranslationHeader>When I receive</TranslationHeader>
             <Translation
@@ -562,7 +576,10 @@ this.costume`}
               scratch="<touching (mouse-pointer v)?>"
               js='this.touching("mouse")'
             />
-            <Translation scratch="<touching (edge v)?>" />
+            <Translation
+              scratch="<touching (edge v)?>"
+              js='this.touching("edge")'
+            />
             <Translation
               scratch="<touching (Sprite1 v)?>"
               js="this.touching(this.sprites.sprite1.andClones())"
@@ -635,7 +652,7 @@ this.costume`}
             <Translation scratch="set drag mode [not draggable v]" />
 
             <TranslationHeader>Loudness</TranslationHeader>
-            <Translation scratch="(loudness)" />
+            <Translation scratch="(loudness)" js="this.loudness" />
 
             <TranslationHeader>Timer</TranslationHeader>
             <Translation scratch="(timer)" js="this.timer" />
