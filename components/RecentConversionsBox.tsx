@@ -36,8 +36,8 @@ export default function RecentConversionsBox() {
                 >
                   <img
                     className="h-12 rounded"
-                    src={conversion.scratchProjectData.image}
-                    alt={conversion.scratchProjectData.title}
+                    src={conversion?.scratchProjectData?.image}
+                    alt={conversion?.scratchProjectData?.title}
                   />
                 </a>
                 <div className="flex-grow">
@@ -45,20 +45,20 @@ export default function RecentConversionsBox() {
                     <div className="flex-1">
                       <a
                         className="font-medium hover:underline"
-                        href={`https://scratch.mit.edu/projects/${conversion.scratchProjectId}/`}
+                        href={`https://scratch.mit.edu/projects/${conversion?.scratchProjectId}/`}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        {conversion.scratchProjectData.title}
+                        {conversion?.scratchProjectData?.title}
                       </a>{" "}
                       by{" "}
                       <a
                         className="hover:underline"
-                        href={`https://scratch.mit.edu/users/${conversion.scratchProjectData.author.username}/`}
+                        href={`https://scratch.mit.edu/users/${conversion?.scratchProjectData?.author?.username}/`}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        {conversion.scratchProjectData.author.username}
+                        {conversion?.scratchProjectData?.author?.username}
                       </a>
                     </div>
                     <div className="flex-initial text-xs text-gray-600">
