@@ -88,12 +88,19 @@ ${content}`;
 
     const sandboxId = result.sandbox_id;
 
-    await prisma.conversionLog.create({
-      data: {
-        scratchProjectId: projectId,
-        sandboxId,
-      },
-    });
+    const projectData: any = await fetch(
+      `https://api.scratch.mit.edu/projects/${projectId}`
+    ).then((res) => res.json());
+
+    const isShared = projectData?.code !== "NotFound";
+    if (isShared) {
+      await prisma.conversionLog.create({
+        data: {
+          scratchProjectId: projectId,
+          sandboxId,
+        },
+      });
+    }
 
     res
       .status(200)
