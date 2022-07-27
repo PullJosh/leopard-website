@@ -5,6 +5,7 @@ import TopBorder from "../components/TopBorder";
 import Center from "../components/Center";
 import Nav from "../components/Nav";
 import ConvertBox from "../components/ConvertBox";
+import RecentConversionsBox from "../components/RecentConversionsBox";
 
 function Index() {
   const bottomSectionRef = useRef(null);
@@ -30,7 +31,10 @@ function Index() {
             <h2 className="text-xl font-semibold text-center mb-3 text-gray-800">
               Convert your Scratch projects to JavaScript!
             </h2>
-            <ConvertBox />
+            <div className="space-y-16 mb-16">
+              <ConvertBox />
+              <RecentConversionsBox />
+            </div>
           </div>
 
           <ScrollDownButton onClick={scrollToBottom} />

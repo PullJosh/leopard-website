@@ -13,6 +13,7 @@
   "author": "Josh Pullen",
   "license": "ISC",
   "dependencies": {
+    "@prisma/client": "^4.1.0",
     "classnames": "^2.3.1",
     "codesandbox": "^2.2.3",
     "form-data": "^4.0.0",
@@ -22,7 +23,8 @@
     "react-dom": "^18.2.0",
     "react-syntax-highlighter": "^15.5.0",
     "sb-edit": "^0.13.10",
-    "scratchblocks": "^3.6.0"
+    "scratchblocks": "^3.6.0",
+    "swr": "^1.3.0"
   },
   "devDependencies": {
     "@types/node": "^18.0.6",
@@ -31,6 +33,7 @@
     "autoprefixer": "^10.4.7",
     "postcss": "^8.4.14",
     "prettier": "^2.7.1",
+    "prisma": "^4.1.0",
     "tailwindcss": "^3.1.6",
     "typescript": "^4.7.4"
   }

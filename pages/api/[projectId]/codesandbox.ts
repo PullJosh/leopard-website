@@ -1,10 +1,14 @@
+import type { NextApiRequest, NextApiResponse } from "next";
 import fetch from "node-fetch";
 import { Project } from "sb-edit";
 import { getParameters } from "codesandbox/lib/api/define";
 import FormData from "form-data";
 
-export default async (req, res) => {
-  const { projectId } = req.query;
+import { PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient();
+
+export default async (req: NextApiRequest, res: NextApiResponse) => {
+  const projectId = req.query.projectId as string;
 
   let projectJSON: any;
   try {
@@ -72,16 +76,28 @@ ${content}`;
 
     const formData = new FormData();
     formData.append("parameters", getParameters({ files }));
+    formData.append("json", 1);
 
-    const result = await fetch(
+    const result: any = await fetch(
       "https://codesandbox.io/api/v1/sandboxes/define",
       {
         method: "POST",
         body: formData,
       }
-    );
+    ).then((res) => res.json());
 
-    res.status(200).json({ url: result.url });
+    const sandboxId = result.sandbox_id;
+
+    await prisma.conversionLog.create({
+      data: {
+        scratchProjectId: projectId,
+        sandboxId,
+      },
+    });
+
+    res
+      .status(200)
+      .json({ url: `https://codesandbox.io/s/${sandboxId}?file=/index.js` });
   } catch (err) {
     return res.status(400).json({ error: err.message });
   }

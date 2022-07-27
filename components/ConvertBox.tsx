@@ -84,7 +84,7 @@ export default function ConvertBox() {
       {/* Error box */}
       <div
         className={classNames("bg-red-200 rounded px-4 py-3 space-y-2", {
-          "hidden sm:block sm:invisible": !error,
+          hidden: !error,
         })}
       >
         <p>
