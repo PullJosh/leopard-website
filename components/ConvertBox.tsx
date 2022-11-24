@@ -16,7 +16,7 @@ export default function ConvertBox() {
   const projectId = getProjectId(projectURL);
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<{ status: number; info: string }>(null);
 
   const onSubmit = async (event) => {
     event.preventDefault();
@@ -37,7 +37,7 @@ export default function ConvertBox() {
       window.location.href = data.url;
     } else {
       console.log(data);
-      setError(data.error);
+      setError({ status: response.status, info: data.error });
       setLoading(false);
     }
   };
@@ -82,34 +82,46 @@ export default function ConvertBox() {
       </form>
 
       {/* Error box */}
-      <div
-        className={classNames("bg-red-200 rounded px-4 py-3 space-y-2", {
-          hidden: !error,
-        })}
-      >
-        <p>
-          <strong>There was an error converting your project.</strong>
-        </p>
-        <p>
-          <code className="text-red-800 text-sm bg-red-300 px-2 py-1 rounded">
-            {error}
-          </code>
-        </p>
-        <p>
-          Leopard only supports new projects (created in Scratch 3.0). And the
-          only supported extension is "pen"; all others will fail.
-        </p>
-        <p>
-          If you aren't sure why your project is failing,{" "}
-          <a
-            href="https://scratch.mit.edu/discuss/topic/420162/"
-            className="underline"
-          >
-            ask on the forums
-          </a>
-          !
-        </p>
-      </div>
+      {error && (
+        <div className="bg-red-200 rounded px-4 py-3 space-y-2">
+          {error.status === 404 ? (
+            <>
+              <p>
+                <strong>Project not found. (Did you share it?)</strong>
+              </p>
+              <p>
+                Your project must be shared in order to be converted. A shared
+                project was not found with the id {projectId}.
+              </p>
+            </>
+          ) : (
+            <>
+              <p>
+                <strong>There was an error converting your project.</strong>
+              </p>
+              <p>
+                <code className="text-red-800 text-sm bg-red-300 px-2 py-1 rounded">
+                  {error.info}
+                </code>
+              </p>
+              <p>
+                Leopard only supports new projects (created in Scratch 3.0). And
+                the only supported extension is "pen"; all others will fail.
+              </p>
+            </>
+          )}
+          <p>
+            If you aren't sure why your project is failing,{" "}
+            <a
+              href="https://scratch.mit.edu/discuss/topic/420162/"
+              className="underline"
+            >
+              ask on the forums
+            </a>
+            !
+          </p>
+        </div>
+      )}
     </div>
   );
 }

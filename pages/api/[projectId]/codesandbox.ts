@@ -14,6 +14,11 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     `https://api.scratch.mit.edu/projects/${projectId}`
   ).then((res) => res.json());
 
+  if (projectData.code === "NotFound") {
+    res.status(404).json({ error: "Project not found. Is it shared?" });
+    return;
+  }
+
   let projectJSON: any;
   try {
     const url = `https://projects.scratch.mit.edu/${projectId}?token=${projectData.project_token}`;
