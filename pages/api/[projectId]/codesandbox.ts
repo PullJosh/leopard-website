@@ -10,10 +10,14 @@ const prisma = new PrismaClient();
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   const projectId = req.query.projectId as string;
 
+  const projectData: any = await fetch(
+    `https://api.scratch.mit.edu/projects/${projectId}`
+  ).then((res) => res.json());
+
   let projectJSON: any;
   try {
-    const url = `https://projects.scratch.mit.edu/${projectId}`;
-    projectJSON = await fetch(url).then((res: any) => res.json());
+    const url = `https://projects.scratch.mit.edu/${projectId}?token=${projectData.project_token}`;
+    projectJSON = await fetch(url).then((res) => res.json());
   } catch (e) {
     console.error(e);
     return res
@@ -87,10 +91,6 @@ ${content}`;
     ).then((res) => res.json());
 
     const sandboxId = result.sandbox_id;
-
-    const projectData: any = await fetch(
-      `https://api.scratch.mit.edu/projects/${projectId}`
-    ).then((res) => res.json());
 
     const isShared = projectData?.code !== "NotFound";
     if (isShared) {
