@@ -19,7 +19,7 @@
     "codesandbox": "^2.2.3",
     "form-data": "^4.0.0",
     "jszip": "^3.10.1",
-    "next": "^12.2.3",
+    "next": "^12.2.4",
     "node-fetch": "^3.2.9",
     "raw-body": "^2.5.1",
     "react": "^18.2.0",
