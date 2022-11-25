@@ -18,12 +18,12 @@ const s3 = new S3({
   accessKeyId: `${process.env.CLOUDFLARE_R2_KEY_ID}`,
   secretAccessKey: `${process.env.CLOUDFLARE_R2_KEY_SECRET}`,
   signatureVersion: "v4",
+  region: "auto",
 });
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const body = await getRawBody(req);
-    const sb3File = body;
 
     const zip = await JSZip.loadAsync(body);
     const json = await zip.file("project.json").async("text");
