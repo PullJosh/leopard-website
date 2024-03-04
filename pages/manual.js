@@ -124,7 +124,7 @@ export default function Manual() {
             <Translation scratch="set y to (0)" js="this.y = 0;" />
 
             <TranslationHeader>If on edge, bounce</TranslationHeader>
-            <Translation scratch="if on edge, bounce" />
+            <Translation scratch="if on edge, bounce" js="this.ifOnEdgeBounce();" />
 
             <TranslationHeader>Set rotation style</TranslationHeader>
             <Translation
