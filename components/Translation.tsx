@@ -16,11 +16,11 @@ export default function Translation({
         <ScratchBlocks scale={0.9}>{scratch}</ScratchBlocks>
       </div>
       {js ? (
-        <div className="bg-gray-200 px-2 py-1 rounded overflow-hidden">
+        <div className="overflow-hidden rounded bg-gray-200 px-2 py-1">
           <Code language="javascript">{js}</Code>
         </div>
       ) : (
-        <div className="self-center italic text-lg text-gray-700">
+        <div className="self-center text-lg italic text-gray-700">
           No translation available.
         </div>
       )}
@@ -28,7 +28,11 @@ export default function Translation({
   );
 }
 
-export function TranslationGrid({ children }) {
+interface TranslationGridProps {
+  children: React.ReactNode;
+}
+
+export function TranslationGrid({ children }: TranslationGridProps) {
   return (
     <div className="translationGrid">
       {children}
@@ -50,7 +54,11 @@ export function TranslationGrid({ children }) {
   );
 }
 
-export function TranslationHeader({ children }) {
+interface TranslationHeaderProps {
+  children: React.ReactNode;
+}
+
+export function TranslationHeader({ children }: TranslationHeaderProps) {
   return (
     <h3 className="my-2 text-lg font-semibold text-gray-800">{children}</h3>
   );

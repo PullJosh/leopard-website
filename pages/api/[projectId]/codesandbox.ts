@@ -4,14 +4,16 @@ import { Project } from "sb-edit";
 import { getParameters } from "codesandbox/lib/api/define";
 import FormData from "form-data";
 
-import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
+import prisma from "../../../lib/db";
 
-export default async (req: NextApiRequest, res: NextApiResponse) => {
+export default async function convertToCodesandbox(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
   const projectId = req.query.projectId as string;
 
   const projectData: any = await fetch(
-    `https://api.scratch.mit.edu/projects/${projectId}`
+    `https://api.scratch.mit.edu/projects/${projectId}`,
   ).then((res) => res.json());
 
   if (projectData.code === "NotFound") {
@@ -31,14 +33,15 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   try {
+    type AssetType = string;
     const project = await Project.fromSb3JSON(projectJSON, {
-      getAsset: async ({ md5, ext }) =>
+      getAsset: async ({ md5, ext }): Promise<AssetType> =>
         `https://assets.scratch.mit.edu/internalapi/asset/${md5}.${ext}/get/`,
     });
 
     const converted = project.toLeopard({});
 
-    let files = {};
+    let files: { [name: string]: { content: string; isBinary: boolean } } = {};
 
     for (const fileName in converted) {
       let content = converted[fileName];
@@ -71,13 +74,13 @@ ${content}`;
     for (const target of [project.stage, ...project.sprites]) {
       for (const costume of target.costumes) {
         files[`${target.name}/costumes/${costume.name}.${costume.ext}`] = {
-          content: costume.asset,
+          content: costume.asset as AssetType,
           isBinary: true,
         };
       }
       for (const sound of target.sounds) {
         files[`${target.name}/sounds/${sound.name}.${sound.ext}`] = {
-          content: sound.asset,
+          content: sound.asset as AssetType,
           isBinary: true,
         };
       }
@@ -92,25 +95,19 @@ ${content}`;
       {
         method: "POST",
         body: formData,
-      }
+      },
     ).then((res) => res.json());
 
     const sandboxId = result.sandbox_id;
-
-    const isShared = projectData?.code !== "NotFound";
-    if (isShared) {
-      await prisma.conversionLog.create({
-        data: {
-          scratchProjectId: projectId,
-          sandboxId,
-        },
-      });
-    }
 
     res
       .status(200)
       .json({ url: `https://codesandbox.io/s/${sandboxId}?file=/index.js` });
   } catch (err) {
-    return res.status(400).json({ error: err.message });
+    if (err instanceof Error) {
+      return res.status(400).json({ error: err.message });
+    }
+
+    return res.status(400).json({ error: "An unknown error occurred" });
   }
-};
+}

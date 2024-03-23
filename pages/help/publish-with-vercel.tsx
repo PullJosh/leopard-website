@@ -1,5 +1,5 @@
 import Center from "../../components/Center";
-import Nav from "../../components/Nav";
+import HomepageNav from "../../components/HomepageNav";
 import Title from "../../components/Title";
 import TopBorder from "../../components/TopBorder";
 
@@ -11,7 +11,7 @@ export default function PublishWithVercel() {
       <TopBorder />
 
       <Center>
-        <Nav />
+        <HomepageNav />
 
         <h2 className="mt-8 mb-4 text-4xl font-bold text-gray-800">
           Publish your project as a website!
@@ -35,7 +35,7 @@ export default function PublishWithVercel() {
             <a
               href="https://github.com/"
               target="_blank"
-              className="font-semibold text-indigo-700 hover:underline"
+              className="font-semibold text-indigo-600 hover:underline"
             >
               github.com
             </a>{" "}
@@ -61,7 +61,7 @@ export default function PublishWithVercel() {
           title={
             <>
               In your project, create a file called{" "}
-              <code className="px-2 py-1 -my-1 font-normal bg-gray-200 rounded">
+              <code className="-my-1 rounded bg-gray-200 px-2 py-1 font-normal">
                 package.json
               </code>
             </>
@@ -77,7 +77,7 @@ export default function PublishWithVercel() {
           title={
             <>
               Replace the content of{" "}
-              <code className="px-2 py-1 -my-1 font-normal bg-gray-200 rounded">
+              <code className="-my-1 rounded bg-gray-200 px-2 py-1 font-normal">
                 package.json
               </code>{" "}
               with the following
@@ -85,10 +85,10 @@ export default function PublishWithVercel() {
           }
         >
           <p>Be sure to save your changes!</p>
-          <pre className="bg-gray-200 rounded">
+          <pre className="rounded bg-gray-200">
             <div className="border-t-4 border-gray-400">
               <span
-                className="inline-block px-4 py-2 bg-gray-400 select-none rounded-br-md"
+                className="inline-block select-none rounded-br-md bg-gray-400 px-4 py-2"
                 style={{ marginTop: -4 }}
               >
                 package.json
@@ -158,7 +158,7 @@ export default function PublishWithVercel() {
             <a
               href="https://vercel.com/dashboard"
               target="_blank"
-              className="font-semibold text-indigo-700 hover:underline"
+              className="font-semibold text-indigo-600 hover:underline"
             >
               vercel.com/dashboard
             </a>
@@ -197,7 +197,7 @@ export default function PublishWithVercel() {
             </p>
             <p>
               Vercel provides the following endings for free:
-              <ul className="ml-4 list-disc list-inside">
+              <ul className="ml-4 list-inside list-disc">
                 <li>
                   <i>your-chosen-name</i>
                   <strong>.vercel.app</strong>
@@ -247,12 +247,16 @@ export default function PublishWithVercel() {
   );
 }
 
-function InfoBox({ children }) {
+interface InfoBoxProps {
+  children: React.ReactNode;
+}
+
+function InfoBox({ children }: InfoBoxProps) {
   return (
-    <div className="p-4 my-8 text-blue-900 bg-blue-100 border border-blue-300 rounded">
-      <h4 className="flex items-center mb-2 font-semibold text-blue-600">
+    <div className="my-8 rounded border border-blue-300 bg-blue-100 p-4 text-blue-900">
+      <h4 className="mb-2 flex items-center font-semibold text-blue-600">
         <svg
-          className="inline-block w-5 h-5 mr-2 text-white bg-blue-600 rounded-full"
+          className="mr-2 inline-block h-5 w-5 rounded-full bg-blue-600 text-white"
           viewBox="0 0 20 20"
         >
           <line
@@ -279,17 +283,23 @@ function InfoBox({ children }) {
   );
 }
 
-function Step({ title, number, children }) {
+interface StepProps {
+  title: React.ReactNode;
+  number: number;
+  children: React.ReactNode;
+}
+
+function Step({ title, number, children }: StepProps) {
   return (
     <div>
       <h3 className="mt-8 mb-4 text-2xl font-semibold text-gray-700">
-        <div className="inline-flex items-center justify-center w-10 h-10 mr-4 text-xl text-white bg-indigo-600 rounded-full">
+        <div className="mr-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-indigo-600 text-xl text-white">
           {number}
         </div>
         {title}
       </h3>
 
-      <div className="pl-4 ml-10">{children}</div>
+      <div className="ml-10 pl-4">{children}</div>
     </div>
   );
 }

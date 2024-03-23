@@ -1,4 +1,6 @@
-import SyntaxHighlighter from "react-syntax-highlighter";
+import SyntaxHighlighter, {
+  SyntaxHighlighterProps,
+} from "react-syntax-highlighter";
 
 const theme = {
   hljs: {
@@ -115,8 +117,10 @@ const theme = {
   "hljs-strong": {
     fontWeight: "bold",
   },
-};
+} as const;
 
-export default function Code(props) {
+type CodeProps = SyntaxHighlighterProps;
+
+export default function Code(props: CodeProps) {
   return <SyntaxHighlighter style={theme} {...props} />;
 }

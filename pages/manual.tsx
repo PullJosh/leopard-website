@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import Title from "../components/Title";
 import TopBorder from "../components/TopBorder";
 import Center from "../components/Center";
-import Nav from "../components/Nav";
+import HomepageNav from "../components/HomepageNav";
 import Translation, {
   TranslationGrid,
   TranslationHeader,
@@ -22,12 +22,12 @@ export default function Manual() {
       <TopBorder />
 
       <Center>
-        <Nav />
+        <HomepageNav />
       </Center>
 
-      <PaletteTabs selected="motion" />
+      <PaletteTabs />
 
-      <div className="max-w-5xl px-8 mx-auto my-4">
+      <div className="mx-auto my-4 max-w-5xl px-8">
         {palette === "motion" && (
           <TranslationGrid>
             <TranslationHeader>Move steps</TranslationHeader>
@@ -1155,7 +1155,7 @@ function PaletteTabs() {
 
   return (
     <nav
-      className={classNames("bg-white border-t sticky -top-px", {
+      className={classNames("sticky -top-px border-t bg-white", {
         "border-b": !isStickied,
         shadow: isStickied,
       })}
@@ -1163,7 +1163,7 @@ function PaletteTabs() {
         setStickyElement(elem);
       }}
     >
-      <div className="max-w-5xl px-8 mx-auto flex flex-wrap">
+      <div className="mx-auto flex max-w-5xl flex-wrap px-8">
         <PaletteTab id="motion" color="#3373cc">
           Motion
         </PaletteTab>
@@ -1199,16 +1199,22 @@ function PaletteTabs() {
   );
 }
 
-function PaletteTab({ id, children, color }) {
+interface PaletteTabProps {
+  id: string;
+  children: React.ReactNode;
+  color: string;
+}
+
+function PaletteTab({ id, children, color }: PaletteTabProps) {
   const router = useRouter();
   const palette = router.query.p || "motion";
 
   const selected = palette === id;
 
   return (
-    <Link href={`?p=${id}`} scroll={false}>
+    <Link href={`?p=${id}`} scroll={false} legacyBehavior>
       <a
-        className="block relative px-4 py-2 font-medium"
+        className="relative block px-4 py-2 font-medium"
         style={{
           color: color,
           backgroundColor: selected ? `${color}33` : undefined,
@@ -1234,7 +1240,7 @@ function PaletteTab({ id, children, color }) {
 }
 
 function useStickyWatcher() {
-  const [element, setElement] = useState(null);
+  const [element, setElement] = useState<HTMLElement | null>(null);
   const [isStickied, setIsStickied] = useState(false);
 
   useEffect(() => {
@@ -1243,7 +1249,7 @@ function useStickyWatcher() {
         ([e]) => {
           setIsStickied(e.intersectionRatio < 1);
         },
-        { threshold: [1] }
+        { threshold: [1] },
       );
 
       observer.observe(element);
@@ -1254,5 +1260,5 @@ function useStickyWatcher() {
     }
   }, [element]);
 
-  return [setElement, isStickied];
+  return [setElement, isStickied] as const;
 }

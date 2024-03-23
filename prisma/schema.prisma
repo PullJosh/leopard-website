@@ -10,9 +10,47 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model ConversionLog {
-  id               String   @id @default(cuid())
+model User {
+  id           String    @id @default(cuid())
+  username     String    @unique
+  passwordHash String
+  sessions     Session[]
+  projects     Project[]
+  createdAt    DateTime  @default(now())
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  expires   DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Project {
+  id               String   @id
+  title            String
+  scratchProjectId String?
   createdAt        DateTime @default(now())
-  scratchProjectId String
-  sandboxId        String
+  updatedAt        DateTime @updatedAt
+  files            File[]
+  ownerId          String?
+  owner            User?    @relation(fields: [ownerId], references: [id])
+}
+
+model File {
+  id        String  @id @default(cuid())
+  path      String
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id])
+
+  // A file can either have content or an asset (but not both)
+  // If it has neither, it's a directory. Directories do not need to be explicitly created
+  // unless they are empty.
+  content String?
+  asset   String?
+
+  @@unique([path, projectId])
 }

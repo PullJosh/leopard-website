@@ -24,7 +24,7 @@ export default function ScratchBlocks({
 
     ref.current.innerHTML = "";
     ref.current.appendChild(svg);
-  }, [blockStyle, languages, scale, children]);
+  }, [blockStyle, languages, scale, children, inline]);
 
   return <div ref={ref} {...props} />;
 }

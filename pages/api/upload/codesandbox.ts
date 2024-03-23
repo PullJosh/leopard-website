@@ -21,56 +21,57 @@ const s3 = new S3({
   region: "auto",
 });
 
-export default async (req: NextApiRequest, res: NextApiResponse) => {
+export default async function uploadToCodesandbox(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
   try {
     const body = await getRawBody(req);
 
     const zip = await JSZip.loadAsync(body);
-    const json = await zip.file("project.json").async("text");
+    const json = await zip.file("project.json")!.async("text");
 
     // Upload assets to Cloudflare R2 for temporary storage
-    const getAsset = async ({
-      md5,
-      ext,
-    }): Promise<{ content: string; isBinary: boolean }> => {
-      if (ext === "svg") {
-        // No need to upload SVG files to R2. (And in fact, trying to do so
-        // is failing for me for some reason.) Instead, just pass the text content of the SVG file.
+    type AssetType = { content: string; isBinary: boolean };
+    const project = await Project.fromSb3JSON(JSON.parse(json), {
+      getAsset: async ({ md5, ext }): Promise<AssetType> => {
+        if (ext === "svg") {
+          // No need to upload SVG files to R2. (And in fact, trying to do so
+          // is failing for me for some reason.) Instead, just pass the text content of the SVG file.
+          return {
+            content: await zip.file(`${md5}.${ext}`)!.async("text"),
+            isBinary: false,
+          };
+        }
+
+        // Get asset data from zip as a `Buffer`
+        const data = await zip.file(`${md5}.${ext}`)!.async("nodebuffer");
+
+        // Upload asset to Cloudflare R2
+        await s3
+          .putObject({
+            Bucket: "leopard-website",
+            Key: `uploaded-sb3-files/${md5}.${ext}`,
+            Body: data,
+            Expires: new Date(Date.now() + 5 * 60 * 1000), // Automatically deleted after 5 minutes
+          })
+          .promise();
+
+        // Return a signed URL that allows access to the file for the next 5 minutes
         return {
-          content: await zip.file(`${md5}.${ext}`).async("text"),
-          isBinary: false,
+          content: await s3.getSignedUrlPromise("getObject", {
+            Bucket: "leopard-website",
+            Key: `uploaded-sb3-files/${md5}.${ext}`,
+            Expires: 5 * 60, // 5 minutes
+          }),
+          isBinary: true,
         };
-      }
-
-      // Get asset data from zip as a `Buffer`
-      const data = await zip.file(`${md5}.${ext}`).async("nodebuffer");
-
-      // Upload asset to Cloudflare R2
-      await s3
-        .putObject({
-          Bucket: "leopard-website",
-          Key: `uploaded-sb3-files/${md5}.${ext}`,
-          Body: data,
-          Expires: new Date(Date.now() + 5 * 60 * 1000), // Automatically deleted after 5 minutes
-        })
-        .promise();
-
-      // Return a signed URL that allows access to the file for the next 5 minutes
-      return {
-        content: await s3.getSignedUrlPromise("getObject", {
-          Bucket: "leopard-website",
-          Key: `uploaded-sb3-files/${md5}.${ext}`,
-          Expires: 5 * 60, // 5 minutes
-        }),
-        isBinary: true,
-      };
-    };
-
-    const project = await Project.fromSb3JSON(JSON.parse(json), { getAsset });
+      },
+    });
 
     const converted = project.toLeopard({});
 
-    let files = {};
+    let files: { [name: string]: { content: string; isBinary: boolean } } = {};
 
     for (const fileName in converted) {
       let content = converted[fileName];
@@ -103,10 +104,11 @@ ${content}`;
     for (const target of [project.stage, ...project.sprites]) {
       for (const costume of target.costumes) {
         files[`${target.name}/costumes/${costume.name}.${costume.ext}`] =
-          costume.asset;
+          costume.asset as AssetType;
       }
       for (const sound of target.sounds) {
-        files[`${target.name}/sounds/${sound.name}.${sound.ext}`] = sound.asset;
+        files[`${target.name}/sounds/${sound.name}.${sound.ext}`] =
+          sound.asset as AssetType;
       }
     }
 
@@ -119,7 +121,7 @@ ${content}`;
       {
         method: "POST",
         body: formData,
-      }
+      },
     ).then((res) => res.json());
 
     const sandboxId = result.sandbox_id;
@@ -129,6 +131,11 @@ ${content}`;
       .json({ url: `https://codesandbox.io/s/${sandboxId}?file=/index.js` });
   } catch (err) {
     console.error(err);
-    return res.status(400).json({ error: err.message });
+
+    if (err instanceof Error) {
+      return res.status(400).json({ error: err.message });
+    }
+
+    return res.status(400).json({ error: "An unknown error occurred." });
   }
-};
+}
