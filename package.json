@@ -18,6 +18,7 @@
     "@monaco-editor/react": "^4.6.0",
     "@next/third-parties": "^14.1.4",
     "@prisma/client": "^4.1.0",
+    "@webcontainer/api": "^1.1.9",
     "aws-sdk": "^2.1261.0",
     "bcrypt": "^5.1.1",
     "classnames": "^2.3.1",

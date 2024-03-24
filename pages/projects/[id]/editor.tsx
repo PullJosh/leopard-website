@@ -49,10 +49,8 @@ import { Dialog, Menu } from "@headlessui/react";
 import Title from "../../../components/Title";
 import Nav, {
   NavAnonymousProjectWarning,
-  NavLoggedOutUserInfo,
   NavProjectDescription,
   NavSpace,
-  NavUserInfo,
 } from "../../../components/Nav";
 import { useSession } from "../../../components/SessionProvider";
 import { useProject } from "../../../lib/useProject";
