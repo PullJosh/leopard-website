@@ -1,8 +1,10 @@
+"use client";
+
 import { Dialog, Menu } from "@headlessui/react";
 import classNames from "classnames";
 import Link from "next/link";
 import { useAccountModal } from "./AccountModal";
-import { useSession } from "../pages/_app";
+import { useSession } from "../components/SessionProvider";
 import {
   Fragment,
   createContext,
@@ -14,7 +16,7 @@ import { RemixIcon } from "./RemixIcon";
 
 interface NavProps {
   width?: "default" | "full";
-  leopardText?: boolean;
+  title?: string | null;
   children?: React.ReactNode;
 }
 
@@ -24,7 +26,7 @@ const NavContext = createContext<{
 
 export default function Nav({
   width = "default",
-  leopardText = false,
+  title = null,
   children,
 }: NavProps) {
   return (
@@ -45,9 +47,12 @@ export default function Nav({
               src="/leopard-logo.svg"
               alt="Leopard logo"
             />
-            {leopardText && <h1 className="text-lg font-semibold">Leopard</h1>}
+            {title && <h1 className="text-lg font-semibold">{title}</h1>}
           </Link>
+
           {children}
+
+          <NavUserInfo />
         </div>
       </header>
     </NavContext.Provider>
@@ -217,38 +222,34 @@ export function NavAnonymousProjectWarning({
   );
 }
 
-export function NavLoggedOutUserInfo() {
+export function NavUserInfo() {
+  const { user, setUser } = useSession();
+
   const { openAccountModal } = useAccountModal();
   const { width } = useContext(NavContext);
 
-  return (
-    <div
-      className={classNames("flex items-center space-x-2", {
-        "mr-3": width === "full",
-      })}
-    >
-      <button
-        onClick={() => openAccountModal("register")}
-        className="rounded-md bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700 active:bg-indigo-800"
+  if (!user) {
+    return (
+      <div
+        className={classNames("flex items-center space-x-2", {
+          "mr-3": width === "full",
+        })}
       >
-        Register
-      </button>
-      <button
-        onClick={() => openAccountModal("sign-in")}
-        className="rounded-md bg-gray-300 px-4 py-2 text-gray-800 hover:bg-gray-400 active:bg-gray-500"
-      >
-        Sign in
-      </button>
-    </div>
-  );
-}
-
-interface NavUserInfoProps {
-  username: string;
-}
-
-export function NavUserInfo({ username }: NavUserInfoProps) {
-  const { setUser } = useSession();
+        <button
+          onClick={() => openAccountModal("register")}
+          className="rounded-md bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700 active:bg-indigo-800"
+        >
+          Register
+        </button>
+        <button
+          onClick={() => openAccountModal("sign-in")}
+          className="rounded-md bg-gray-300 px-4 py-2 text-gray-800 hover:bg-gray-400 active:bg-gray-500"
+        >
+          Sign in
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="relative flex py-2">
@@ -264,9 +265,9 @@ export function NavUserInfo({ username }: NavUserInfoProps) {
           <img
             className="mr-3 h-8 w-8 rounded"
             src="/default-profile-picture.svg"
-            alt={`Picture of ${username}`}
+            alt={`Picture of ${user.username}`}
           />
-          <div className="text-gray-800">{username}</div>
+          <div className="text-gray-800">{user.username}</div>
           <svg className="ml-3 mr-1 w-[16px]" viewBox="0 0 16 9">
             <polyline
               points="1 1, 8 8, 15 1"
@@ -280,7 +281,7 @@ export function NavUserInfo({ username }: NavUserInfoProps) {
         </Menu.Button>
 
         <Menu.Items className="absolute top-full right-0 z-40 -mt-1 flex w-48 flex-col overflow-hidden rounded-xl border border-gray-300 bg-white p-2 shadow-lg">
-          <NavUserInfoMenuItem onClick={`/users/${username}`}>
+          <NavUserInfoMenuItem onClick={`/users/${user.username}`}>
             Profile
           </NavUserInfoMenuItem>
           <NavUserInfoMenuItem>My Stuff</NavUserInfoMenuItem>

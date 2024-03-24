@@ -1,5 +1,7 @@
 import Head from "next/head";
 
+// TODO: Remove this
+
 export default function Title({ children }: { children?: string | null }) {
   return (
     <Head>

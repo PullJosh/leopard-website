@@ -1,3 +1,5 @@
+"use client";
+
 import { Dialog, Tab } from "@headlessui/react";
 import classNames from "classnames";
 import {
@@ -10,7 +12,7 @@ import {
 
 import Image from "next/image";
 import JoshPullenProfilePicture from "../public/josh-pullen-profile-picture.jpeg";
-import { useSession } from "../pages/_app";
+import { useSession } from "./SessionProvider";
 import { RegisterForm } from "./RegisterForm";
 import { SignInForm } from "./SignInForm";
 import { Checkbox } from "./CheckBox";

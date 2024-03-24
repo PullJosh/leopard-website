@@ -54,7 +54,7 @@ import Nav, {
   NavSpace,
   NavUserInfo,
 } from "../../../components/Nav";
-import { useSession } from "../../_app";
+import { useSession } from "../../../components/SessionProvider";
 import { useProject } from "../../../lib/useProject";
 import { SeeProjectPageButton } from "../../../components/SeeInsideButton";
 
@@ -415,11 +415,6 @@ export default function ProjectEditorPage() {
             <div className="ml-4 mr-2 flex py-3">
               <SeeProjectPageButton id={id as string} />
             </div>
-            {user === null ? (
-              <NavLoggedOutUserInfo />
-            ) : (
-              <NavUserInfo username={user.username} />
-            )}
           </Nav>
         </div>
         <div className="flex divide-x divide-gray-300 overflow-hidden">

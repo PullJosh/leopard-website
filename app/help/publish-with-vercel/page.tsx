@@ -1,18 +1,20 @@
-import Center from "../../components/Center";
-import HomepageNav from "../../components/HomepageNav";
-import Title from "../../components/Title";
-import TopBorder from "../../components/TopBorder";
+import Center from "../../../components/Center";
+import Nav, { NavSpace } from "../../../components/Nav";
+
+export const metadata = {
+  title: "Publish your project as a website",
+};
 
 export default function PublishWithVercel() {
   return (
     <>
-      <Title>Publish your project as a website</Title>
-
-      <TopBorder />
+      <div className="border-b border-gray-300">
+        <Nav>
+          <NavSpace />
+        </Nav>
+      </div>
 
       <Center>
-        <HomepageNav />
-
         <h2 className="mt-8 mb-4 text-4xl font-bold text-gray-800">
           Publish your project as a website!
         </h2>
@@ -195,19 +197,17 @@ export default function PublishWithVercel() {
               It's also possible to choose a domain that does not end in
               <strong>.vercel.app</strong>.
             </p>
-            <p>
-              Vercel provides the following endings for free:
-              <ul className="ml-4 list-inside list-disc">
-                <li>
-                  <i>your-chosen-name</i>
-                  <strong>.vercel.app</strong>
-                </li>
-                <li>
-                  <i>your-chosen-name</i>
-                  <strong>.now.sh</strong>
-                </li>
-              </ul>
-            </p>
+            <p>Vercel provides the following endings for free:</p>
+            <ul className="ml-4 list-inside list-disc">
+              <li>
+                <i>your-chosen-name</i>
+                <strong>.vercel.app</strong>
+              </li>
+              <li>
+                <i>your-chosen-name</i>
+                <strong>.now.sh</strong>
+              </li>
+            </ul>
             <p>
               If you want something else, like a .com or .dev domain, you'll
               need to pay money — usually about $12/year. I recommend using{" "}
@@ -232,7 +232,7 @@ export default function PublishWithVercel() {
         </Step>
       </Center>
 
-      <style jsx>
+      <style>
         {`
           img {
             margin: 16px 0;

@@ -4,12 +4,9 @@ import Title from "../../../components/Title";
 import TopBorder from "../../../components/TopBorder";
 import Nav, {
   NavAnonymousProjectWarning,
-  NavLoggedOutUserInfo,
-  NavProjectDescription,
   NavSpace,
-  NavUserInfo,
 } from "../../../components/Nav";
-import { useSession } from "../../_app";
+import { useSession } from "../../../components/SessionProvider";
 import { SeeInsideButton } from "../../../components/SeeInsideButton";
 import Link from "next/link";
 import { RemixIcon } from "../../../components/RemixIcon";
@@ -42,11 +39,6 @@ export default function ProjectPage() {
                   setProject={projectResponse.setProject}
                 />
               )}
-            {user === null ? (
-              <NavLoggedOutUserInfo />
-            ) : (
-              <NavUserInfo username={user.username} />
-            )}
           </Nav>
         </div>
 

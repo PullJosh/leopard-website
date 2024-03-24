@@ -12,6 +12,10 @@ module.exports = {
     "./pages/**/*.jsx",
     "./pages/**/*.ts",
     "./pages/**/*.js",
+    "./app/**/*.tsx",
+    "./app/**/*.jsx",
+    "./app/**/*.ts",
+    "./app/**/*.js",
   ],
   theme: {
     extend: {

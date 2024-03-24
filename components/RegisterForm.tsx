@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction, useMemo, useState } from "react";
 import { validatePassword, validateUsername } from "../lib/validateUserInfo";
-import { useSession } from "../pages/_app";
+import { useSession } from "../components/SessionProvider";
 import { FormErrorMessage } from "./FormErrorMessage";
 import { FormField } from "./FormField";
 import { Checkbox } from "./CheckBox";

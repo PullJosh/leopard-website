@@ -7,7 +7,7 @@ import {
 } from "react";
 import * as gtag from "../lib/gtag";
 import classNames from "classnames";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 const getProjectURL = (id: number) => `https://scratch.mit.edu/projects/${id}/`;
 

@@ -1,18 +1,13 @@
+"use client";
+
 import { useRef } from "react";
 import Link from "next/link";
-import Title from "../components/Title";
-import TopBorder from "../components/TopBorder";
 import Center from "../components/Center";
-import HomepageNav from "../components/HomepageNav";
 import ConvertBox from "../components/ConvertBox";
-import Nav, {
-  NavLoggedOutUserInfo,
-  NavSpace,
-  NavUserInfo,
-} from "../components/Nav";
-import { useSession } from "./_app";
+import { useSession } from "../components/SessionProvider";
+import Nav, { NavSpace } from "../components/Nav";
 
-function Index() {
+export default function Index() {
   const bottomSectionRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -22,21 +17,11 @@ function Index() {
     });
   };
 
-  const { user } = useSession();
-
   return (
     <>
-      <Title />
-
       <div className="border-b border-gray-300">
-        <TopBorder />
-        <Nav leopardText={true}>
+        <Nav title="Leopard">
           <NavSpace />
-          {user === null ? (
-            <NavLoggedOutUserInfo />
-          ) : (
-            <NavUserInfo username={user.username} />
-          )}
         </Nav>
       </div>
 
@@ -172,8 +157,6 @@ function Index() {
     </>
   );
 }
-
-export default Index;
 
 interface ScrollDownButtonProps {
   onClick?: React.MouseEventHandler;

@@ -1,29 +1,30 @@
+"use client";
+
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/router";
-import Title from "../components/Title";
-import TopBorder from "../components/TopBorder";
-import Center from "../components/Center";
-import HomepageNav from "../components/HomepageNav";
+import { useSearchParams } from "next/navigation";
 import Translation, {
   TranslationGrid,
   TranslationHeader,
-} from "../components/Translation";
+} from "../../components/Translation";
 import classNames from "classnames";
+import Nav, { NavSpace } from "../../components/Nav";
+
+// export const metadata = {
+//   title: "Manual",
+// };
 
 export default function Manual() {
-  const router = useRouter();
-  const palette = router.query.p || "motion";
+  const searchParams = useSearchParams();
+  const palette = searchParams?.get("p") ?? "motion";
 
   return (
     <>
-      <Title>Manual</Title>
-
-      <TopBorder />
-
-      <Center>
-        <HomepageNav />
-      </Center>
+      <div className="border-b border-gray-300">
+        <Nav>
+          <NavSpace />
+        </Nav>
+      </div>
 
       <PaletteTabs />
 
@@ -124,7 +125,10 @@ export default function Manual() {
             <Translation scratch="set y to (0)" js="this.y = 0;" />
 
             <TranslationHeader>If on edge, bounce</TranslationHeader>
-            <Translation scratch="if on edge, bounce" js="this.ifOnEdgeBounce();" />
+            <Translation
+              scratch="if on edge, bounce"
+              js="this.ifOnEdgeBounce();"
+            />
 
             <TranslationHeader>Set rotation style</TranslationHeader>
             <Translation
@@ -1206,8 +1210,8 @@ interface PaletteTabProps {
 }
 
 function PaletteTab({ id, children, color }: PaletteTabProps) {
-  const router = useRouter();
-  const palette = router.query.p || "motion";
+  const searchParams = useSearchParams();
+  const palette = searchParams?.get("p") ?? "motion";
 
   const selected = palette === id;
 
