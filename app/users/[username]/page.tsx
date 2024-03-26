@@ -5,10 +5,10 @@ import DefaultProfilePicture from "../../../public/default-profile-picture.svg";
 
 import Link from "next/link";
 
-import { PrismaClient } from "@prisma/client";
 import { Metadata, ResolvingMetadata } from "next";
 import Nav, { NavSpace } from "../../../components/Nav";
-const prisma = new PrismaClient();
+
+import prisma from "../../../lib/prisma";
 
 interface Props {
   params: {

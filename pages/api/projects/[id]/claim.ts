@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import prisma from "../../../../lib/db";
+import prisma from "../../../../lib/prisma";
 import { getUser } from "../../../../lib/getUser";
 import { getProject } from "./get";
 

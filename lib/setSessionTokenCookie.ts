@@ -1,4 +1,4 @@
-import { Session } from "@prisma/client";
+import type { Session } from "@prisma/client";
 import { NextApiResponse } from "next";
 
 export function setSessionTokenCookie(

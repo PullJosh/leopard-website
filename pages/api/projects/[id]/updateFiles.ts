@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import prisma from "../../../../lib/db";
+import prisma from "../../../../lib/prisma";
 
 type FileChange =
   | { type: "create"; path: string; content?: string }

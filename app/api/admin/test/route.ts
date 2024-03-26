@@ -1,0 +1,54 @@
+import S3 from "aws-sdk/clients/s3";
+
+const s3 = new S3({
+  endpoint: `https://${process.env.CLOUDFLARE_R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+  accessKeyId: `${process.env.CLOUDFLARE_R2_KEY_ID}`,
+  secretAccessKey: `${process.env.CLOUDFLARE_R2_KEY_SECRET}`,
+  signatureVersion: "v4",
+  region: "auto",
+});
+
+export async function POST(request: Request) {
+  const prefix = "401n3ndp1R/";
+
+  const deletedCount = await deleteFolder(prefix);
+
+  return Response.json({ success: true, deletedCount });
+}
+
+async function deleteFolder(prefix: string, delimeter = "/"): Promise<number> {
+  const { Contents, CommonPrefixes } = await s3
+    .listObjectsV2({
+      Bucket: "leopard-projects-dev",
+      Delimiter: delimeter,
+      Prefix: prefix,
+    })
+    .promise();
+
+  let count = 0;
+
+  if (CommonPrefixes && CommonPrefixes.length > 0) {
+    const subCounts = await Promise.all(
+      CommonPrefixes?.map(({ Prefix }) =>
+        deleteFolder(Prefix as string, delimeter),
+      ),
+    );
+
+    count += subCounts.reduce((acc, curr) => acc + curr, 0);
+  }
+
+  if (Contents && Contents.length > 0) {
+    await s3
+      .deleteObjects({
+        Bucket: "leopard-projects-dev",
+        Delete: {
+          Objects: Contents.map(({ Key }) => ({ Key: Key as string })),
+        },
+      })
+      .promise();
+
+    count += Contents.length;
+  }
+
+  return count;
+}

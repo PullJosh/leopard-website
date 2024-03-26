@@ -35,8 +35,10 @@ export default function ProjectPage() {
             {projectResponse.state === "ready" &&
               projectResponse.project.owner === null && (
                 <NavAnonymousProjectWarning
+                  className="mr-2"
                   projectId={projectResponse.project.id}
                   setProject={projectResponse.setProject}
+                  autoClaimOnSignIn={true}
                 />
               )}
           </Nav>
@@ -46,15 +48,28 @@ export default function ProjectPage() {
           <div className="mx-auto max-w-4xl px-8">
             <div>
               <div className="mb-4 flex items-center">
-                <Link
-                  href={
-                    projectResponse.state === "ready"
-                      ? `/users/${projectResponse.project.owner?.username}`
-                      : "#"
-                  }
-                >
+                {projectResponse.state === "ready" &&
+                projectResponse.project.owner ? (
+                  <Link
+                    href={
+                      projectResponse.state === "ready"
+                        ? `/users/${projectResponse.project.owner?.username}`
+                        : "#"
+                    }
+                  >
+                    <img
+                      className="mr-3 h-14 w-14 self-start rounded-md"
+                      src="/default-profile-picture.svg"
+                      alt={
+                        projectResponse.state === "ready"
+                          ? `Picture of ${projectResponse.project.owner?.username}`
+                          : "Default profile picture"
+                      }
+                    />
+                  </Link>
+                ) : (
                   <img
-                    className="mr-3 h-14 w-14 self-start rounded-md"
+                    className="mr-3 h-14 w-14 self-start rounded-md grayscale"
                     src="/default-profile-picture.svg"
                     alt={
                       projectResponse.state === "ready"
@@ -62,7 +77,7 @@ export default function ProjectPage() {
                         : "Default profile picture"
                     }
                   />
-                </Link>
+                )}
                 <div className="flex-grow">
                   <h1 className="flex-grow text-2xl font-semibold">
                     {projectResponse.state === "ready"
@@ -71,14 +86,17 @@ export default function ProjectPage() {
                   </h1>
                   <div className="text-gray-800">
                     by{" "}
-                    {projectResponse.state === "ready" && (
-                      <Link
-                        className="font-medium text-indigo-600 hover:underline"
-                        href={`/users/${projectResponse.project.owner?.username}`}
-                      >
-                        {projectResponse.project.owner?.username}
-                      </Link>
-                    )}
+                    {projectResponse.state === "ready" &&
+                      (projectResponse.project.owner ? (
+                        <Link
+                          className="font-medium text-indigo-600 hover:underline"
+                          href={`/users/${projectResponse.project.owner.username}`}
+                        >
+                          {projectResponse.project.owner.username}
+                        </Link>
+                      ) : (
+                        "Anonymous"
+                      ))}
                   </div>
                 </div>
 

@@ -2,12 +2,11 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import fetch from "node-fetch";
 import { Project } from "sb-edit";
 import S3 from "aws-sdk/clients/s3";
-import prisma from "../../../lib/db";
-import crypto from "crypto";
-
-import { nanoid } from "nanoid";
-import { Prisma } from "@prisma/client";
+import prisma from "../../../lib/prisma";
+import type { Prisma } from "@prisma/client";
 import { getUser } from "../../../lib/getUser";
+import { nanoid } from "nanoid";
+import crypto from "crypto";
 
 const s3 = new S3({
   endpoint: `https://${process.env.CLOUDFLARE_R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
@@ -98,7 +97,7 @@ export default async function convertToLeopardWebsite(
 
         filesToCreate.push({
           path: `${target.name}/sounds/${sound.name}.${sound.ext}`,
-          asset: `${hash}.${sound.ext}`,
+          asset: name,
         });
       }
     }

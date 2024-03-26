@@ -147,5 +147,5 @@ module.exports = {
     backgroundColor: ["responsive", "hover", "focus", "focus-within"],
     boxShadow: ["responsive", "hover", "focus", "focus-within"],
   },
-  plugins: [],
+  plugins: [require("@tailwindcss/typography")],
 };

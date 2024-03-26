@@ -8,11 +8,7 @@ import {
   useRef,
   useState,
 } from "react";
-
-export interface User {
-  id: string;
-  username: string;
-}
+import { User } from "../lib/getUser";
 
 const SessionContext = createContext<{
   user: User | null;

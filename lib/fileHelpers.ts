@@ -75,7 +75,7 @@ export function findAllFiles<FileType extends AbstractFile>(
 }
 
 export function pathToString(path: Path) {
-  return "/" + path.join("/");
+  return path.join("/");
 }
 
 export function stringToPath(path: string): Path {

@@ -3,10 +3,10 @@ import { validatePassword, validateUsername } from "../../lib/validateUserInfo";
 import bcrypt from "bcrypt";
 import zod from "zod";
 
-import { PrismaClient } from "@prisma/client";
 import { setSessionTokenCookie } from "../../lib/setSessionTokenCookie";
 import { createUserSession } from "../../lib/createUserSession";
-const prisma = new PrismaClient();
+
+import prisma from "../../lib/prisma";
 
 const registerSchema = zod.object({
   username: zod.string(),

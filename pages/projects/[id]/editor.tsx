@@ -406,15 +406,17 @@ export default function ProjectEditorPage() {
               />
             )}
             <NavSpace />
-            {project && project.owner === null && (
-              <NavAnonymousProjectWarning
-                projectId={project.id}
-                setProject={setProject!}
-              />
-            )}
-            <div className="ml-4 mr-2 flex py-3">
+            <div className="mr-2 flex py-3">
               <SeeProjectPageButton id={id as string} />
             </div>
+            {project && project.owner === null && (
+              <NavAnonymousProjectWarning
+                className="mr-2"
+                projectId={project.id}
+                setProject={setProject!}
+                autoClaimOnSignIn={true}
+              />
+            )}
           </Nav>
         </div>
         <div className="flex divide-x divide-gray-300 overflow-hidden">

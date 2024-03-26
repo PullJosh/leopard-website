@@ -4,8 +4,6 @@ import { Project } from "sb-edit";
 import { getParameters } from "codesandbox/lib/api/define";
 import FormData from "form-data";
 
-import prisma from "../../../lib/db";
-
 export default async function convertToCodesandbox(
   req: NextApiRequest,
   res: NextApiResponse,

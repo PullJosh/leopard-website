@@ -1,6 +1,6 @@
 "use client";
 
-import { Dialog, Menu } from "@headlessui/react";
+import { Menu } from "@headlessui/react";
 import classNames from "classnames";
 import Link from "next/link";
 import { useAccountModal } from "./AccountModal";
@@ -8,11 +8,12 @@ import { useSession } from "../components/SessionProvider";
 import {
   Fragment,
   createContext,
-  useCallback,
   useContext,
+  useEffect,
   useState,
 } from "react";
 import { RemixIcon } from "./RemixIcon";
+import { ErrorIcon } from "./icons/ErrorIcon";
 
 interface NavProps {
   width?: "default" | "full";
@@ -143,82 +144,53 @@ export function NavProjectDescription({
 interface NavAnonymousProjectWarningProps {
   projectId: string;
   setProject: (project: any) => void;
+  autoClaimOnSignIn?: boolean;
+  className?: string;
 }
 
 export function NavAnonymousProjectWarning({
   projectId,
   setProject,
+  autoClaimOnSignIn = false,
+  className,
 }: NavAnonymousProjectWarningProps) {
   const { user } = useSession();
-  const [modalOpen, setModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<any | null>(null);
 
-  const claim = useCallback(() => {
-    setLoading(true);
-    fetch(`/api/projects/${projectId}/claim`, { method: "POST" })
-      .then((res) => res.json())
-      .then((res) => {
-        const project = res.project;
-        setProject(project);
-        setModalOpen(false);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error(err);
-        alert("Error: Failed to claim project");
-        setLoading(false);
-      });
-  }, [projectId, setProject]);
+  useEffect(() => {
+    if (user && autoClaimOnSignIn && !loading && error === null) {
+      setLoading(true);
+      fetch(`/api/projects/${projectId}/claim`, { method: "POST" })
+        .then((res) => res.json())
+        .then((res) => {
+          const project = res.project;
+          setProject(project);
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.error(err);
+          alert("Error: Failed to claim project");
+          setLoading(false);
+          setError(err);
+        });
+    }
+  }, [autoClaimOnSignIn, error, loading, projectId, setProject, user]);
 
   return (
-    <>
-      <div className="mr-4 self-center text-center text-sm">
-        <div className="font-medium">Anybody can edit this project</div>
-        <div>
-          <button
-            className="rounded bg-gray-300 px-1 text-sm hover:bg-gray-400 active:bg-gray-500"
-            onClick={() => setModalOpen(true)}
-          >
-            {user === null ? "Sign in" : "Claim it"}
-          </button>{" "}
-          to save your work
+    <div
+      className={classNames(
+        "flex h-10 items-center space-x-3 self-center rounded-md bg-yellow-300 px-3 py-1",
+        className,
+      )}
+    >
+      <ErrorIcon className="h-5 w-5 text-yellow-800" />
+      <div className="text-left text-sm">
+        <div className="text-yellow-800">
+          Project will be deleted. Sign in to save.
         </div>
       </div>
-      <Dialog
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        className="relative z-50"
-      >
-        <div className="fixed inset-0 flex w-screen items-center justify-center bg-gray-900/40 p-4">
-          <Dialog.Panel className="w-full max-w-sm rounded border-t-8 border-indigo-600 bg-white p-8 shadow-xl">
-            <Dialog.Title className="mb-4 text-center text-xl font-bold text-gray-900">
-              Claim Project
-            </Dialog.Title>
-            <Dialog.Description>
-              This project was created anonymously, so anybody can edit it.
-              Claim this project to become its owner.
-            </Dialog.Description>
-
-            <div className="mt-4 flex justify-end space-x-2">
-              <button
-                className="rounded bg-gray-300 px-4 py-2 text-gray-800 hover:bg-gray-400 active:bg-gray-500"
-                onClick={() => setModalOpen(false)}
-                disabled={loading}
-              >
-                Cancel
-              </button>
-              <button
-                className="rounded bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700 active:bg-indigo-800 disabled:bg-indigo-300"
-                onClick={() => claim()}
-                disabled={loading}
-              >
-                Claim as yours
-              </button>
-            </div>
-          </Dialog.Panel>
-        </div>
-      </Dialog>
-    </>
+    </div>
   );
 }
 
@@ -285,6 +257,12 @@ export function NavUserInfo() {
             Profile
           </NavUserInfoMenuItem>
           <NavUserInfoMenuItem>My Stuff</NavUserInfoMenuItem>
+          {user.role === "ADMIN" && (
+            <>
+              <div className="-mx-2 my-2 border-b" />
+              <NavUserInfoMenuItem onClick="/admin">Admin</NavUserInfoMenuItem>
+            </>
+          )}
           <div className="-mx-2 my-2 border-b" />
           <NavUserInfoMenuItem
             onClick={() => {
