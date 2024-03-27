@@ -1,4 +1,5 @@
 import S3 from "aws-sdk/clients/s3";
+import { NextResponse } from "next/server";
 
 const s3 = new S3({
   endpoint: `https://${process.env.CLOUDFLARE_R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
@@ -13,7 +14,7 @@ export async function POST(request: Request) {
 
   const deletedCount = await deleteFolder(prefix);
 
-  return Response.json({ success: true, deletedCount });
+  return NextResponse.json({ success: true, deletedCount });
 }
 
 async function deleteFolder(prefix: string, delimeter = "/"): Promise<number> {

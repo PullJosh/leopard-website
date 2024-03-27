@@ -1,6 +1,7 @@
 // This route is meant to be hit by Vercel's cron functionality.
 // It might also be hit by a user, but that's fine.
 
+import { NextResponse } from "next/server";
 import prisma from "../../../../lib/prisma";
 import S3 from "aws-sdk/clients/s3";
 
@@ -56,5 +57,5 @@ export async function GET(request: Request) {
     where: { id: { in: projectIds } },
   });
 
-  return Response.json({ success: true });
+  return NextResponse.json({ success: true });
 }
