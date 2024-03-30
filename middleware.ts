@@ -2,8 +2,6 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
-  console.log(request.nextUrl.pathname);
-
   if (request.nextUrl.pathname.startsWith("/admin")) {
     const user = await getUserFromAPI(request);
 

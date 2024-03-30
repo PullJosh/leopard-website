@@ -1,18 +1,29 @@
-import scratchblocks from "scratchblocks";
+"use client";
+
 import { useEffect, useRef } from "react";
+const scratchblocks = require("scratchblocks");
+
+interface ScratchBlocksProps {
+  children: string;
+  blockStyle?: string;
+  languages?: string[];
+  inline?: boolean;
+  scale?: number;
+}
 
 export default function ScratchBlocks({
+  children,
   blockStyle = "scratch3",
   languages = undefined,
-  children,
   inline = false,
   scale = 1,
   ...props
-}) {
-  const ref = useRef(null);
+}: ScratchBlocksProps) {
+  const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    let options = {};
+    let options: { style?: string; languages?: string[]; inline?: boolean } =
+      {};
     if (blockStyle !== undefined) options.style = blockStyle;
     if (languages !== undefined) options.languages = languages;
     options.inline = inline;
@@ -22,8 +33,8 @@ export default function ScratchBlocks({
 
     svg.setAttribute("width", svg.getAttribute("width") * scale);
 
-    ref.current.innerHTML = "";
-    ref.current.appendChild(svg);
+    ref.current!.innerHTML = "";
+    ref.current!.appendChild(svg);
   }, [blockStyle, languages, scale, children, inline]);
 
   return <div ref={ref} {...props} />;

@@ -1,5 +1,6 @@
+"use client";
+
 import classNames from "classnames";
-import { useRouter } from "next/router";
 import {
   Dispatch,
   Fragment,
@@ -16,8 +17,7 @@ import {
   useState,
 } from "react";
 import Editor, { useMonaco } from "@monaco-editor/react";
-import { ProjectResponseJSON } from "../../api/projects/[id]/get";
-import TopBorder from "../../../components/TopBorder";
+import TopBorder from "../components/TopBorder";
 import { Tooltip } from "react-tooltip";
 import {
   AbstractFile,
@@ -38,25 +38,22 @@ import {
   DirectoryPath,
   isFilePath,
   getSmartSelectPath,
-} from "../../../lib/fileHelpers";
-import { useHashState } from "../../../lib/useHashState";
+} from "../lib/fileHelpers";
 import {
   UpdateFilesRequestJSON,
   UpdateFilesResponseJSON,
-} from "../../api/projects/[id]/updateFiles";
+} from "../pages/api/projects/[id]/updateFiles";
 import { useHotkeys } from "react-hotkeys-hook";
 import { Dialog, Menu } from "@headlessui/react";
-import Title from "../../../components/Title";
 import Nav, {
   NavAnonymousProjectWarning,
-  NavLoggedOutUserInfo,
   NavProjectDescription,
   NavSpace,
-  NavUserInfo,
-} from "../../../components/Nav";
-import { useSession } from "../../../components/SessionProvider";
-import { useProject } from "../../../lib/useProject";
-import { SeeProjectPageButton } from "../../../components/SeeInsideButton";
+} from "../components/Nav";
+import { SeeProjectPageButton } from "../components/SeeInsideButton";
+import { JSTranslationsReferencePanel } from "./JSTranslationsReferencePanel";
+// import { JSTranslationsModal } from "../components/JSTranslationsModal";
+import { ProjectResponseJSON } from "../pages/api/projects/[id]/get";
 
 const imageFileExtensions = ["png", "svg", "jpg", "jpeg"];
 const audioFileExtensions = ["wav", "mp3"];
@@ -110,16 +107,19 @@ function usePath(path: Path, root?: DirectoryType<AbstractFile>) {
   return fileOrDirectory;
 }
 
-export default function ProjectEditorPage() {
-  const router = useRouter();
-  const { id } = router.query;
+interface ProjectEditorProps {
+  projectId: string;
+  defaultProject: ProjectResponseJSON;
 
-  const projectResponse = useProject(id as string);
-  const projectState = projectResponse.state;
-  const project =
-    projectResponse.state === "ready" ? projectResponse.project : null;
-  const setProject =
-    projectResponse.state === "ready" ? projectResponse.setProject : null;
+  translationsReferencePanel?: React.ReactNode;
+}
+
+export function ProjectEditor({
+  projectId,
+  defaultProject,
+  translationsReferencePanel,
+}: ProjectEditorProps) {
+  const [project, setProject] = useState(defaultProject);
 
   const root = useMemo(() => {
     let files: {
@@ -130,27 +130,24 @@ export default function ProjectEditorPage() {
       asset?: string | undefined;
     }[] = [];
     let directoryPaths: DirectoryPath[] = [];
-
-    if (project) {
-      for (const file of project.files) {
-        const path = stringToPath(file.path);
-        if (isFilePath(path)) {
-          const name = path[path.length - 1] as FileName;
-          files.push({ ...file, name, path });
-        } else {
-          directoryPaths.push(path);
-        }
+    for (const file of project.files) {
+      const path = stringToPath(file.path);
+      if (isFilePath(path)) {
+        const name = path[path.length - 1] as FileName;
+        files.push({ ...file, name, path });
+      } else {
+        directoryPaths.push(path);
       }
     }
-
     return groupFilesByDirectory(files, directoryPaths);
   }, [project]);
 
-  const [activePath, setActivePath] = useHashState(
-    [],
-    pathToString,
-    stringToPath,
-  );
+  // const [activePath, setActivePath] = useHashState(
+  //   [],
+  //   pathToString,
+  //   stringToPath,
+  // );
+  const [activePath, setActivePath] = useState<string[]>([""]);
 
   // TODO: Use `getSmartSelectPath` to automatically load index.js as the default file rather than opening up to a blank path
 
@@ -232,7 +229,7 @@ export default function ProjectEditorPage() {
 
   const updateFiles = useCallback(
     (body: UpdateFilesRequestJSON) => {
-      return fetch(`/api/projects/${id}/updateFiles`, {
+      return fetch(`/api/projects/${projectId}/updateFiles`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
@@ -273,7 +270,7 @@ export default function ProjectEditorPage() {
           });
         });
     },
-    [id, setProject],
+    [projectId, setProject],
   );
 
   const saveFileEdits = useCallback(() => {
@@ -297,7 +294,7 @@ export default function ProjectEditorPage() {
   const active = usePath(activePath, root);
 
   const previewIframeRef = useRef<HTMLIFrameElement>(null);
-  const previewURL = `/api/preview/${id}/index.html`;
+  const previewURL = `/api/preview/${projectId}/index.html`;
   const [previewRunning, setPreviewRunning] = useState(false);
   const runPreview = useCallback(async () => {
     if (!previewIframeRef.current) return;
@@ -364,8 +361,6 @@ export default function ProjectEditorPage() {
 
   const fileGridRef = useRef<FileGridRef>(null);
 
-  const { user } = useSession();
-
   return (
     <ProjectEditorContext.Provider
       value={{
@@ -378,15 +373,13 @@ export default function ProjectEditorPage() {
         createFile,
       }}
     >
-      <Title>{project?.title}</Title>
-      <div className="grid h-screen w-screen grid-rows-[auto,1fr]">
+      <div className="grid h-[calc(100vh-8px)] w-screen grid-rows-[auto,1fr]">
         <style jsx global>{`
           body {
             overscroll-behavior: none;
           }
         `}</style>
         <div className="border-b border-gray-300">
-          <TopBorder />
           <Nav width="full">
             {project && (
               <NavProjectDescription
@@ -407,7 +400,7 @@ export default function ProjectEditorPage() {
             )}
             <NavSpace />
             <div className="mr-2 flex py-3">
-              <SeeProjectPageButton id={id as string} />
+              <SeeProjectPageButton id={projectId} />
             </div>
             {project && project.owner === null && (
               <NavAnonymousProjectWarning
@@ -422,50 +415,42 @@ export default function ProjectEditorPage() {
         <div className="flex divide-x divide-gray-300 overflow-hidden">
           {!ready && <div className="flex-grow">Loading...</div>}
           {ready && (
-            <div className="relative flex flex-grow flex-col">
-              {projectState === "error" && (
-                <div className="flex flex-grow items-center justify-center">
-                  <div className="text-center text-gray-700">
-                    <svg
-                      className="mx-auto mb-4 block w-16"
-                      viewBox="0 0 48 36"
-                      strokeLinejoin="miter"
-                    >
-                      <g transform="matrix(1,0,0,1,-8.25,-14)">
-                        <path
-                          d="M20.446,26.05C21.972,20.268 27.241,16 33.5,16C40.895,16 46.909,21.959 46.999,29.333C51.031,30.431 54,34.121 54,38.5C54,43.743 49.743,48 44.5,48L21.5,48C15.429,48 10.5,43.071 10.5,37C10.5,31.285 14.868,26.582 20.446,26.05Z"
-                          className="stroke-gray-600"
-                          strokeWidth={4}
-                          fill="none"
-                        />
-                      </g>
-                      <g transform="matrix(0.853333,-0.853333,0.707107,0.707107,-15.8524,29.611)">
-                        <rect
-                          x="9.5"
-                          y="16.5"
-                          width="38"
-                          height="8"
-                          className="fill-gray-600 stroke-white"
-                          strokeWidth={3.61}
-                        />
-                      </g>
-                    </svg>
-                    <h5 className="font-bold text-gray-800">
-                      Something went wrong.
-                    </h5>
-                    <p>This project could not be loaded. Are you online?</p>
-                  </div>
+            <div className="relative flex w-0 flex-grow flex-col">
+              {/* <div className="flex h-0 flex-grow items-center justify-center">
+                <div className="text-center text-gray-700">
+                  <svg
+                    className="mx-auto mb-4 block w-16"
+                    viewBox="0 0 48 36"
+                    strokeLinejoin="miter"
+                  >
+                    <g transform="matrix(1,0,0,1,-8.25,-14)">
+                      <path
+                        d="M20.446,26.05C21.972,20.268 27.241,16 33.5,16C40.895,16 46.909,21.959 46.999,29.333C51.031,30.431 54,34.121 54,38.5C54,43.743 49.743,48 44.5,48L21.5,48C15.429,48 10.5,43.071 10.5,37C10.5,31.285 14.868,26.582 20.446,26.05Z"
+                        className="stroke-gray-600"
+                        strokeWidth={4}
+                        fill="none"
+                      />
+                    </g>
+                    <g transform="matrix(0.853333,-0.853333,0.707107,0.707107,-15.8524,29.611)">
+                      <rect
+                        x="9.5"
+                        y="16.5"
+                        width="38"
+                        height="8"
+                        className="fill-gray-600 stroke-white"
+                        strokeWidth={3.61}
+                      />
+                    </g>
+                  </svg>
+                  <h5 className="font-bold text-gray-800">
+                    Something went wrong.
+                  </h5>
+                  <p>This project could not be loaded. Are you online?</p>
                 </div>
-              )}
-              {!first && (
-                <div className="flex flex-grow items-center justify-center bg-gray-100 text-gray-800">
-                  {/* TODO: Make this blank screen look nicer */}
-                  Select a file to start editing
-                </div>
-              )}
-              {first && (
+              </div> */}
+              {first ? (
                 <div>
-                  <div className="relative z-50">
+                  <div className="relative z-30">
                     <FileTabs path={first.path} />
                   </div>
                   <div className="flex items-center space-x-1 border-b border-gray-300 bg-white px-2 py-1 text-sm">
@@ -486,16 +471,21 @@ export default function ProjectEditorPage() {
                     )}
                   </div>
                 </div>
+              ) : (
+                <div className="flex h-0 flex-grow items-center justify-center bg-gray-100 text-gray-800">
+                  {/* TODO: Make this blank screen look nicer */}
+                  Select a file to start editing
+                </div>
               )}
               {first?.type === "file" && (
-                <div className="relative flex-grow">
+                <div className="relative h-0 flex-grow">
                   <FileEditor file={first.file} />
                 </div>
               )}
               {first?.type === "directory" && (
                 <>
                   {secondPath.length >= 2 && (
-                    <div className="relative flex flex-grow overflow-hidden">
+                    <div className="relative flex h-0 flex-grow overflow-hidden">
                       {second?.type === "file" && (
                         <FileEditor file={second.file} />
                       )}
@@ -519,6 +509,32 @@ export default function ProjectEditorPage() {
                     </div>
                   )}
                 </>
+              )}
+
+              {/* <div className="flex justify-end border-t border-gray-300 bg-gray-100 p-2">
+                <button className="flex items-center space-x-2 rounded-md py-2 pl-2 pr-3 text-gray-700 hover:bg-gray-300 active:bg-gray-400">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="h-6 w-6"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M14.25 9.75 16.5 12l-2.25 2.25m-4.5 0L7.5 12l2.25-2.25M6 20.25h12A2.25 2.25 0 0 0 20.25 18V6A2.25 2.25 0 0 0 18 3.75H6A2.25 2.25 0 0 0 3.75 6v12A2.25 2.25 0 0 0 6 20.25Z"
+                    />
+                  </svg>
+
+                  <span>JS Translations</span>
+                </button>
+              </div> */}
+              {translationsReferencePanel && (
+                <div className="flex max-h-[40%] flex-col overflow-hidden border-t border-gray-300 bg-white">
+                  {translationsReferencePanel}
+                </div>
               )}
             </div>
           )}
@@ -609,6 +625,7 @@ export default function ProjectEditorPage() {
           </div>
         </div>
       </div>
+      {/* <JSTranslationsModal /> */}
       <Dialog
         open={createFileModalOpen}
         onClose={() => setCreateFileModalOpen(false)}

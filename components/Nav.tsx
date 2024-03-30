@@ -14,6 +14,7 @@ import {
 } from "react";
 import { RemixIcon } from "./RemixIcon";
 import { ErrorIcon } from "./icons/ErrorIcon";
+import { useRouter } from "next/navigation";
 
 interface NavProps {
   width?: "default" | "full";
@@ -143,7 +144,7 @@ export function NavProjectDescription({
 
 interface NavAnonymousProjectWarningProps {
   projectId: string;
-  setProject: (project: any) => void;
+  setProject?: (project: any) => void;
   autoClaimOnSignIn?: boolean;
   className?: string;
 }
@@ -158,6 +159,8 @@ export function NavAnonymousProjectWarning({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<any | null>(null);
 
+  const router = useRouter();
+
   useEffect(() => {
     if (user && autoClaimOnSignIn && !loading && error === null) {
       setLoading(true);
@@ -165,7 +168,11 @@ export function NavAnonymousProjectWarning({
         .then((res) => res.json())
         .then((res) => {
           const project = res.project;
-          setProject(project);
+          if (setProject) {
+            setProject(project);
+          } else {
+            router.refresh();
+          }
           setLoading(false);
         })
         .catch((err) => {
@@ -175,7 +182,7 @@ export function NavAnonymousProjectWarning({
           setError(err);
         });
     }
-  }, [autoClaimOnSignIn, error, loading, projectId, setProject, user]);
+  }, [autoClaimOnSignIn, error, loading, projectId, router, setProject, user]);
 
   return (
     <div
@@ -252,7 +259,7 @@ export function NavUserInfo() {
           </svg>
         </Menu.Button>
 
-        <Menu.Items className="absolute top-full right-0 z-40 -mt-1 flex w-48 flex-col overflow-hidden rounded-xl border border-gray-300 bg-white p-2 shadow-lg">
+        <Menu.Items className="absolute top-full right-0 z-50 -mt-1 flex w-48 flex-col overflow-hidden rounded-xl border border-gray-300 bg-white p-2 shadow-lg">
           <NavUserInfoMenuItem
             icon={
               <svg

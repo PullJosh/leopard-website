@@ -4,7 +4,7 @@ import AccountModal from "../components/AccountModal";
 import { SessionProvider } from "../components/SessionProvider";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import TopBorder from "../components/TopBorder";
-import Nav, { NavSpace, NavUserInfo } from "../components/Nav";
+import { Toasts, ToastsProvider } from "../components/Toasts";
 
 export const metadata = {
   title: {
@@ -23,10 +23,13 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <SessionProvider>
-          <AccountModal>
-            <TopBorder />
-            {children}
-          </AccountModal>
+          <ToastsProvider>
+            <AccountModal>
+              <TopBorder />
+              {children}
+              <Toasts />
+            </AccountModal>
+          </ToastsProvider>
         </SessionProvider>
         {process.env.NEXT_PUBLIC_GA_ID && (
           <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
