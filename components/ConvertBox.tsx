@@ -160,7 +160,7 @@ export default function ConvertBox() {
     {
       output: "leopard-website",
       label: "Leopard Editor",
-      tag: "Beta",
+      tag: "Alpha",
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
