@@ -194,7 +194,7 @@ export function NavAnonymousProjectWarning({
       <ErrorIcon className="h-5 w-5 text-yellow-800" />
       <div className="text-left text-sm">
         <div className="text-yellow-800">
-          Project will be deleted. Sign in to save.
+          Project will be deleted after 24h. Sign in to save.
         </div>
       </div>
     </div>
