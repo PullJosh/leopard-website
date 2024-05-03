@@ -5,6 +5,7 @@ import { SessionProvider } from "../components/SessionProvider";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import TopBorder from "../components/TopBorder";
 import { Toasts, ToastsProvider } from "../components/Toasts";
+import Link from "next/link";
 
 export const metadata = {
   title: {

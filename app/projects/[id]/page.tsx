@@ -7,6 +7,11 @@ import Link from "next/link";
 import { RemixIcon } from "../../../components/RemixIcon";
 import { getProject } from "../../../pages/api/projects/[id]/get";
 import { Metadata, ResolvingMetadata } from "next";
+import { getUser, sessionTokenCookieName } from "../../../lib/getUser";
+import { cookies } from "next/headers";
+import { notFound } from "next/navigation";
+import { useState } from "react";
+import { ProjectNotesEditor } from "../../../components/ProjectNotesEditor";
 
 interface ProjectPageProps {
   params: {
@@ -18,6 +23,15 @@ export default async function ProjectPage({
   params: { id },
 }: ProjectPageProps) {
   const project = await getProject(id);
+
+  const token = cookies().get(sessionTokenCookieName)?.value;
+  const user = await getUser(token);
+
+  if (project.owner !== null && !project.shared) {
+    if (project.owner.id !== user?.id) {
+      return notFound();
+    }
+  }
 
   return (
     <>
@@ -129,9 +143,10 @@ export default async function ProjectPage({
                   </>
                 )}
                 <strong className="mb-1 flex-grow-0">Project Notes</strong>
-                <textarea
-                  className="w-full flex-grow resize-none rounded-md bg-gray-200 p-4"
-                  readOnly={true}
+                <ProjectNotesEditor
+                  projectId={project.id}
+                  defaultValue={project.description}
+                  editable={!!user && project.owner?.id === user.id}
                 />
               </div>
             </div>
@@ -150,6 +165,6 @@ export async function generateMetadata(
 
   return {
     title: project.title,
-    // TODO: description: project.description,
+    description: project.description,
   };
 }

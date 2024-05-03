@@ -4,7 +4,6 @@ import { useRef } from "react";
 import Link from "next/link";
 import Center from "../components/Center";
 import ConvertBox from "../components/ConvertBox";
-import { useSession } from "../components/SessionProvider";
 import Nav, { NavSpace } from "../components/Nav";
 
 export default function Index() {
@@ -25,8 +24,33 @@ export default function Index() {
         </Nav>
       </div>
 
+      {process.env.NEXT_PUBLIC_IS_ALPHA === "true" && (
+        <div className="-mb-px border-b border-yellow-400 bg-yellow-200 py-2 text-yellow-900">
+          <div className="mx-auto max-w-4xl px-8">
+            You are currently exploring the Leopard alpha. It is broken,
+            insecure, and incomplete. Nothing you create here is private, and it
+            may be deleted at any time. Please test it out and{" "}
+            <Link
+              href="https://github.com/PullJosh/leopard-website/issues"
+              className="font-semibold underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              report any issues you find
+            </Link>
+            .
+          </div>
+        </div>
+      )}
+
       <Center>
-        <div className="relative flex min-h-[calc(100vh-4.5rem)] flex-col">
+        <div
+          className={`relative flex ${
+            process.env.NEXT_PUBLIC_IS_ALPHA === "true"
+              ? "min-h-[calc(100vh-8.5rem)]"
+              : "min-h-[calc(100vh-4.5rem)]"
+          } flex-col`}
+        >
           <div className="flex flex-grow flex-col justify-center py-12">
             <h2 className="mb-3 text-center text-xl font-semibold text-gray-800">
               Convert your Scratch projects to JavaScript!

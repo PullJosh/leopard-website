@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../../../lib/prisma";
+import { getUser } from "../../../../lib/getUser";
 
 type FileChange =
   | { type: "create"; path: string; content?: string }
@@ -34,6 +35,14 @@ export default async function updateFiles(
 
   if (!project) {
     return res.status(404).json({ error: "Project not found." });
+  }
+
+  const user = await getUser(req);
+
+  if (project.ownerId !== null && !project.shared) {
+    if (project.ownerId !== user?.id) {
+      return res.status(403).json({ error: "Forbidden" });
+    }
   }
 
   const { changes }: UpdateFilesRequestJSON = req.body;

@@ -17,7 +17,7 @@ export function Code({ children, className }: CodeProps) {
   }).value;
 
   return (
-    <div
+    <pre
       className={classNames("font-mono", className)}
       dangerouslySetInnerHTML={{ __html: highlightedCode }}
     />

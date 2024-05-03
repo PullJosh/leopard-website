@@ -118,6 +118,9 @@ export default async function convertToLeopardWebsite(
             data: filesToCreate,
           },
         },
+        description: [projectData.instructions, projectData.description]
+          .filter(Boolean)
+          .join("\n\n---\n\n"),
       },
     });
 

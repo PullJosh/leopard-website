@@ -8,6 +8,7 @@ import {
 import * as gtag from "../lib/gtag";
 import classNames from "classnames";
 import { useRouter } from "next/navigation";
+import { Menu } from "@headlessui/react";
 
 const getProjectURL = (id: number) => `https://scratch.mit.edu/projects/${id}/`;
 
@@ -29,65 +30,93 @@ export default function ConvertBox() {
 
   const router = useRouter();
 
-  const onSubmit: FormEventHandler<HTMLFormElement> = async (event) => {
-    event.preventDefault();
+  type ConversionInput =
+    | { type: "url"; id: number }
+    | { type: "file"; file: File };
 
+  type ConversionOutputType = "codesandbox" | "leopard-website";
+
+  const performConversion = async (
+    input: ConversionInput,
+    outputType: ConversionOutputType,
+  ) => {
     gtag.event({
       category: "Translate Project",
       action: "Edit in CodeSandbox",
-      // @ts-expect-error - gtag types incorrectly infer the label is supposed to be `undefined`
-      label: projectId,
+      // @ts-expect-error - gtag types incorrectly state that label is supposed to be `undefined`
+      label: input.type === "url" ? input.id : "sb3",
+      // @ts-expect-error - gtag types incorrectly state that value is supposed to be `undefined`
+      value: outputType,
     });
 
     setLoading(true);
 
-    const url = `/api/${projectId}/leopard-website`;
-    const response = await fetch(url);
-    const data = await response.json();
+    const assertUnreachable = (x: never): void => {};
+    switch (input.type) {
+      case "url": {
+        const url = `/api/${input.id}/${outputType}`;
 
-    if (response.ok) {
-      // window.location.href = data.url;
-      router.push(`/projects/${data.project.id}/editor`);
-      console.log("Upload successful!", data);
-      setError(null);
-      setLoading(false);
-    } else {
-      console.log(data);
-      setError({ status: response.status, info: data.error });
-      setLoading(false);
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (response.ok) {
+          switch (outputType) {
+            case "leopard-website":
+              router.push(`/projects/${data.project.id}/editor`);
+              break;
+            case "codesandbox":
+              window.location.href = data.url;
+              break;
+            default:
+              assertUnreachable(outputType);
+              break;
+          }
+          setError(null);
+          setLoading(false);
+        } else {
+          console.log(data);
+          setError({ status: response.status, info: data.error });
+          setLoading(false);
+        }
+
+        break;
+      }
+      case "file":
+        // For now, uploaded files always go to CodeSandbox
+        const url = `/api/upload/codesandbox`;
+        const response = await fetch(url, {
+          method: "POST",
+          body: input.file,
+        });
+        const data = await response.json();
+
+        if (response.ok) {
+          window.location.href = data.url;
+        } else {
+          console.log(data);
+          setError({ status: response.status, info: data.error });
+          setLoading(false);
+        }
+        break;
+      default:
+        assertUnreachable(input);
+        break;
     }
   };
 
-  const onSubmitUpload: FormEventHandler<HTMLFormElement> = async (event) => {
+  const onSubmit: FormEventHandler<HTMLFormElement> = (event) => {
     event.preventDefault();
+    if (projectId === null) return;
+    return performConversion({ type: "url", id: projectId }, "codesandbox");
+  };
 
-    gtag.event({
-      category: "Translate Project",
-      action: "Edit in CodeSandbox",
-      // @ts-expect-error - gtag types incorrectly infer the label is supposed to be `undefined`
-      label: "File",
-    });
-
-    setLoading(true);
-
-    const url = `/api/upload/codesandbox`;
-    const response = await fetch(url, {
-      method: "POST",
-      body: (
-        event.currentTarget.querySelector(
-          "input[type=file]",
-        ) as HTMLInputElement
-      ).files![0],
-    });
-    const data = await response.json();
-
-    if (response.ok) {
-      window.location.href = data.url;
-    } else {
-      console.log(data);
-      setError({ status: response.status, info: data.error });
-      setLoading(false);
-    }
+  const onSubmitUpload: FormEventHandler<HTMLFormElement> = (event) => {
+    event.preventDefault();
+    const file = (
+      event.currentTarget.querySelector("input[type=file]") as HTMLInputElement
+    ).files![0];
+    if (!file) return;
+    return performConversion({ type: "file", file }, "codesandbox");
   };
 
   const uploadFormRef = useRef<HTMLFormElement>(null);
@@ -121,6 +150,76 @@ export default function ConvertBox() {
       document.body.removeEventListener("drop", onDrop);
     };
   }, [onDragOver, onDragLeave, onDrop]);
+
+  const conversionMenuItems: {
+    output: ConversionOutputType;
+    label: string;
+    icon?: React.ReactNode;
+    tag?: string;
+  }[] = [
+    {
+      output: "leopard-website",
+      label: "Leopard Editor",
+      tag: "Beta",
+      icon: (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 34 31"
+          className="h-6 w-6 stroke-current"
+        >
+          <g transform="matrix(1,0,0,1,-15,-16.8862)">
+            <path
+              d="M28.7,37.173L35.311,37.173L32,40L28.7,37.173Z"
+              strokeWidth={2}
+            />
+          </g>
+          <g transform="matrix(0.414847,-6.16298e-33,-6.16298e-33,-0.414847,3.70273,40.5349)">
+            <path
+              d="M28.7,37.173L35.311,37.173L32,40L28.7,37.173Z"
+              strokeWidth={4.82}
+            />
+          </g>
+          <g transform="matrix(0.347936,0,0,0.347936,-168.891,-9.25507)">
+            <path
+              d="M552.844,39.536C565.245,29.353 574.989,27.378 578.667,31.465C582.344,35.552 579.958,45.699 568.1,59.766C568.978,62.82 569.443,66.045 569.443,69.376C569.443,83.233 561.405,95.226 549.74,100.941C546.963,106.664 541.091,110.603 534.305,110.603C527.52,110.603 521.648,106.664 518.87,100.941C507.205,95.226 499.168,83.233 499.168,69.376C499.168,66.052 499.63,62.835 500.504,59.791C488.897,46.274 486.225,36.021 489.699,31.735C493.176,27.444 502.81,29.132 515.806,39.511C521.177,36.167 527.518,34.238 534.305,34.238C541.108,34.238 547.463,36.176 552.844,39.536Z"
+              strokeWidth={5.75}
+            />
+          </g>
+          <g
+            transform="matrix(1,0,0,1,-15,-16.8862)"
+            className="fill-current stroke-transparent"
+          >
+            <g transform="matrix(1.36818,0,0,1.36818,-9.209,-11.7817)">
+              <circle cx="26.37" cy="30.642" r="1.358" />
+            </g>
+            <g transform="matrix(1.36818,0,0,1.36818,1.0108,-11.7817)">
+              <circle cx="26.37" cy="30.642" r="1.358" />
+            </g>
+          </g>
+        </svg>
+      ),
+    },
+    {
+      output: "codesandbox",
+      label: "CodeSandbox",
+      icon: (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 600 600"
+          className="h-6 w-6"
+        >
+          <path
+            fill-rule="evenodd"
+            clip-rule="evenodd"
+            d="M150 150L449.832 150V450H150V150ZM419.168 180.682V419.318H180.665V180.682H419.168Z"
+            className="fill-current"
+          />
+        </svg>
+      ),
+    },
+  ];
 
   return (
     <div className="space-y-4">
@@ -158,13 +257,107 @@ export default function ConvertBox() {
             />
           </div>
 
-          <ProgressButton
-            disabled={!projectId}
-            loading={loading}
-            error={!!error}
-          >
-            Edit as JavaScript
-          </ProgressButton>
+          <div className="relative flex">
+            <Menu>
+              <button
+                className={classNames(
+                  "relative flex items-center justify-center whitespace-nowrap rounded-l-md px-5 py-3 text-lg text-white",
+                  {
+                    "disabled:cursor-not-allowed": !error && !loading,
+                    "bg-indigo-600 enabled:hover:bg-indigo-700":
+                      !error && !loading,
+                    "bg-indigo-700": !error && loading,
+                    "bg-red-700 enabled:hover:bg-red-800": error && !loading,
+                    "bg-red-800": error && loading,
+                  },
+                )}
+                disabled={!projectId || loading}
+              >
+                <span className={classNames({ invisible: loading })}>
+                  Edit as JavaScript
+                </span>
+                {loading && (
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                    <div
+                      className={classNames(
+                        "h-8 w-8 origin-center animate-spin rounded-full border-4",
+                        {
+                          "border-indigo-200": !error,
+                          "border-red-300": error,
+                        },
+                      )}
+                      style={{ borderBottomColor: "transparent" }}
+                    />
+                  </div>
+                )}
+              </button>
+              <Menu.Button
+                className={({ open }) =>
+                  classNames("rounded-r-md border-l px-4 py-3", {
+                    "border-indigo-800 bg-indigo-600": !error,
+                    "bg-indigo-700": !error && open,
+                    "enabled:hover:bg-indigo-700": !error && !open,
+                    "border-red-800 bg-red-700": error,
+                    "bg-red-800": error && open,
+                    "enabled:hover:bg-red-800": error && !open,
+                  })
+                }
+              >
+                {/* Down arrow SVG */}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  viewBox="0 0 20 20"
+                >
+                  <polyline
+                    points="1 6, 10 15, 19 6"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="stroke-white"
+                    fill="none"
+                  />
+                </svg>
+              </Menu.Button>
+
+              {/* TODO: This menu dropdown should probably be standardized with the profile menu */}
+              <Menu.Items className="absolute top-full right-0 mt-2 flex flex-col rounded-xl border border-gray-300 bg-white p-2 shadow-lg">
+                {conversionMenuItems.map((item) => (
+                  <Menu.Item key={item.output}>
+                    {({ active }) => (
+                      <button
+                        className={classNames(
+                          "flex items-center justify-start space-x-2 rounded px-2 py-2 text-left text-gray-800",
+                          {
+                            "bg-gray-200": active,
+                            "text-gray-800": !projectId || loading,
+                            "cursor-default text-gray-500":
+                              !projectId || loading,
+                          },
+                        )}
+                        disabled={!projectId || loading}
+                        onClick={() => {
+                          if (projectId === null) return;
+                          performConversion(
+                            { type: "url", id: projectId },
+                            item.output,
+                          );
+                        }}
+                      >
+                        <div>{item.icon}</div>
+                        <div>{item.label}</div>
+                        {item.tag && (
+                          <span className="ml-2 rounded-full bg-indigo-100 px-2 py-1 text-xs text-indigo-800">
+                            {item.tag}
+                          </span>
+                        )}
+                      </button>
+                    )}
+                  </Menu.Item>
+                ))}
+              </Menu.Items>
+            </Menu>
+          </div>
         </form>
 
         {/* File upload form */}
@@ -252,48 +445,5 @@ export default function ConvertBox() {
         </div>
       )}
     </div>
-  );
-}
-
-interface ProgressButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  children: React.ReactNode;
-  loading?: boolean;
-  error?: boolean;
-}
-
-function ProgressButton({
-  children,
-  loading = false,
-  error = false,
-  ...props
-}: ProgressButtonProps) {
-  return (
-    <button
-      className={classNames(
-        "relative flex items-center justify-center whitespace-nowrap rounded-md px-5 py-3 text-lg text-white disabled:cursor-not-allowed",
-        {
-          "bg-indigo-600": !error,
-          "bg-red-700": error,
-        },
-      )}
-      {...props}
-    >
-      <span className={classNames({ invisible: loading })}>{children}</span>
-      {loading && (
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-          <div
-            className={classNames(
-              "h-8 w-8 origin-center animate-spin rounded-full border-4",
-              {
-                "border-indigo-200": !error,
-                "border-red-300": error,
-              },
-            )}
-            style={{ borderBottomColor: "transparent" }}
-          />
-        </div>
-      )}
-    </button>
   );
 }

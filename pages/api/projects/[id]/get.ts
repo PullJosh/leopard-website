@@ -12,7 +12,9 @@ export interface ProjectResponseJSON {
     content?: string;
     asset?: string;
   }[];
-  owner: { username: string } | null;
+  description: string;
+  owner: { id: string; username: string } | null;
+  shared: boolean;
 }
 
 export async function getProject(
@@ -53,7 +55,14 @@ export async function getProject(
       content: file.content ?? undefined,
       asset: file.asset ?? undefined,
     })),
-    owner: project.owner,
+    description: project.description,
+    owner: project.owner
+      ? {
+          id: project.owner.id,
+          username: project.owner.username,
+        }
+      : null,
+    shared: project.shared,
   };
 
   return responseJSON;

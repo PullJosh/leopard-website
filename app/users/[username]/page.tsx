@@ -71,7 +71,7 @@ export default async function ProfilePage({ params: { username } }: Props) {
               </div>
             </div>
             <div>
-              <div className="rounded-xl border border-gray-300 bg-white">
+              <div className="overflow-hidden rounded-xl border border-gray-300 bg-white">
                 <div className="flex border-b-2 border-gray-300">
                   <div className="mb-[-2px] flex items-center space-x-2 border-b-2 border-indigo-600 px-4 py-2 focus-visible:bg-gray-100 focus-visible:outline-none">
                     <span className="text-lg font-medium text-indigo-800">
@@ -88,12 +88,27 @@ export default async function ProfilePage({ params: { username } }: Props) {
                       <div key={project.id}>
                         <Link
                           href={`/projects/${project.id}`}
-                          className="flex items-center px-4 py-4 hover:bg-gray-100"
+                          className="flex justify-between space-x-4 px-4 py-4 hover:bg-gray-100"
                         >
-                          <strong className="mr-auto font-bold">
-                            {project.title}
-                          </strong>
-                          <div className="text-sm text-gray-500">
+                          <div className="self-start">
+                            <strong className="font-bold">
+                              {project.title}
+                            </strong>
+                            {project.description && (
+                              <div className="text-sm text-gray-500">
+                                {project.description
+                                  .replaceAll("\n", " ")
+                                  .slice(0, 100)}
+                                {project.description.length > 100 && "..."}
+                              </div>
+                            )}
+                          </div>
+                          <div
+                            className={classNames("text-sm text-gray-500", {
+                              "self-center": !project.description,
+                              "self-baseline": !!project.description,
+                            })}
+                          >
                             {relativeDateStr(project.createdAt)}
                           </div>
                         </Link>

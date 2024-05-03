@@ -4,6 +4,7 @@ import { useSession } from "../components/SessionProvider";
 import { FormErrorMessage } from "./FormErrorMessage";
 import { FormField } from "./FormField";
 import { Checkbox } from "./CheckBox";
+import { useRouter } from "next/navigation";
 
 interface RegisterFormProps {
   username: string;
@@ -29,6 +30,7 @@ export function RegisterForm({
   }, [over13, password, username]);
 
   const { setUser } = useSession();
+  const router = useRouter();
 
   return (
     <form

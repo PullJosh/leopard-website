@@ -28,7 +28,7 @@ export function JSTranslationsReferenceTable({
             </td>
             <td className="w-2/3 border-b border-gray-300 bg-gray-100 text-sm">
               {translation.js ? (
-                <Code>{translation.js}</Code>
+                <Code className="py-2">{translation.js}</Code>
               ) : (
                 <span className="px-2 italic">No translation available</span>
               )}

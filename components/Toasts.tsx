@@ -8,6 +8,7 @@ import {
   useState,
 } from "react";
 import { Transition } from "@headlessui/react";
+import classNames from "classnames";
 
 interface ToastsContextValue {
   toasts: ToastType[];
@@ -21,10 +22,11 @@ const ToastsContext = createContext<ToastsContextValue>({
 
 interface ToastType {
   children: React.ReactNode;
+  style?: "default" | "error";
   duration: number;
 }
 
-function Toast({ children, duration }: ToastType) {
+function Toast({ children, style = "default", duration }: ToastType) {
   const [showing, setShowing] = useState(true);
 
   useEffect(() => {
@@ -46,8 +48,34 @@ function Toast({ children, duration }: ToastType) {
       leaveFrom="opacity-100"
       leaveTo="opacity-0"
     >
-      <div className="duration mb-2 h-12 rounded-md bg-gray-900 px-4 py-3 text-white shadow-lg">
-        {children}
+      <div
+        className={classNames(
+          "duration mb-2 h-12 rounded-md px-4 py-3 text-white shadow-lg",
+          {
+            "bg-gray-900": style === "default",
+            "bg-red-600": style === "error",
+          },
+        )}
+      >
+        <div className="flex items-center space-x-2">
+          {style === "error" && (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="h-6 w-6"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"
+              />
+            </svg>
+          )}
+          <span>{children}</span>
+        </div>
       </div>
     </Transition>
   );

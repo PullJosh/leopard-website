@@ -42,8 +42,10 @@ model Project {
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
   files            File[]
+  description      String   @default("")
   ownerId          String?
   owner            User?    @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  shared           Boolean  @default(false)
 }
 
 model File {

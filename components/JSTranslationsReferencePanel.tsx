@@ -2,7 +2,6 @@
 
 import { useCallback, useState } from "react";
 import classNames from "classnames";
-// import { palettes } from "./JSTranslationsModal";
 
 interface JSTranslationsReferencePageProps {
   palettes: {

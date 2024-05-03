@@ -37,12 +37,13 @@ export default async function PreviewFile(
 
   if (file.asset) {
     // TODO: Investigate how to prevent caching issues on the cloudflare end
-    return res
+    res
       .setHeader("Access-Control-Allow-Origin", "*")
       .redirect(
         302,
         `https://pub-2c4c62070be24cd593a08b68263568f0.r2.dev/${file.asset}`,
       );
+    return;
   }
 }
 

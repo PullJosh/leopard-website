@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-const scratchblocks = require("scratchblocks");
+
+// @ts-ignore Scratchblocks is not typed
+import scratchblocks from "scratchblocks";
 
 interface ScratchBlocksProps {
   children: string;

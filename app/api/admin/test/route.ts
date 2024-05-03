@@ -1,5 +1,5 @@
 import S3 from "aws-sdk/clients/s3";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 const s3 = new S3({
   endpoint: `https://${process.env.CLOUDFLARE_R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
@@ -9,8 +9,15 @@ const s3 = new S3({
   region: "auto",
 });
 
-export async function POST(request: Request) {
-  const prefix = "401n3ndp1R/";
+export async function POST(request: NextRequest) {
+  // const prefix = "4Zo1Zs_rJb/";
+
+  // get query param "prefix"
+  const prefix = request.nextUrl.searchParams.get("prefix");
+
+  if (!prefix) {
+    throw new Error("Need a prefix");
+  }
 
   const deletedCount = await deleteFolder(prefix);
 

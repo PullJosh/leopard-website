@@ -75,8 +75,6 @@ export default function AccountModal({ children }: AccountModalProps) {
 
   // When the user is signed in, close the account modal
   useEffect(() => {
-    console.log("User changed", user);
-
     if (user !== null) {
       setOpen(false);
     }

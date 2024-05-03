@@ -6,13 +6,15 @@ import type { Prisma } from "@prisma/client";
 import { NextRequest } from "next/server";
 import { RequestCookies } from "next/dist/compiled/@edge-runtime/cookies";
 
+export const sessionTokenCookieName = "leopard_session_token";
+
 export function getSessionToken(req: NextRequest | NextApiRequest) {
   const getCookie = (name: string) =>
     (req.cookies instanceof RequestCookies
       ? req.cookies.get(name)?.value
       : req.cookies[name]) ?? undefined;
 
-  const token = getCookie("leopard_session_token");
+  const token = getCookie(sessionTokenCookieName);
   return token;
 }
 
@@ -29,10 +31,18 @@ export type User = Prisma.UserGetPayload<{
   select: typeof userSelect;
 }>;
 
-export async function getUser(
-  req: NextRequest | NextApiRequest,
-): Promise<User | null> {
-  const token = getSessionToken(req);
+type Req = NextRequest | NextApiRequest;
+type Token = string | undefined;
+
+export async function getUser(reqOrToken: Req | Token): Promise<User | null> {
+  const token =
+    typeof reqOrToken === "string" || reqOrToken === undefined
+      ? reqOrToken
+      : getSessionToken(reqOrToken);
+
+  if (!token) {
+    return null;
+  }
 
   try {
     const session = await prisma.session.findUnique({
