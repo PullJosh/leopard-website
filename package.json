@@ -10,7 +10,7 @@
     "start": "next start",
     "lint": "next lint",
     "format": "prettier --write --ignore-path .gitignore .",
-    "postinstall": "prisma generate"
+    "vercel-build": "prisma migrate deploy && prisma generate && next build"
   },
   "author": "Josh Pullen",
   "license": "ISC",
