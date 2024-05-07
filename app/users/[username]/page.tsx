@@ -9,6 +9,7 @@ import { Metadata, ResolvingMetadata } from "next";
 import Nav, { NavSpace } from "../../../components/Nav";
 
 import prisma from "../../../lib/prisma";
+import { relativeDateStr } from "../../../lib/fuzzyDate";
 
 interface Props {
   params: {
@@ -104,10 +105,14 @@ export default async function ProfilePage({ params: { username } }: Props) {
                             )}
                           </div>
                           <div
-                            className={classNames("text-sm text-gray-500", {
-                              "self-center": !project.description,
-                              "self-baseline": !!project.description,
-                            })}
+                            className={classNames(
+                              "whitespace-nowrap text-sm text-gray-500",
+                              {
+                                "self-center": !project.description,
+                                "self-baseline": !!project.description,
+                              },
+                            )}
+                            title={`Created on ${project.createdAt.toLocaleDateString()} at ${project.createdAt.toLocaleTimeString()}`}
                           >
                             {relativeDateStr(project.createdAt)}
                           </div>
@@ -154,20 +159,4 @@ export async function generateMetadata(
     title: user!.username,
     description: `Projects by ${user!.username}`,
   };
-}
-
-function relativeDateStr(date: Date): string {
-  const now = new Date();
-  const diff = now.getTime() - date.getTime();
-  const days = Math.floor(diff / (24 * 60 * 60 * 1000)); // TODO: Count days as # of times past midnight, not # of 24-hour periods (so if the date was 11:59pm last night and now it's 12:01am the result is "yesterday")
-  if (days === 0) return "today";
-  if (days === 1) return "yesterday";
-  if (days < 7) return `${days} days ago`;
-
-  const dateFormatter = new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "numeric",
-  });
-
-  return dateFormatter.format(date);
 }
