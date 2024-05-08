@@ -5,3 +5,16 @@
 body {
   @apply bg-gray-100;
 }
+
+.scrollbar-none {
+  /* Internet Explorer 10+ */
+  -ms-overflow-style: none;
+
+  /* Firefox */
+  scrollbar-width: none;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  /* Safari and Chrome */
+  display: none;
+}

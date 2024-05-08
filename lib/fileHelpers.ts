@@ -1,4 +1,8 @@
-export type FileName = `${string}.${string}`;
+declare const __brand: unique symbol;
+type Brand<B> = { [__brand]: B };
+export type Branded<T, B> = T & Brand<B>;
+
+export type FileName = Branded<`${string}.${string}`, "FileName">;
 export type DirectoryName = string;
 export type DirectoryPath = DirectoryName[];
 export type FilePath = [...DirectoryName[], FileName];
@@ -18,6 +22,16 @@ export type DirectoryType<FileType extends AbstractFile> = {
   directories: DirectoryType<FileType>[];
   files: FileType[];
 };
+
+export function toFilePath(names: string[]): FilePath {
+  if (isFileName(names[names.length - 1])) {
+    return names as FilePath;
+  }
+
+  throw new Error(
+    `Invalid file path. ${names[names.length - 1]} is not a file name.`,
+  );
+}
 
 export function getDirectory<FileType extends AbstractFile>(
   path: DirectoryPath,
@@ -168,8 +182,8 @@ export function getSmartSelectPath(directory: DirectoryType<AbstractFile>) {
     (f) => f.name.split(".")[0] === directory.name,
     (f) => f.name.toLowerCase() === `${directory.name.toLowerCase()}.js`,
     (f) => f.name.toLowerCase().split(".")[0] === directory.name.toLowerCase(),
-    (f) => f.name === "index.js",
-    (f) => f.name === "index.html",
+    (f) => (f.name as string) === "index.js",
+    (f) => (f.name as string) === "index.html",
     (f) => f.name.split(".")[0] === "index",
     (f) => f.name.toLowerCase().split(".")[0] === "index",
   ]);
@@ -180,3 +194,6 @@ export function getSmartSelectPath(directory: DirectoryType<AbstractFile>) {
     return directory.path;
   }
 }
+
+export const imageFileExtensions = ["png", "svg", "jpg", "jpeg"];
+export const audioFileExtensions = ["wav", "mp3"];
