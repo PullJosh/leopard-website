@@ -28,10 +28,12 @@ export default async function PreviewFile(
       .status(200)
       .setHeader("Access-Control-Allow-Origin", "*")
       .setHeader("Content-Type", getContentType(file.path))
-      .setHeader("Cache-Control", "no-cache, no-store, must-revalidate")
-      .setHeader("Pragma", "no-cache")
+      .setHeader("Surrogate-Control", "no-store")
+      .setHeader(
+        "Cache-Control",
+        "no-store, no-cache, must-revalidate, proxy-revalidate",
+      )
       .setHeader("Expires", "0")
-      .setHeader("Max-Age", "0")
       .send(file.content);
   }
 
