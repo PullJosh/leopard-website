@@ -49,11 +49,7 @@ import { SeeProjectPageButton } from "../components/SeeInsideButton";
 import { JSTranslationsReferencePanel } from "./JSTranslationsReferencePanel";
 // import { JSTranslationsModal } from "../components/JSTranslationsModal";
 import { ProjectResponseJSON } from "../pages/api/projects/[id]/get";
-import {
-  FileDirectory,
-  FileDirectoryFileNameInput,
-  FileGridRef,
-} from "./FileDirectory";
+import { FileDirectory, FileDirectoryFileNameInput } from "./FileDirectory";
 import {
   ProjectEditorContext,
   useDirectory,
@@ -311,8 +307,6 @@ export function ProjectEditor({
     },
     [root, updateFiles],
   );
-
-  const fileGridRef = useRef<FileGridRef>(null);
 
   return (
     <ProjectEditorContext.Provider
@@ -999,26 +993,34 @@ function FileTabs({ path }: FileTabsProps) {
                         "border-transparent": !active,
                       },
                     )}
-                    onClick={onClick}
+                    onClick={(event) => {
+                      onClick();
+
+                      // Scroll to the clicked tab
+                      event.currentTarget.scrollIntoView({
+                        block: "center",
+                        behavior: "instant",
+                      });
+                    }}
                   >
                     {type === "directory" && (
                       <>
                         {/* prettier-ignore */}
                         <svg className="-mb-[2px] h-7 w-7" viewBox="0 0 48 48">
-                      <rect className="fill-gray-500" x={8} y={8} width={14} height={8} rx={3} />
-                      <rect className="fill-gray-500" x={8} y={12} width={32} height={24} rx={3} />
-                    </svg>
+                          <rect className="fill-gray-500" x={8} y={8} width={14} height={8} rx={3} />
+                          <rect className="fill-gray-500" x={8} y={12} width={32} height={24} rx={3} />
+                        </svg>
                       </>
                     )}
                     {type === "file" && (
                       <>
                         {/* prettier-ignore */}
                         <svg className="-mb-px h-7 w-7" viewBox="0 0 48 48">
-                      <rect className={{ html: "fill-blue-700", js: "fill-yellow-600" }[fileExtension((item?.name ?? renaming?.name ?? "") as FileName)] ?? "fill-gray-500"} x={12} y={8} width={24} height={32} rx={3} />
-                      <rect className="fill-white" x={16} y={13} width={16} height={3} />
-                      <rect className="fill-white" x={16} y={20} width={16} height={3} />
-                      <rect className="fill-white" x={16} y={27} width={8} height={3} />
-                    </svg>
+                          <rect className={{ html: "fill-blue-700", js: "fill-yellow-600" }[fileExtension((item?.name ?? renaming?.name ?? "") as FileName)] ?? "fill-gray-500"} x={12} y={8} width={24} height={32} rx={3} />
+                          <rect className="fill-white" x={16} y={13} width={16} height={3} />
+                          <rect className="fill-white" x={16} y={20} width={16} height={3} />
+                          <rect className="fill-white" x={16} y={27} width={8} height={3} />
+                        </svg>
                       </>
                     )}
 
