@@ -33,6 +33,7 @@ import {
   isFilePath,
   imageFileExtensions,
   audioFileExtensions,
+  toFilePath,
 } from "../lib/fileHelpers";
 import {
   UpdateFilesRequestJSON,
@@ -55,6 +56,8 @@ import {
   useDirectory,
   usePath,
 } from "../lib/ProjectEditorContext";
+import Link from "next/link";
+import { useToasts } from "./Toasts";
 
 interface ProjectEditorProps {
   projectId: string;
@@ -102,6 +105,8 @@ export function ProjectEditor({
 
   const monaco = useMonaco();
   const [ready, setReady] = useState(true);
+
+  const toasts = useToasts();
 
   // Make Monaco editor aware of all files in the project (once)
   /*
@@ -176,6 +181,53 @@ export function ProjectEditor({
 
   const [fileEdits, setFileEdits] = useState<{ [key: string]: string }>({}); // file id -> content
 
+  const handleUpdateFilesResponse = useCallback(
+    (res: UpdateFilesResponseJSON) => {
+      setFileEdits((fileEdits) => {
+        let newFileEdits = { ...fileEdits };
+        for (const file of res.files) {
+          delete newFileEdits[file.id];
+        }
+        for (const id of res.deletedFiles) {
+          delete newFileEdits[id];
+        }
+        return newFileEdits;
+      });
+      setProject!((project) => {
+        if (!project) return project;
+
+        const newProject = { ...project };
+
+        for (const changedFile of res.files) {
+          let found = false;
+          for (const file of newProject.files) {
+            if (file.id === changedFile.id) {
+              file.content = changedFile.content;
+              found = true;
+              break;
+            }
+          }
+
+          if (!found) {
+            newProject.files.push({
+              id: changedFile.id,
+              path: changedFile.path,
+              asset: changedFile.asset,
+              content: changedFile.content,
+            });
+          }
+        }
+
+        newProject.files = newProject.files.filter(
+          (file) => !res.deletedFiles.includes(file.id),
+        );
+
+        return newProject;
+      });
+    },
+    [],
+  );
+
   const updateFiles = useCallback(
     (body: UpdateFilesRequestJSON) => {
       return fetch(`/api/projects/${projectId}/updateFiles`, {
@@ -185,41 +237,58 @@ export function ProjectEditor({
       })
         .then((res) => res.json())
         .then((res: UpdateFilesResponseJSON) => {
-          setFileEdits({});
-          setProject!((project) => {
-            if (!project) return project;
+          handleUpdateFilesResponse(res);
+        });
+    },
+    [handleUpdateFilesResponse, projectId],
+  );
 
-            const newProject = { ...project };
+  const uploadFiles = useCallback(
+    (files: FileList, uploadPath: DirectoryPath) => {
+      const formData = new FormData();
+      formData.append("uploadPath", pathToString(uploadPath));
 
-            for (const changedFile of res.files) {
-              let found = false;
-              for (const file of newProject.files) {
-                if (file.id === changedFile.id) {
-                  file.content = changedFile.content;
-                  found = true;
-                  break;
-                }
-              }
+      let hasAnyFiles = false;
+      for (const file of Array.from(files)) {
+        const filePath = toFilePath([...uploadPath, file.name]);
+        if (getFile(filePath, root) !== null) {
+          toasts.addToast({
+            style: "error",
+            children: `A file with the name ${file.name} already exists`,
+            duration: 4000,
+          });
+        } else {
+          formData.append("files", file);
+          hasAnyFiles = true;
+        }
+      }
 
-              if (!found) {
-                newProject.files.push({
-                  id: changedFile.id,
-                  path: changedFile.path,
-                  asset: changedFile.asset,
-                  content: changedFile.content,
-                });
-              }
-            }
+      if (!hasAnyFiles) return;
 
-            newProject.files = newProject.files.filter(
-              (file) => !res.deletedFiles.includes(file.id),
-            );
+      fetch(`/api/projects/${projectId}/uploadFiles`, {
+        method: "POST",
+        body: formData,
+      })
+        .then((res) => {
+          if (!res.ok) {
+            console.error(res);
+            throw new Error("Failed to upload files");
+          }
 
-            return newProject;
+          return res.json();
+        })
+        .then((res: UpdateFilesResponseJSON) => {
+          handleUpdateFilesResponse(res);
+        })
+        .catch((err) => {
+          toasts.addToast({
+            style: "error",
+            children: err.message,
+            duration: 4000,
           });
         });
     },
-    [projectId, setProject],
+    [handleUpdateFilesResponse, projectId, root, toasts],
   );
 
   const saveFileEdits = useCallback(() => {
@@ -278,8 +347,6 @@ export function ProjectEditor({
     });
   }, [monaco, runPreview, saveFileEdits]);
 
-  const [createFileModalOpen, setCreateFileModalOpen] = useState(false);
-
   const createDirectory = useCallback(
     (path: DirectoryPath) => {
       if (getDirectory(path, root)) return Promise.resolve();
@@ -307,6 +374,27 @@ export function ProjectEditor({
     },
     [root, updateFiles],
   );
+
+  const showFileUploadPicker = useCallback(() => {
+    // window.showOpenFilePicker() is not yet supported in Firefox or Safari,
+    // so we create a file input element and "click" that
+
+    const input = document.createElement("input");
+    input.type = "file";
+    input.multiple = true;
+
+    input.addEventListener("change", async () => {
+      if (!input.files) return;
+
+      const uploadPath = isFilePath(activePath)
+        ? activePath.slice(0, -1)
+        : activePath;
+
+      uploadFiles(input.files, uploadPath);
+    });
+
+    input.click();
+  }, [activePath, uploadFiles]);
 
   return (
     <ProjectEditorContext.Provider
@@ -397,7 +485,10 @@ export function ProjectEditor({
               {first ? (
                 <div className="flex h-0 flex-grow flex-col">
                   <div className="relative z-30">
-                    <FileTabs path={first.path} />
+                    <FileTabs
+                      path={first.path}
+                      showFileUploadPicker={showFileUploadPicker}
+                    />
                   </div>
                   <div className="flex items-center space-x-1 border-b border-gray-300 bg-white px-2 py-1 text-sm">
                     {activePath.map((part, i) => (
@@ -565,6 +656,7 @@ export function ProjectEditor({
                       className="h-7"
                       onClickCreateFile={() => createFile()}
                       onClickCreateFolder={() => createDirectory()}
+                      onClickUploadFile={() => showFileUploadPicker()}
                     />
                   </div>
                   <div className="relative flex flex-1 flex-wrap content-start gap-4 overflow-y-auto p-4">
@@ -628,36 +720,6 @@ export function ProjectEditor({
         </div>
       </div>
       {/* <JSTranslationsModal /> */}
-      <Dialog
-        open={createFileModalOpen}
-        onClose={() => setCreateFileModalOpen(false)}
-        className="relative z-50"
-      >
-        <div className="fixed inset-0 flex w-screen items-center justify-center bg-gray-900/40 p-4">
-          <Dialog.Panel className="w-full max-w-lg rounded border-t-4 border-indigo-600 bg-white p-8">
-            <Dialog.Title className="text-xl font-bold text-gray-900">
-              Create File
-            </Dialog.Title>
-            {/* <Dialog.Description>
-              This will permanently deactivate your account
-            </Dialog.Description> */}
-
-            <ul>
-              <li>Empty Folder</li>
-              <li>Leopard Sprite</li>
-              <li>Empty File</li>
-              <li>Upload File</li>
-            </ul>
-
-            <button onClick={() => setCreateFileModalOpen(false)}>
-              Deactivate
-            </button>
-            <button onClick={() => setCreateFileModalOpen(false)}>
-              Cancel
-            </button>
-          </Dialog.Panel>
-        </div>
-      </Dialog>
     </ProjectEditorContext.Provider>
   );
 }
@@ -691,7 +753,7 @@ function FileList({ path }: FileListProps) {
                 key={file.id}
                 src={`https://pub-2c4c62070be24cd593a08b68263568f0.r2.dev/${file.asset}`}
                 alt={`Image file ${file.path}`}
-                className="h-6 w-6 border border-gray-300"
+                className="h-6 w-6 border border-gray-300 object-contain"
               />
             )}
             <span>{file.name}</span>
@@ -803,14 +865,15 @@ function DirectoryIcon({ imageSrc }: DirectoryIconProps) {
 interface FileIconProps {
   extension: string;
   imageSrc?: string;
+  className?: string;
 }
 
-function FileIcon({ extension, imageSrc }: FileIconProps) {
+function FileIcon({ extension, imageSrc, className }: FileIconProps) {
   extension = extension.toLowerCase();
 
   if (imageSrc) {
     return (
-      <svg width="100%" height="100%" viewBox="0 0 25 25">
+      <svg className={className} width="100%" height="100%" viewBox="0 0 25 25">
         <rect
           x={0.5}
           y={0.5}
@@ -832,7 +895,7 @@ function FileIcon({ extension, imageSrc }: FileIconProps) {
   }
 
   return (
-    <svg width="100%" height="100%" viewBox="0 0 25 32">
+    <svg className={className} width="100%" height="100%" viewBox="0 0 25 32">
       <rect x={0} y={0} width={25} height={32} rx={2} className="fill-white" />
       <g>
         {new Array(7).fill(null).map((_, i) => (
@@ -905,9 +968,10 @@ function FileIcon({ extension, imageSrc }: FileIconProps) {
 
 interface FileTabsProps {
   path: Path;
+  showFileUploadPicker: () => void;
 }
 
-function FileTabs({ path }: FileTabsProps) {
+function FileTabs({ path, showFileUploadPicker }: FileTabsProps) {
   const ctx = useContext(ProjectEditorContext);
 
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -983,6 +1047,10 @@ function FileTabs({ path }: FileTabsProps) {
                 const hasUnsavedChanges =
                   type === "file" && !!item && item.id in ctx.fileEdits;
 
+                const ext = fileExtension(
+                  (item?.name ?? renaming?.name ?? "") as FileName,
+                );
+
                 return (
                   <button
                     key={key}
@@ -1012,17 +1080,24 @@ function FileTabs({ path }: FileTabsProps) {
                         </svg>
                       </>
                     )}
-                    {type === "file" && (
-                      <>
-                        {/* prettier-ignore */}
-                        <svg className="-mb-px h-7 w-7" viewBox="0 0 48 48">
-                          <rect className={{ html: "fill-blue-700", js: "fill-yellow-600" }[fileExtension((item?.name ?? renaming?.name ?? "") as FileName)] ?? "fill-gray-500"} x={12} y={8} width={24} height={32} rx={3} />
-                          <rect className="fill-white" x={16} y={13} width={16} height={3} />
-                          <rect className="fill-white" x={16} y={20} width={16} height={3} />
-                          <rect className="fill-white" x={16} y={27} width={8} height={3} />
-                        </svg>
-                      </>
-                    )}
+                    {type === "file" &&
+                      (imageFileExtensions.includes(ext) ? (
+                        <FileIcon
+                          className="h-7 w-7"
+                          extension={ext}
+                          imageSrc={`https://pub-2c4c62070be24cd593a08b68263568f0.r2.dev/${item.asset}`}
+                        />
+                      ) : (
+                        <>
+                          {/* prettier-ignore */}
+                          <svg className="-mb-px h-7 w-7" viewBox="0 0 48 48">
+                            <rect className={{ html: "fill-blue-700", js: "fill-yellow-600" }[ext] ?? "fill-gray-500"} x={12} y={8} width={24} height={32} rx={3} />
+                            <rect className="fill-white" x={16} y={13} width={16} height={3} />
+                            <rect className="fill-white" x={16} y={20} width={16} height={3} />
+                            <rect className="fill-white" x={16} y={27} width={8} height={3} />
+                          </svg>
+                        </>
+                      ))}
 
                     {renaming ? (
                       <FileDirectoryFileNameInput
@@ -1075,6 +1150,7 @@ function FileTabs({ path }: FileTabsProps) {
                 className="h-7"
                 onClickCreateFile={() => createFile()}
                 onClickCreateFolder={() => createDirectory()}
+                onClickUploadFile={() => showFileUploadPicker()}
               />
             </div>
           )}
@@ -1116,19 +1192,49 @@ function FileEditor<FileType extends AbstractFile>({
   }
 
   if (file.asset) {
+    const assetURL = `https://pub-2c4c62070be24cd593a08b68263568f0.r2.dev/${file.asset}`;
+
     if (imageFileExtensions.includes(fileExtension(file.path))) {
       return <ImageEditor file={file} />;
     }
 
+    if (audioFileExtensions.includes(fileExtension(file.path))) {
+      return (
+        <div className="absolute top-0 left-0 flex h-full w-full items-center justify-center bg-gray-100">
+          <audio key={file.id} src={assetURL} controls />
+        </div>
+      );
+    }
+
     return (
       <div className="absolute top-0 left-0 flex h-full w-full items-center justify-center bg-gray-100">
-        {audioFileExtensions.includes(fileExtension(file.path)) && (
-          <audio
-            key={file.id}
-            src={`https://pub-2c4c62070be24cd593a08b68263568f0.r2.dev/${file.asset}`}
-            controls
-          />
-        )}
+        <div className="text-center">
+          <p>Editing this file type is not supported</p>
+          <p>
+            <Link
+              href={assetURL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-indigo-600"
+            >
+              <span className="underline">View file</span>{" "}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="mb-[0.125rem] inline-block h-4 w-4 align-middle"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"
+                />
+              </svg>
+            </Link>
+          </p>
+        </div>
       </div>
     );
   }
@@ -1230,7 +1336,7 @@ export function CreateFileMenu({
     {
       id: "upload",
       icon: uploadFileIcon,
-      text: "Upload file",
+      text: "Upload files",
       onClick: onClickUploadFile,
     },
   ];
