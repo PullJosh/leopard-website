@@ -1,3 +1,4 @@
+import { NextResponse } from "next/server";
 import prisma from "../../../../../lib/prisma";
 import { getAssetHash, uploadS3Asset } from "../../../../../lib/uploadS3Asset";
 import { UpdateFilesResponseJSON } from "../../../../../pages/api/projects/[id]/updateFiles";
@@ -65,7 +66,7 @@ export async function POST(
     deletedFiles: [],
   };
 
-  return Response.json(responseJSON);
+  return NextResponse.json(responseJSON);
 }
 
 /**

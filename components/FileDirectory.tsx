@@ -190,7 +190,7 @@ export function FileDirectory({
     throw new Error("Invalid path");
   }
 
-  return children({ items: allItemProps, createDirectory, createFile });
+  return <>{children({ items: allItemProps, createDirectory, createFile })}</>;
 }
 
 interface FileDirectoryFileNameInputProps {

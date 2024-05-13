@@ -1067,7 +1067,7 @@ function FileTabs({ path, showFileUploadPicker }: FileTabsProps) {
                       // Scroll to the clicked tab
                       event.currentTarget.scrollIntoView({
                         block: "center",
-                        behavior: "instant",
+                        behavior: "auto",
                       });
                     }}
                   >
