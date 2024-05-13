@@ -293,7 +293,7 @@ export default function ConvertBox() {
               </button>
               <Menu.Button
                 className={({ open }) =>
-                  classNames("rounded-r-md border-l px-4 py-3", {
+                  classNames("relative rounded-r-md border-l px-4 py-3", {
                     "border-indigo-800 bg-indigo-600": !error,
                     "bg-indigo-700": !error && open,
                     "enabled:hover:bg-indigo-700": !error && !open,
@@ -318,6 +318,10 @@ export default function ConvertBox() {
                     fill="none"
                   />
                 </svg>
+                <div className="absolute top-3 right-2 h-2 w-2">
+                  <div className="absolute inset-0 animate-ping rounded-full bg-pink-300/75" />
+                  <div className="absolute inset-0 rounded-full bg-pink-400" />
+                </div>
               </Menu.Button>
 
               {/* TODO: This menu dropdown should probably be standardized with the profile menu */}
@@ -347,7 +351,7 @@ export default function ConvertBox() {
                         <div>{item.icon}</div>
                         <div>{item.label}</div>
                         {item.tag && (
-                          <span className="ml-2 rounded-full bg-indigo-100 px-2 py-1 text-xs text-indigo-800">
+                          <span className="ml-2 rounded-full bg-pink-200 px-2 py-1 text-xs text-pink-800">
                             {item.tag}
                           </span>
                         )}
