@@ -327,7 +327,7 @@ export default function ConvertBox() {
               {/* TODO: This menu dropdown should probably be standardized with the profile menu */}
               <MenuItems
                 anchor="bottom end"
-                className="flex flex-col rounded-xl border border-gray-300 bg-white p-2 shadow-lg [--anchor-gap:0.5rem]"
+                className="flex flex-col rounded-xl border border-gray-300 bg-white p-2 shadow-lg [--anchor-gap:0.25rem]"
               >
                 {conversionMenuItems.map((item) => (
                   <MenuItem key={item.output}>

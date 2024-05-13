@@ -274,7 +274,10 @@ export function NavUserInfo() {
           </svg>
         </MenuButton>
 
-        <MenuItems className="absolute top-full right-0 z-50 -mt-1 flex w-48 flex-col overflow-hidden rounded-xl border border-gray-300 bg-white p-2 shadow-lg">
+        <MenuItems
+          anchor="bottom end"
+          className="z-50 flex w-48 flex-col overflow-hidden rounded-xl border border-gray-300 bg-white p-2 shadow-lg [--anchor-gap:0.25rem]"
+        >
           <NavUserInfoMenuItem
             icon={
               <svg

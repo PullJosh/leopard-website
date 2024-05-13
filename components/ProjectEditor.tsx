@@ -1344,7 +1344,7 @@ export function CreateFileMenu({
   return (
     <div className={classNames("relative ml-auto self-center", className)}>
       <Menu>
-        <MenuButton className="flex h-full items-center rounded hover:bg-gray-200 active:bg-gray-300">
+        <MenuButton className="data-[active]:bg-gray-300 flex h-full items-center rounded hover:bg-gray-200">
           <svg className="h-full w-full" viewBox="0 0 32 32">
             <line
               x1={16}
@@ -1365,7 +1365,10 @@ export function CreateFileMenu({
           </svg>
           <div className="pr-2 text-gray-700">Create</div>
         </MenuButton>
-        <MenuItems className="absolute top-full right-0 z-40 mt-1 flex w-40 flex-col overflow-hidden rounded-md border bg-white shadow">
+        <MenuItems
+          anchor="bottom end"
+          className="z-40 flex w-40 flex-col overflow-hidden rounded-md border bg-white shadow [--anchor-gap:0.25rem]"
+        >
           {menuItems.map((item) => (
             <MenuItem key={item.id} disabled={!item.onClick}>
               {({ disabled }) => (
