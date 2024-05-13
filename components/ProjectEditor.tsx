@@ -1081,7 +1081,7 @@ function FileTabs({ path, showFileUploadPicker }: FileTabsProps) {
                       </>
                     )}
                     {type === "file" &&
-                      (imageFileExtensions.includes(ext) ? (
+                      (item && imageFileExtensions.includes(ext) ? (
                         <FileIcon
                           className="h-7 w-7"
                           extension={ext}

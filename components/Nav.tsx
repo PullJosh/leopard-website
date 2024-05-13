@@ -15,6 +15,7 @@ import {
 import { RemixIcon } from "./RemixIcon";
 import { ErrorIcon } from "./icons/ErrorIcon";
 import { useRouter } from "next/navigation";
+import { ProjectTitleEditor } from "./ProjectTitleEditor";
 
 interface NavProps {
   width?: "default" | "full";
@@ -75,6 +76,7 @@ interface NavProjectDescriptionProps {
     username: string;
   };
   owner: {
+    id: string;
     username: string;
   } | null;
 }
@@ -85,12 +87,25 @@ export function NavProjectDescription({
   remixSource,
   owner,
 }: NavProjectDescriptionProps) {
+  const { user } = useSession();
+
   return (
     <div className="flex flex-col items-start self-center">
       <div className="text-lg">
-        <Link href={`/projects/${id}`} className="hover:underline">
-          <h1 className="inline font-semibold">{title}</h1>
-        </Link>
+        {!!user && owner?.id === user.id ? (
+          <h1 className="inline font-semibold">
+            <ProjectTitleEditor
+              projectId={id}
+              defaultTitle={title}
+              editable={true}
+              size="small"
+            />
+          </h1>
+        ) : (
+          <Link href={`/projects/${id}`} className="hover:underline">
+            <h1 className="inline font-semibold">{title}</h1>
+          </Link>
+        )}
         {owner && (
           <>
             {" "}

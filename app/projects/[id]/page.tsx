@@ -12,6 +12,7 @@ import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import { useState } from "react";
 import { ProjectNotesEditor } from "../../../components/ProjectNotesEditor";
+import { ProjectTitleEditor } from "../../../components/ProjectTitleEditor";
 
 interface ProjectPageProps {
   params: {
@@ -68,8 +69,12 @@ export default async function ProjectPage({
                 />
               )}
               <div className="flex-grow">
-                <h1 className="flex-grow text-2xl font-semibold">
-                  {project.title}
+                <h1 className="flex flex-grow text-2xl font-semibold">
+                  <ProjectTitleEditor
+                    projectId={project.id}
+                    defaultTitle={project.title}
+                    editable={!!user && project.owner?.id === user.id}
+                  />
                 </h1>
                 <div className="text-gray-800">
                   by{" "}

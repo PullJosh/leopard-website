@@ -2,11 +2,11 @@ import { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../../../lib/prisma";
 import { getUser } from "../../../../lib/getUser";
 
-export interface DescriptionRequestJSON {
-  description: string;
+export interface TitleRequestJSON {
+  title: string;
 }
 
-export default async function updateDescription(
+export default async function updateTitle(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
@@ -29,12 +29,12 @@ export default async function updateDescription(
     }
   }
 
-  const { description }: DescriptionRequestJSON = req.body;
+  const { title }: TitleRequestJSON = req.body;
 
   await prisma.project.update({
     where: { id },
-    data: { description },
+    data: { title },
   });
 
-  return res.json({ id, description });
+  return res.json({ id, title });
 }

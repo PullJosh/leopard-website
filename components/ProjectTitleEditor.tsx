@@ -3,51 +3,53 @@
 import { useCallback, useRef, useState } from "react";
 import { useToasts } from "../components/Toasts";
 import { useRouter } from "next/navigation";
+import classNames from "classnames";
 
-interface ProjectNotesEditorProps {
+interface ProjectTitleEditorProps {
   projectId: string;
-  defaultValue: string;
+  defaultTitle: string;
   editable?: boolean;
+  size?: "small" | "large";
 }
 
-export function ProjectNotesEditor({
+export function ProjectTitleEditor({
   projectId,
-  defaultValue,
+  defaultTitle,
   editable = false,
-}: ProjectNotesEditorProps) {
-  const savedValue = useRef(defaultValue);
-  const [value, setValue] = useState(defaultValue);
+  size = "large",
+}: ProjectTitleEditorProps) {
+  const savedTitle = useRef(defaultTitle);
+  const [title, setTitle] = useState(defaultTitle);
 
   const toasts = useToasts();
   const router = useRouter();
 
   const submit = useCallback(() => {
     // Don't submit if the value hasn't changed
-    console.log("Value", value, savedValue.current);
-    if (value === savedValue.current) return;
+    if (title === savedTitle.current) return;
 
-    fetch(`/api/projects/${projectId}/description`, {
+    fetch(`/api/projects/${projectId}/title`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ description: value }),
+      body: JSON.stringify({ title }),
     })
       .then((res) => {
         if (!res.ok) {
           toasts.addToast({
-            children: "Failed to save project notes",
+            children: "Failed to save project title",
             style: "error",
             duration: 5000,
           });
           return;
         }
 
-        savedValue.current = value;
+        savedTitle.current = title;
         router.refresh(); // Refresh server-rendered page so that the old value is not cached if you leave this page and then return
 
         toasts.addToast({
-          children: "Project notes saved",
+          children: "Project title saved",
           duration: 3000,
         });
       })
@@ -59,14 +61,28 @@ export function ProjectNotesEditor({
           duration: 5000,
         });
       });
-  }, [projectId, router, toasts, value]);
+  }, [projectId, router, toasts, title]);
+
+  if (!editable) {
+    return <div>{title}</div>;
+  }
 
   return (
-    <textarea
-      className="w-full flex-grow resize-none rounded-md bg-gray-200 p-4"
-      value={value}
-      onChange={(e) => setValue(e.target.value)}
+    <input
+      type="text"
+      className={classNames("flex-grow bg-gray-200 font-[inherit]", {
+        "rounded-md px-4 py-1": size === "large",
+        "rounded px-2 py-px": size === "small",
+      })}
+      style={{ fontSize: "inherit" }}
+      value={title}
+      onChange={(e) => setTitle(e.target.value)}
       onBlur={submit}
+      onKeyDown={(event) => {
+        if (event.key === "Enter") {
+          submit();
+        }
+      }}
       readOnly={!editable}
     />
   );
