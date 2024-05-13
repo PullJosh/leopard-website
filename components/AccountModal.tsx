@@ -1,6 +1,16 @@
 "use client";
 
-import { Dialog, Tab } from "@headlessui/react";
+import {
+  Description,
+  Dialog,
+  DialogPanel,
+  DialogTitle,
+  Tab,
+  TabGroup,
+  TabList,
+  TabPanel,
+  TabPanels,
+} from "@headlessui/react";
 import classNames from "classnames";
 import {
   createContext,
@@ -106,10 +116,10 @@ export default function AccountModal({ children }: AccountModalProps) {
         }}
       >
         <div className="fixed inset-0 z-50 flex w-screen flex-col items-center justify-center bg-gray-900/40 p-4">
-          <Dialog.Panel className="flex w-full max-w-sm flex-shrink flex-col overflow-hidden rounded-lg bg-white shadow-2xl">
-            <Tab.Group selectedIndex={activeTab} onChange={setActiveTab}>
+          <DialogPanel className="flex w-full max-w-sm flex-shrink flex-col overflow-hidden rounded-lg bg-white shadow-2xl">
+            <TabGroup selectedIndex={activeTab} onChange={setActiveTab}>
               <div className="flex bg-gray-300">
-                <Tab.List className="flex flex-grow">
+                <TabList className="flex flex-grow">
                   {["Register", "Sign In"].map((tabName) => (
                     <Tab
                       key={tabName}
@@ -158,13 +168,13 @@ export default function AccountModal({ children }: AccountModalProps) {
                       />
                     </svg>
                   </button>
-                </Tab.List>
+                </TabList>
               </div>
-              <Tab.Panels className="overflow-auto">
-                <Tab.Panel className="p-8">
-                  <Dialog.Title className="text-center text-lg font-bold">
+              <TabPanels className="overflow-auto">
+                <TabPanel className="p-8">
+                  <DialogTitle className="text-center text-lg font-bold">
                     Create a Leopard account
-                  </Dialog.Title>
+                  </DialogTitle>
                   <div className="mx-auto mt-2 mb-4 h-1 w-12 bg-indigo-600" />
 
                   <RegisterForm
@@ -173,11 +183,11 @@ export default function AccountModal({ children }: AccountModalProps) {
                     password={password}
                     setPassword={setPassword}
                   />
-                </Tab.Panel>
-                <Tab.Panel className="p-8">
-                  <Dialog.Title className="text-center text-lg font-bold">
+                </TabPanel>
+                <TabPanel className="p-8">
+                  <DialogTitle className="text-center text-lg font-bold">
                     Sign in to Leopard
-                  </Dialog.Title>
+                  </DialogTitle>
                   <div className="mx-auto mt-2 mb-4 h-1 w-12 bg-indigo-600" />
 
                   <SignInForm
@@ -186,10 +196,10 @@ export default function AccountModal({ children }: AccountModalProps) {
                     password={password}
                     setPassword={setPassword}
                   />
-                </Tab.Panel>
-              </Tab.Panels>
-            </Tab.Group>
-          </Dialog.Panel>
+                </TabPanel>
+              </TabPanels>
+            </TabGroup>
+          </DialogPanel>
         </div>
       </Dialog>
 
@@ -226,17 +236,17 @@ export function CommunityGuidelinesModal() {
   return (
     <Dialog open={communityGuidelinesOpen} onClose={() => {}}>
       <div className="fixed inset-0 z-50 flex w-screen items-center justify-center bg-gray-900/40 p-4">
-        <Dialog.Panel className="w-full max-w-sm overflow-hidden rounded-lg bg-white shadow-2xl">
+        <DialogPanel className="w-full max-w-sm overflow-hidden rounded-lg bg-white shadow-2xl">
           <div className="p-8">
-            <Dialog.Title className="text-center text-lg font-bold">
+            <DialogTitle className="text-center text-lg font-bold">
               Community Guidelines
-            </Dialog.Title>
+            </DialogTitle>
             <div className="mx-auto mt-2 h-1 w-12 bg-indigo-600" />
 
-            <Dialog.Description className="mt-4 text-sm text-gray-700">
+            <Description className="mt-4 text-sm text-gray-700">
               Our community is a place for Scratchers to learn JavaScript and
               web development.
-            </Dialog.Description>
+            </Description>
 
             <h3 className="mt-4 font-bold text-gray-900">Community Goals</h3>
             <ul className="mt-2 space-y-2 text-sm text-gray-600">
@@ -290,7 +300,7 @@ export function CommunityGuidelinesModal() {
               </button>
             </div>
           </div>
-        </Dialog.Panel>
+        </DialogPanel>
       </div>
     </Dialog>
   );
@@ -303,17 +313,17 @@ export function CommunityModeratorsModal() {
   return (
     <Dialog open={communityModeratorsOpen} onClose={() => {}}>
       <div className="fixed inset-0 z-50 flex w-screen items-center justify-center bg-gray-900/40 p-4">
-        <Dialog.Panel className="w-full max-w-sm overflow-hidden rounded-lg bg-white shadow-2xl">
+        <DialogPanel className="w-full max-w-sm overflow-hidden rounded-lg bg-white shadow-2xl">
           <div className="p-8">
-            <Dialog.Title className="text-center text-lg font-bold">
+            <DialogTitle className="text-center text-lg font-bold">
               Community Moderators
-            </Dialog.Title>
+            </DialogTitle>
             <div className="mx-auto mt-2 h-1 w-12 bg-indigo-600" />
 
-            <Dialog.Description className="mt-4 text-sm text-gray-700">
+            <Description className="mt-4 text-sm text-gray-700">
               Get to know your moderators! They are the people who enforce the
               community guidelines.
-            </Dialog.Description>
+            </Description>
 
             <div className="-mx-8 my-4 bg-gray-200 px-8 py-4">
               <div className="rounded-lg bg-white p-4 shadow-lg">
@@ -356,7 +366,7 @@ export function CommunityModeratorsModal() {
               </div>
             </div>
           </div>
-        </Dialog.Panel>
+        </DialogPanel>
       </div>
     </Dialog>
   );

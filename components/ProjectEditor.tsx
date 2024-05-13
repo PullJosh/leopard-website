@@ -40,7 +40,7 @@ import {
   UpdateFilesResponseJSON,
 } from "../pages/api/projects/[id]/updateFiles";
 import { useHotkeys } from "react-hotkeys-hook";
-import { Dialog, Menu } from "@headlessui/react";
+import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import Nav, {
   NavAnonymousProjectWarning,
   NavProjectDescription,
@@ -1344,7 +1344,7 @@ export function CreateFileMenu({
   return (
     <div className={classNames("relative ml-auto self-center", className)}>
       <Menu>
-        <Menu.Button className="flex h-full items-center rounded hover:bg-gray-200 active:bg-gray-300">
+        <MenuButton className="flex h-full items-center rounded hover:bg-gray-200 active:bg-gray-300">
           <svg className="h-full w-full" viewBox="0 0 32 32">
             <line
               x1={16}
@@ -1364,18 +1364,15 @@ export function CreateFileMenu({
             />
           </svg>
           <div className="pr-2 text-gray-700">Create</div>
-        </Menu.Button>
-        <Menu.Items className="absolute top-full right-0 z-40 mt-1 flex w-40 flex-col overflow-hidden rounded-md border bg-white shadow">
+        </MenuButton>
+        <MenuItems className="absolute top-full right-0 z-40 mt-1 flex w-40 flex-col overflow-hidden rounded-md border bg-white shadow">
           {menuItems.map((item) => (
-            <Menu.Item key={item.id} disabled={!item.onClick}>
-              {({ active, disabled }) => (
+            <MenuItem key={item.id} disabled={!item.onClick}>
+              {({ disabled }) => (
                 <button
                   disabled={disabled}
                   onClick={item.onClick}
-                  className={classNames(
-                    "group flex items-center justify-start space-x-2 px-2 py-1 text-left disabled:cursor-default",
-                    { "bg-gray-200": active },
-                  )}
+                  className="data-[focus]:bg-gray-200 group flex items-center justify-start space-x-2 px-2 py-1 text-left disabled:cursor-default"
                 >
                   <div className="h-7 w-7 group-enabled:text-gray-500 group-disabled:text-gray-300">
                     {item.icon}
@@ -1385,9 +1382,9 @@ export function CreateFileMenu({
                   </span>
                 </button>
               )}
-            </Menu.Item>
+            </MenuItem>
           ))}
-        </Menu.Items>
+        </MenuItems>
       </Menu>
     </div>
   );

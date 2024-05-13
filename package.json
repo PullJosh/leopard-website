@@ -15,7 +15,7 @@
   "author": "Josh Pullen",
   "license": "ISC",
   "dependencies": {
-    "@headlessui/react": "^1.7.17",
+    "@headlessui/react": "^2.0.3",
     "@monaco-editor/react": "^4.6.0",
     "@next/third-parties": "^14.1.4",
     "@prisma/client": "^5.11.0",
@@ -52,7 +52,7 @@
     "prettier": "^3.1.1",
     "prettier-plugin-tailwindcss": "^0.5.9",
     "prisma": "^5.11.0",
-    "tailwindcss": "^3.1.6",
+    "tailwindcss": "^3.4.3",
     "typescript": "^4.9.5"
   }
 }

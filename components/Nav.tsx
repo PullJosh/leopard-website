@@ -1,6 +1,6 @@
 "use client";
 
-import { Menu } from "@headlessui/react";
+import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import classNames from "classnames";
 import Link from "next/link";
 import { useAccountModal } from "./AccountModal";
@@ -248,7 +248,7 @@ export function NavUserInfo() {
   return (
     <div className="relative flex py-2">
       <Menu>
-        <Menu.Button
+        <MenuButton
           className={({ open }) =>
             classNames("flex items-center rounded-lg p-2", {
               "hover:bg-gray-200 focus-visible:bg-gray-200": !open,
@@ -272,9 +272,9 @@ export function NavUserInfo() {
               fill="none"
             />
           </svg>
-        </Menu.Button>
+        </MenuButton>
 
-        <Menu.Items className="absolute top-full right-0 z-50 -mt-1 flex w-48 flex-col overflow-hidden rounded-xl border border-gray-300 bg-white p-2 shadow-lg">
+        <MenuItems className="absolute top-full right-0 z-50 -mt-1 flex w-48 flex-col overflow-hidden rounded-xl border border-gray-300 bg-white p-2 shadow-lg">
           <NavUserInfoMenuItem
             icon={
               <svg
@@ -366,7 +366,7 @@ export function NavUserInfo() {
           >
             Sign Out
           </NavUserInfoMenuItem>
-        </Menu.Items>
+        </MenuItems>
       </Menu>
     </div>
   );
@@ -383,45 +383,35 @@ function NavUserInfoMenuItem({
   icon,
   onClick,
 }: NavUserInfoMenuItemProps) {
-  const sharedClassNames = (active: boolean, disabled: boolean) => {
-    return classNames(
-      "flex items-center justify-start space-x-2 rounded px-2 py-2 text-left text-gray-800",
-      {
-        "bg-gray-200": active,
-        "text-gray-800": !disabled,
-        "cursor-default text-gray-500": disabled,
-      },
-    );
-  };
+  const sharedClassNames =
+    "flex items-center justify-start space-x-2 rounded px-2 py-2 text-left enabled:text-gray-800 disabled:cursor-default disabled:text-gray-500 data-[focus]:bg-gray-200";
 
   const disabled = onClick === undefined;
 
   if (typeof onClick === "string") {
     const href = onClick;
     return (
-      <Menu.Item disabled={disabled} as={Fragment}>
-        {({ active, disabled }) => (
-          <Link href={href} className={sharedClassNames(active, disabled)}>
-            <div>{icon}</div>
-            <div>{children}</div>
-          </Link>
-        )}
-      </Menu.Item>
+      <MenuItem disabled={disabled} as={Fragment}>
+        <Link href={href} className={sharedClassNames}>
+          <div>{icon}</div>
+          <div>{children}</div>
+        </Link>
+      </MenuItem>
     );
   } else {
     return (
-      <Menu.Item disabled={disabled}>
-        {({ active, disabled }) => (
+      <MenuItem disabled={disabled}>
+        {({ disabled }) => (
           <button
             disabled={disabled}
             onClick={onClick}
-            className={sharedClassNames(active, disabled)}
+            className={sharedClassNames}
           >
             <div>{icon}</div>
             <div>{children}</div>
           </button>
         )}
-      </Menu.Item>
+      </MenuItem>
     );
   }
 }

@@ -8,7 +8,7 @@ import {
 import * as gtag from "../lib/gtag";
 import classNames from "classnames";
 import { useRouter } from "next/navigation";
-import { Menu } from "@headlessui/react";
+import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 
 const getProjectURL = (id: number) => `https://scratch.mit.edu/projects/${id}/`;
 
@@ -291,7 +291,7 @@ export default function ConvertBox() {
                   </div>
                 )}
               </button>
-              <Menu.Button
+              <MenuButton
                 className={({ open }) =>
                   classNames("relative rounded-r-md border-l px-4 py-3", {
                     "border-indigo-800 bg-indigo-600": !error,
@@ -322,44 +322,37 @@ export default function ConvertBox() {
                   <div className="absolute inset-0 animate-ping rounded-full bg-pink-300/75" />
                   <div className="absolute inset-0 rounded-full bg-pink-400" />
                 </div>
-              </Menu.Button>
+              </MenuButton>
 
               {/* TODO: This menu dropdown should probably be standardized with the profile menu */}
-              <Menu.Items className="absolute top-full right-0 mt-2 flex flex-col rounded-xl border border-gray-300 bg-white p-2 shadow-lg">
+              <MenuItems
+                anchor="bottom end"
+                className="flex flex-col rounded-xl border border-gray-300 bg-white p-2 shadow-lg [--anchor-gap:0.5rem]"
+              >
                 {conversionMenuItems.map((item) => (
-                  <Menu.Item key={item.output}>
-                    {({ active }) => (
-                      <button
-                        className={classNames(
-                          "flex items-center justify-start space-x-2 rounded px-2 py-2 text-left text-gray-800",
-                          {
-                            "bg-gray-200": active,
-                            "text-gray-800": !projectId || loading,
-                            "cursor-default text-gray-500":
-                              !projectId || loading,
-                          },
-                        )}
-                        disabled={!projectId || loading}
-                        onClick={() => {
-                          if (projectId === null) return;
-                          performConversion(
-                            { type: "url", id: projectId },
-                            item.output,
-                          );
-                        }}
-                      >
-                        <div>{item.icon}</div>
-                        <div>{item.label}</div>
-                        {item.tag && (
-                          <span className="ml-2 rounded-full bg-pink-200 px-2 py-1 text-xs text-pink-800">
-                            {item.tag}
-                          </span>
-                        )}
-                      </button>
-                    )}
-                  </Menu.Item>
+                  <MenuItem key={item.output}>
+                    <button
+                      className="enabled:data-[focus]:bg-gray-200 flex items-center justify-start space-x-2 rounded px-2 py-2 text-left text-gray-800 enabled:hover:bg-gray-200 disabled:cursor-default disabled:text-gray-500"
+                      disabled={!projectId || loading}
+                      onClick={() => {
+                        if (projectId === null) return;
+                        performConversion(
+                          { type: "url", id: projectId },
+                          item.output,
+                        );
+                      }}
+                    >
+                      <div>{item.icon}</div>
+                      <div>{item.label}</div>
+                      {item.tag && (
+                        <span className="ml-2 rounded-full bg-pink-200 px-2 py-1 text-xs text-pink-800">
+                          {item.tag}
+                        </span>
+                      )}
+                    </button>
+                  </MenuItem>
                 ))}
-              </Menu.Items>
+              </MenuItems>
             </Menu>
           </div>
         </form>
