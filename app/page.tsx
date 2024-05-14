@@ -55,7 +55,7 @@ export default function Index() {
             <h2 className="mb-3 text-center text-xl font-semibold text-gray-800">
               Convert your Scratch projects to JavaScript!
             </h2>
-            <div className="mx-auto w-full max-w-[38rem] space-y-16">
+            <div className="mx-auto w-full max-w-3xl space-y-16 px-8">
               <ConvertBox />
             </div>
           </div>

@@ -8,20 +8,43 @@ import {
 import * as gtag from "../lib/gtag";
 import classNames from "classnames";
 import { useRouter } from "next/navigation";
-import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
+import {
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuItems,
+  Combobox,
+  ComboboxInput,
+  ComboboxOption,
+  ComboboxOptions,
+} from "@headlessui/react";
+import { useToasts } from "./Toasts";
 
 const getProjectURL = (id: number) => `https://scratch.mit.edu/projects/${id}/`;
 
 const getProjectId = (url: string) => {
-  const results = url.match(/\d{2,}/);
+  // Find a number in the URL
+  const results = url.match(/scratch.*\/(\d{2,})/);
   if (results === null) return null;
-  return parseInt(results[0], 10);
+  return parseInt(results[1], 10);
 };
 
-export default function ConvertBox() {
-  const [projectURL, setProjectURL] = useState("");
+type ChosenProject = { type: "url"; id: number } | { type: "file"; file: File };
 
-  const projectId = getProjectId(projectURL);
+const templates = [{ id: 1019731531, name: "Blank Project" }];
+
+const isTemplateId = (id: number) =>
+  templates.some((template) => template.id === id);
+
+export default function ConvertBox() {
+  const [project, setProject] = useState<ChosenProject | null>(null);
+  const projectTitle = useProjectTitle(
+    project?.type === "url" ? project.id : null,
+  );
+
+  const [projectQuery, setProjectQuery] = useState("");
+  const queryId = getProjectId(projectQuery);
+  const queryTitle = useProjectTitle(queryId);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<{ status: number; info: string } | null>(
@@ -29,15 +52,12 @@ export default function ConvertBox() {
   );
 
   const router = useRouter();
-
-  type ConversionInput =
-    | { type: "url"; id: number }
-    | { type: "file"; file: File };
+  const toasts = useToasts();
 
   type ConversionOutputType = "codesandbox" | "leopard-website";
 
   const performConversion = async (
-    input: ConversionInput,
+    input: ChosenProject,
     outputType: ConversionOutputType,
   ) => {
     gtag.event({
@@ -106,20 +126,12 @@ export default function ConvertBox() {
 
   const onSubmit: FormEventHandler<HTMLFormElement> = (event) => {
     event.preventDefault();
-    if (projectId === null) return;
-    return performConversion({ type: "url", id: projectId }, "codesandbox");
-  };
+    if (!project) return;
 
-  const onSubmitUpload: FormEventHandler<HTMLFormElement> = (event) => {
-    event.preventDefault();
-    const file = (
-      event.currentTarget.querySelector("input[type=file]") as HTMLInputElement
-    ).files![0];
-    if (!file) return;
-    return performConversion({ type: "file", file }, "codesandbox");
+    if (project.type === "url") {
+      return performConversion({ type: "url", id: project.id }, "codesandbox");
+    }
   };
-
-  const uploadFormRef = useRef<HTMLFormElement>(null);
 
   const [draggingFile, setDraggingFile] = useState(false);
   const onDragOver = useCallback((event: DragEvent) => {
@@ -133,12 +145,14 @@ export default function ConvertBox() {
   const onDrop = useCallback((event: DragEvent) => {
     event.preventDefault();
     setDraggingFile(false);
-    const fileInput = uploadFormRef.current?.querySelector(
-      "input[type=file]",
-    ) as HTMLInputElement;
-
-    fileInput.files = event.dataTransfer!.files;
-    uploadFormRef.current!.requestSubmit();
+    const fileInput = fileInputRef.current;
+    if (fileInput) {
+      fileInput.files = event.dataTransfer!.files;
+      if (fileInput.files && fileInput.files.length > 0) {
+        setProject({ type: "file", file: fileInput.files[0] });
+        setError(null);
+      }
+    }
   }, []);
   useEffect(() => {
     document.body.addEventListener("dragover", onDragOver);
@@ -153,12 +167,14 @@ export default function ConvertBox() {
 
   const conversionMenuItems: {
     output: ConversionOutputType;
+    allowedTypes: ChosenProject["type"][];
     label: string;
     icon?: React.ReactNode;
     tag?: string;
   }[] = [
     {
       output: "leopard-website",
+      allowedTypes: ["url"],
       label: "Leopard Editor",
       tag: "Alpha",
       icon: (
@@ -202,6 +218,7 @@ export default function ConvertBox() {
     },
     {
       output: "codesandbox",
+      allowedTypes: ["url", "file"],
       label: "CodeSandbox",
       icon: (
         <svg
@@ -211,8 +228,8 @@ export default function ConvertBox() {
           className="h-6 w-6"
         >
           <path
-            fill-rule="evenodd"
-            clip-rule="evenodd"
+            fillRule="evenodd"
+            clipRule="evenodd"
             d="M150 150L449.832 150V450H150V150ZM419.168 180.682V419.318H180.665V180.682H419.168Z"
             className="fill-current"
           />
@@ -220,6 +237,10 @@ export default function ConvertBox() {
       ),
     },
   ];
+
+  const inputParentRef = useRef<HTMLDivElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   return (
     <div className="space-y-4">
@@ -230,36 +251,287 @@ export default function ConvertBox() {
           onSubmit={onSubmit}
         >
           <div className="relative w-full flex-1">
-            <input
-              type="text"
-              className={classNames(
-                "w-full rounded-md border-2 px-5 py-3 text-lg outline-none",
-                {
-                  "border-indigo-600 bg-indigo-100 text-indigo-800 placeholder-indigo-200":
-                    !error,
-                  "border-red-700 bg-red-100 text-red-800 focus:border-red-900":
-                    error,
-                },
-              )}
-              placeholder="https://scratch.mit.edu/projects/345789566/"
-              value={projectURL}
-              onChange={(e) => {
-                setProjectURL(e.target.value);
+            <Combobox<ChosenProject | null>
+              value={project}
+              by={(a: ChosenProject, b: ChosenProject) => {
+                // Don't compare project objects by identity, but by their contents
+                if (a === b) return true;
+
+                if (a?.type === "url" && b?.type === "url") {
+                  return a.id === b.id;
+                }
+
+                if (a?.type === "file" && b?.type === "file") {
+                  return a.file === b.file;
+                }
+
+                return false;
+              }}
+              onChange={(newProject: ChosenProject | "URL" | "SB3") => {
+                console.log("newProject", newProject);
+
+                // Slight hack. Some of the options are meant to be actions
+                // that paste from the clipboard or upload a file. If the user
+                // has chosen one of those, perform the appropriate action.
+                if (newProject === "URL") {
+                  if (queryId) {
+                    setProject({ type: "url", id: queryId });
+                    setError(null);
+                  } else {
+                    // Paste from clipboard
+                    navigator.clipboard.readText().then((text) => {
+                      const id = getProjectId(text);
+                      if (id) {
+                        setProject({ type: "url", id });
+                        setProjectQuery("");
+                        setError(null);
+                      } else {
+                        toasts.addToast({
+                          style: "default",
+                          children: (
+                            <>
+                              Not a Scratch project URL:{" "}
+                              <span className="text-gray-600">
+                                "{text.slice(0, 20)}
+                                {text.length > 20 && "..."}"
+                              </span>
+                            </>
+                          ),
+                          duration: 5000,
+                        });
+                      }
+                    });
+                  }
+                  return;
+                }
+
+                if (newProject === "SB3") {
+                  fileInputRef.current?.click();
+                  return;
+                }
+
+                // If we get here, the user has chosen a real project
+                // from the combobox.
+                console.log("setting project", newProject);
+                setProject(newProject);
+                setProjectQuery("");
                 setError(null);
               }}
-              onBlur={() => {
-                // Normalize url format
-                let id = getProjectId(projectURL);
-                if (id) {
-                  setProjectURL(getProjectURL(id));
+              onClose={() => {
+                if (queryId) {
+                  setProject({ type: "url", id: queryId });
+                  setError(null);
                 }
+
+                // We have `immediate` set to true so that the dropdown
+                // will appear as soon as you focus the input. However,
+                // if the dropdown closes without blurring the input,
+                // then clicking in the input again doesn't focus it
+                // (and thus re-open the dropdown), which is frustrating.
+                // So let's blur it manually.
+                requestAnimationFrame(() => {
+                  menuButtonRef.current?.focus();
+                });
               }}
-            />
+              immediate={true}
+            >
+              <div className="relative" ref={inputParentRef}>
+                <ComboboxInput
+                  aria-label="Project URL"
+                  placeholder="https://scratch.mit.edu/projects/345789566/"
+                  displayValue={(p: ChosenProject | null) => {
+                    switch (p?.type) {
+                      case "url":
+                        // If the project is a template, show the template name
+                        const template = templates.find(
+                          (template) => template.id === p.id,
+                        );
+                        if (template) return template.name;
+
+                        // If the project is a url and we've fetched the title, show it
+                        if (project?.type === "url" && p.id === project.id) {
+                          if (projectTitle) return projectTitle;
+                        }
+
+                        return getProjectURL(p.id);
+                      case "file":
+                        if (p.file.name.endsWith(".sb3")) {
+                          return p.file.name.slice(0, -4);
+                        }
+                        return p.file.name;
+                      default:
+                        return "";
+                    }
+                  }}
+                  onChange={(event) => setProjectQuery(event.target.value)}
+                  className={classNames(
+                    "w-full rounded-md border-2 px-5 py-3 text-lg outline-none",
+                    {
+                      "pl-16": !!project,
+                      "border-indigo-600 bg-indigo-100 text-indigo-800 placeholder-indigo-200":
+                        !error,
+                      "border-red-700 bg-red-100 text-red-800 focus:border-red-900":
+                        error,
+                    },
+                  )}
+                  autoComplete="off"
+                />
+                {project?.type === "url" ? (
+                  <img
+                    src={`https://cdn2.scratch.mit.edu/get_image/project/${project.id}_120x90.png`}
+                    alt=""
+                    className="pointer-events-none absolute left-8 top-1/2 h-9 w-12 -translate-x-1/2 -translate-y-1/2 rounded border border-dashed border-indigo-200 bg-indigo-100"
+                    draggable={false}
+                  />
+                ) : project?.type === "file" ? (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    className="pointer-events-none absolute left-8 top-1/2 h-9 w-12 -translate-x-1/2 -translate-y-1/2 rounded border border-dashed border-indigo-200 bg-indigo-100 fill-indigo-700/75 p-1"
+                  >
+                    <text
+                      x={10}
+                      y={11}
+                      fontSize={12}
+                      textAnchor="middle"
+                      dominantBaseline="middle"
+                    >
+                      .sb3
+                    </text>
+                  </svg>
+                ) : null}
+              </div>
+              <ComboboxOptions
+                anchor="bottom start"
+                className="w-[var(--input-width)] rounded-xl border border-gray-300 bg-white p-2 shadow-lg [--anchor-gap:0.25rem] empty:hidden"
+              >
+                <strong className="mx-2 my-1 block text-sm font-semibold text-gray-800">
+                  Your Project
+                </strong>
+                {((project &&
+                  !(project.type === "url" && isTemplateId(project.id))) ||
+                  queryId) && (
+                  <ComboboxOption
+                    value={queryId ? { type: "url", id: queryId } : project}
+                    className="data-[focus]:bg-gray-200 data-[selected]:bg-indigo-100 flex cursor-pointer items-center space-x-2 rounded-md p-2"
+                  >
+                    {queryId ? (
+                      <img
+                        src={`https://cdn2.scratch.mit.edu/get_image/project/${queryId}_120x90.png`}
+                        alt=""
+                        className="h-6 w-8 rounded border border-dashed border-indigo-200 bg-indigo-100"
+                      />
+                    ) : project?.type === "url" ? (
+                      <img
+                        src={`https://cdn2.scratch.mit.edu/get_image/project/${project.id}_120x90.png`}
+                        alt=""
+                        className="h-6 w-8 rounded border border-dashed border-indigo-200 bg-indigo-100"
+                      />
+                    ) : (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20"
+                        className="h-6 w-8 rounded border border-dashed border-indigo-200 bg-indigo-100 fill-indigo-700/75 p-[0.125rem]"
+                      >
+                        <text
+                          x={10}
+                          y={11}
+                          fontSize={12}
+                          textAnchor="middle"
+                          dominantBaseline="middle"
+                        >
+                          .sb3
+                        </text>
+                      </svg>
+                    )}
+                    <div className="flex flex-grow items-center justify-between overflow-hidden">
+                      <span className="overflow-hidden text-ellipsis whitespace-nowrap text-gray-900 [[data-selected]_&]:text-indigo-900/80">
+                        {queryId
+                          ? queryTitle ?? getProjectURL(queryId)
+                          : project?.type === "url"
+                            ? projectTitle ?? getProjectURL(project.id)
+                            : project?.type === "file"
+                              ? project.file.name
+                              : ""}
+                      </span>
+                      {queryId ? (
+                        <span className="mt-px ml-2 flex-shrink-0 font-mono text-xs text-gray-500 [[data-selected]_&]:text-indigo-400">
+                          {queryId}
+                        </span>
+                      ) : project?.type === "url" &&
+                        !isTemplateId(project.id) ? (
+                        <span className="mt-px ml-2 flex-shrink-0 font-mono text-xs text-gray-500 [[data-selected]_&]:text-indigo-400">
+                          {project.id}
+                        </span>
+                      ) : null}
+                    </div>
+                  </ComboboxOption>
+                )}
+                <ComboboxOption
+                  value="URL"
+                  className="data-[focus]:bg-gray-200 data-[selected]:bg-indigo-100 flex cursor-pointer items-center space-x-2 rounded-md p-2"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    className="h-6 w-8 rounded border border-dashed border-indigo-200 bg-indigo-100 fill-indigo-700/75 p-[0.125rem]"
+                  >
+                    <path d="M12.232 4.232a2.5 2.5 0 0 1 3.536 3.536l-1.225 1.224a.75.75 0 0 0 1.061 1.06l1.224-1.224a4 4 0 0 0-5.656-5.656l-3 3a4 4 0 0 0 .225 5.865.75.75 0 0 0 .977-1.138 2.5 2.5 0 0 1-.142-3.667l3-3Z" />
+                    <path d="M11.603 7.963a.75.75 0 0 0-.977 1.138 2.5 2.5 0 0 1 .142 3.667l-3 3a2.5 2.5 0 0 1-3.536-3.536l1.225-1.224a.75.75 0 0 0-1.061-1.06l-1.224 1.224a4 4 0 1 0 5.656 5.656l3-3a4 4 0 0 0-.225-5.865Z" />
+                  </svg>
+                  <span className="text-gray-900 [[data-selected]_&]:text-indigo-900/80">
+                    Paste project URL
+                  </span>
+                </ComboboxOption>
+                <ComboboxOption
+                  value="SB3"
+                  className="data-[focus]:bg-gray-200 data-[selected]:bg-indigo-100 flex cursor-pointer items-center space-x-2 rounded-md p-2"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    className="h-6 w-8 rounded border border-dashed border-indigo-200 bg-indigo-100 fill-indigo-700/75 p-[0.125rem]"
+                  >
+                    <path d="M9.25 13.25a.75.75 0 0 0 1.5 0V4.636l2.955 3.129a.75.75 0 0 0 1.09-1.03l-4.25-4.5a.75.75 0 0 0-1.09 0l-4.25 4.5a.75.75 0 1 0 1.09 1.03L9.25 4.636v8.614Z" />
+                    <path d="M3.5 12.75a.75.75 0 0 0-1.5 0v2.5A2.75 2.75 0 0 0 4.75 18h10.5A2.75 2.75 0 0 0 18 15.25v-2.5a.75.75 0 0 0-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5Z" />
+                  </svg>
+                  <span className="text-gray-900 [[data-selected]_&]:text-indigo-900/80">
+                    Upload .sb3
+                  </span>
+                </ComboboxOption>
+
+                <strong className="mx-2 mb-1 mt-4 block text-sm font-semibold text-gray-800">
+                  Templates
+                </strong>
+                {templates.map((template) => (
+                  <ComboboxOption
+                    key={template.id}
+                    value={{ type: "url", id: template.id }}
+                    className="data-[focus]:bg-gray-200 data-[selected]:bg-indigo-100 flex cursor-pointer items-center space-x-2 rounded-md p-2"
+                  >
+                    <img
+                      src={`https://cdn2.scratch.mit.edu/get_image/project/${template.id}_120x90.png`}
+                      alt="Project thumbnail"
+                      className="h-6 w-8 rounded border border-gray-300 object-cover"
+                    />
+                    <span className="text-gray-900 [[data-selected]_&]:text-indigo-900/80">
+                      {template.name}
+                    </span>
+                  </ComboboxOption>
+                ))}
+              </ComboboxOptions>
+            </Combobox>
           </div>
 
           <div className="relative flex">
             <Menu>
               <button
+                ref={menuButtonRef}
+                onClick={() => {
+                  if (project) {
+                    performConversion(project, "codesandbox");
+                  }
+                }}
                 className={classNames(
                   "relative flex items-center justify-center whitespace-nowrap rounded-l-md px-5 py-3 text-lg text-white",
                   {
@@ -271,7 +543,7 @@ export default function ConvertBox() {
                     "bg-red-800": error && loading,
                   },
                 )}
-                disabled={!projectId || loading}
+                disabled={!project || loading}
               >
                 <span className={classNames({ invisible: loading })}>
                   Edit as JavaScript
@@ -319,8 +591,8 @@ export default function ConvertBox() {
                   />
                 </svg>
                 <div className="absolute top-3 right-2 h-2 w-2">
-                  <div className="absolute inset-0 animate-ping rounded-full bg-pink-300/75" />
-                  <div className="absolute inset-0 rounded-full bg-pink-400" />
+                  <div className="absolute inset-0 animate-ping rounded-full bg-orange-300/75" />
+                  <div className="absolute inset-0 rounded-full bg-orange-400" />
                 </div>
               </MenuButton>
 
@@ -333,19 +605,21 @@ export default function ConvertBox() {
                   <MenuItem key={item.output}>
                     <button
                       className="enabled:data-[focus]:bg-gray-200 flex items-center justify-start space-x-2 rounded px-2 py-2 text-left text-gray-800 enabled:hover:bg-gray-200 disabled:cursor-default disabled:text-gray-500"
-                      disabled={!projectId || loading}
+                      disabled={
+                        loading ||
+                        !project ||
+                        !item.allowedTypes.includes(project.type)
+                      }
                       onClick={() => {
-                        if (projectId === null) return;
-                        performConversion(
-                          { type: "url", id: projectId },
-                          item.output,
-                        );
+                        if (project) {
+                          performConversion(project, item.output);
+                        }
                       }}
                     >
                       <div>{item.icon}</div>
                       <div>{item.label}</div>
                       {item.tag && (
-                        <span className="ml-2 rounded-full bg-pink-200 px-2 py-1 text-xs text-pink-800">
+                        <span className="ml-2 rounded-full bg-orange-200 px-2 py-1 text-xs text-orange-800">
                           {item.tag}
                         </span>
                       )}
@@ -357,47 +631,44 @@ export default function ConvertBox() {
           </div>
         </form>
 
-        {/* File upload form */}
-        <form
-          ref={uploadFormRef}
-          className="flex justify-center"
-          onSubmit={onSubmitUpload}
+        {/* File upload input + drag and drop interface */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          name="file"
+          className="hidden"
+          accept=".sb3"
+          onChange={(event) => {
+            const input: HTMLInputElement = event.currentTarget;
+            if (input.files && input.files.length > 0) {
+              setProject({ type: "file", file: input.files[0] });
+              setError(null);
+            }
+          }}
+          onClick={(event) => {
+            // I want "onChange" to fire even if the user selects the same file twice in a row
+            // (which wouldn't normally count as a "change" the second time), so let's reset
+            // the input value each time it's clicked.
+            if (event.currentTarget) {
+              event.currentTarget.value = "";
+            }
+          }}
+        />
+        <div
+          className={classNames("fixed inset-0 bg-indigo-400/20", {
+            hidden: !draggingFile,
+          })}
+        />
+        <div
+          className={classNames(
+            "absolute -inset-5 -top-14 flex items-center justify-center rounded-xl border-4 border-dashed border-indigo-500 bg-indigo-400 shadow-2xl shadow-indigo-600/60",
+            { hidden: !draggingFile },
+          )}
         >
-          <label>
-            <span className="text-gray-700">
-              Or{" "}
-              <span className="cursor-pointer font-medium text-indigo-800 underline decoration-indigo-700/30 decoration-dashed">
-                upload
-              </span>{" "}
-              an .sb3 file
-            </span>
-            <input
-              type="file"
-              name="file"
-              className="hidden"
-              accept=".sb3"
-              onChange={(event) => {
-                uploadFormRef.current?.requestSubmit();
-              }}
-            />
-          </label>
-
-          <div
-            className={classNames("fixed inset-0 bg-indigo-400/20", {
-              hidden: !draggingFile,
-            })}
-          />
-          <div
-            className={classNames(
-              "absolute -inset-5 -top-14 flex items-center justify-center rounded-xl border-4 border-dashed border-indigo-500 bg-indigo-400 shadow-2xl shadow-indigo-600/60",
-              { hidden: !draggingFile },
-            )}
-          >
-            <span className="select-none text-xl font-semibold text-white drop-shadow-xl">
-              Drop to upload sb3...
-            </span>
-          </div>
-        </form>
+          <span className="select-none text-xl font-semibold text-white drop-shadow-xl">
+            Drop to upload sb3...
+          </span>
+        </div>
       </div>
 
       {/* Error box */}
@@ -410,7 +681,8 @@ export default function ConvertBox() {
               </p>
               <p>
                 Your project must be shared in order to be converted. A shared
-                project was not found with the id {projectId}.
+                project was not found
+                {project?.type === "url" && ` with the id ${project.id}`}.
               </p>
             </>
           ) : (
@@ -443,4 +715,45 @@ export default function ConvertBox() {
       )}
     </div>
   );
+}
+
+function useProjectTitle(id: number | null) {
+  const [title, setTitle] = useState<string | null>(null);
+  const cachedTitles = useRef<{ [id: number]: string }>({});
+
+  useEffect(() => {
+    if (id === null) {
+      setTitle(null);
+      return;
+    }
+
+    if (cachedTitles.current[id]) {
+      setTitle(cachedTitles.current[id]);
+      return;
+    }
+
+    // We'll give it a tiny delay to minimize noisy UI,
+    // but pretty quickly we should reset the title to null
+    // while loading so that we don't return an outdated result
+    const setToNullTimeout = setTimeout(() => setTitle(null), 500);
+
+    fetch(`/api/getScratchMetadata?id=${id}`)
+      .then((res) => res.json())
+      .then((data) => {
+        const title = data.title;
+        if (typeof title === "string") {
+          cachedTitles.current[id] = title;
+          setTitle(title);
+        } else {
+          setTitle(null);
+        }
+        clearTimeout(setToNullTimeout);
+      })
+      .catch(() => {
+        setTitle(null);
+        clearTimeout(setToNullTimeout);
+      });
+  }, [id]);
+
+  return title;
 }
