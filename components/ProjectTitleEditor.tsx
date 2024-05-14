@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { useToasts } from "../components/Toasts";
 import { useRouter } from "next/navigation";
 import classNames from "classnames";
@@ -10,6 +10,7 @@ interface ProjectTitleEditorProps {
   defaultTitle: string;
   editable?: boolean;
   size?: "small" | "large";
+  autoSize?: boolean;
 }
 
 export function ProjectTitleEditor({
@@ -17,6 +18,7 @@ export function ProjectTitleEditor({
   defaultTitle,
   editable = false,
   size = "large",
+  autoSize = false,
 }: ProjectTitleEditorProps) {
   const savedTitle = useRef(defaultTitle);
   const [title, setTitle] = useState(defaultTitle);
@@ -63,27 +65,59 @@ export function ProjectTitleEditor({
       });
   }, [projectId, router, toasts, title]);
 
+  const measurementSpanRef = useRef<HTMLSpanElement>(null);
+  const [width, setWidth] = useState(0);
+
+  useLayoutEffect(() => {
+    if (!editable) return;
+    if (!measurementSpanRef.current) return;
+
+    const span = measurementSpanRef.current;
+    span.textContent = title;
+    const width = span.offsetWidth;
+    setWidth(width);
+  }, [editable, title]);
+
   if (!editable) {
     return <div>{title}</div>;
   }
 
+  const className = classNames("flex-grow bg-gray-200 font-[inherit]", {
+    "rounded-md px-4 py-1": size === "large",
+    "rounded px-2 py-px": size === "small",
+  });
+
   return (
-    <input
-      type="text"
-      className={classNames("flex-grow bg-gray-200 font-[inherit]", {
-        "rounded-md px-4 py-1": size === "large",
-        "rounded px-2 py-px": size === "small",
-      })}
-      style={{ fontSize: "inherit" }}
-      value={title}
-      onChange={(e) => setTitle(e.target.value)}
-      onBlur={submit}
-      onKeyDown={(event) => {
-        if (event.key === "Enter") {
-          submit();
-        }
-      }}
-      readOnly={!editable}
-    />
+    <>
+      <input
+        type="text"
+        className={className}
+        style={{
+          fontSize: "inherit",
+          width: autoSize ? width : undefined,
+          minWidth: autoSize ? "10ch" : undefined,
+        }}
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        onBlur={submit}
+        onKeyDown={(event) => {
+          if (event.key === "Enter") {
+            submit();
+          }
+        }}
+        readOnly={!editable}
+      />
+
+      {/* Measurement span */}
+      <span
+        ref={measurementSpanRef}
+        className={classNames(
+          className,
+          "invisible fixed -left-[999999px] -top-[999999px] whitespace-pre",
+        )}
+      >
+        {title}
+      </span>
+    </>
   );
 }

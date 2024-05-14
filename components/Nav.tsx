@@ -99,6 +99,7 @@ export function NavProjectDescription({
               defaultTitle={title}
               editable={true}
               size="small"
+              autoSize={true}
             />
           </h1>
         ) : (
