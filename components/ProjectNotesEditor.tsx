@@ -63,7 +63,7 @@ export function ProjectNotesEditor({
 
   return (
     <textarea
-      className="w-full flex-grow resize-none rounded-md bg-gray-200 p-4"
+      className="w-full flex-grow resize-none rounded-lg bg-gray-200 p-4"
       value={value}
       onChange={(e) => setValue(e.target.value)}
       onBlur={submit}

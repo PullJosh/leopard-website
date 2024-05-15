@@ -127,7 +127,7 @@ export default async function ProjectPage({
             </div>
             <div className="flex space-x-4">
               <iframe
-                className="flex-shrink-0 flex-grow-0 rounded-md border border-gray-300 bg-white"
+                className="box-content flex-shrink-0 flex-grow-0 rounded-lg border border-gray-300 bg-white"
                 width="480"
                 height="360"
                 src={`/api/preview/${id}/index.html`}
