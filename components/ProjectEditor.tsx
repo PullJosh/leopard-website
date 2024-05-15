@@ -1345,7 +1345,7 @@ export function CreateFileMenu({
     <div className={classNames("relative ml-auto self-center", className)}>
       <Menu>
         <MenuButton className="data-[active]:bg-gray-300 flex h-full items-center rounded hover:bg-gray-200">
-          <svg className="h-full w-full" viewBox="0 0 32 32">
+          <svg className="h-full w-auto" viewBox="0 0 32 32">
             <line
               x1={16}
               y1={8}
