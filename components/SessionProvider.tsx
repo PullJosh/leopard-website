@@ -22,10 +22,14 @@ const SessionContext = createContext<{
 
 interface SessionProviderProps {
   children: React.ReactNode;
+  serverUser?: User | null;
 }
 
-export function SessionProvider({ children }: SessionProviderProps) {
-  const [user, setUser] = useState<User | null>(null);
+export function SessionProvider({
+  children,
+  serverUser = null,
+}: SessionProviderProps) {
+  const [user, setUser] = useState<User | null>(serverUser);
 
   const fetching = useRef(false);
   const refetchUser = useCallback(async () => {
@@ -38,7 +42,9 @@ export function SessionProvider({ children }: SessionProviderProps) {
   }, []);
 
   useEffect(() => {
-    refetchUser();
+    if (!serverUser) {
+      refetchUser();
+    }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
