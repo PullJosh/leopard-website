@@ -9,8 +9,15 @@ export function setSessionTokenCookie(
   const cookieValue = session?.token ?? "";
   const expires = session ? session.expires : new Date(0);
 
-  return res.setHeader(
-    "Set-Cookie",
-    `${cookieName}=${cookieValue};HttpOnly;Secure;Path=/;Expires=${expires.toUTCString()}`,
-  );
+  let cookie = `${cookieName}=${cookieValue}`;
+  cookie += ";HttpOnly";
+  if (process.env.NODE_ENV === "production") {
+    // In Safari, secure cookies are only sent over HTTPS and
+    // do not work on localhost.
+    cookie += ";Secure";
+  }
+  cookie += ";Path=/";
+  cookie += `;Expires=${expires.toUTCString()}`;
+
+  return res.setHeader("Set-Cookie", cookie);
 }
