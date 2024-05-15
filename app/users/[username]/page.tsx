@@ -10,6 +10,8 @@ import Nav, { NavSpace } from "../../../components/Nav";
 
 import prisma from "../../../lib/prisma";
 import { relativeDateStr } from "../../../lib/fuzzyDate";
+import { cookies } from "next/headers";
+import { getUser, sessionTokenCookieName } from "../../../lib/getUser";
 
 interface Props {
   params: {
@@ -18,7 +20,10 @@ interface Props {
 }
 
 export default async function ProfilePage({ params: { username } }: Props) {
-  const user = await prisma.user.findFirst({
+  const token = cookies().get(sessionTokenCookieName)?.value;
+  const user = await getUser(token);
+
+  const profile = await prisma.user.findFirst({
     where: {
       username: {
         equals: username,
@@ -27,16 +32,30 @@ export default async function ProfilePage({ params: { username } }: Props) {
     },
     include: {
       projects: {
+        where: {
+          shared: true,
+        },
         orderBy: {
           createdAt: "desc",
+        },
+      },
+      _count: {
+        select: {
+          projects: {
+            where: {
+              shared: false,
+            },
+          },
         },
       },
     },
   });
 
-  if (!user) {
+  if (!profile) {
     throw new Error(`User with username ${username} does not exist`);
   }
+
+  const unsharedCount = profile._count.projects;
 
   return (
     <>
@@ -54,24 +73,58 @@ export default async function ProfilePage({ params: { username } }: Props) {
                 <Image
                   layout="intrinsic"
                   src={DefaultProfilePicture}
-                  alt={user.username}
+                  alt={profile.username}
                 />
               </div>
               <h1
                 className={classNames("mt-2 break-words font-semibold", {
-                  "text-2xl": user.username.length < 16,
+                  "text-2xl": profile.username.length < 16,
                   "text-xl":
-                    user.username.length >= 16 && user.username.length < 20,
-                  "text-lg": user.username.length >= 20,
+                    profile.username.length >= 16 &&
+                    profile.username.length < 20,
+                  "text-lg": profile.username.length >= 20,
                 })}
               >
-                {user.username}
+                {profile.username}
               </h1>
               <div className="text-sm">
-                Joined {relativeDateStr(user.createdAt)}
+                Joined {relativeDateStr(profile.createdAt)}
               </div>
             </div>
             <div>
+              {user && user.id === profile.id && unsharedCount > 0 && (
+                <div className="mb-4 flex items-center space-x-2 rounded-md bg-gray-200 px-4 py-2">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="h-6 w-6"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                    />
+                  </svg>
+                  <div>
+                    You have{" "}
+                    <Link
+                      href="/mystuff"
+                      className="text-indigo-700 hover:underline"
+                    >
+                      {unsharedCount} unshared projects
+                    </Link>{" "}
+                    that only you can see.
+                  </div>
+                </div>
+              )}
               <div className="overflow-hidden rounded-xl border border-gray-300 bg-white">
                 <div className="flex border-b-2 border-gray-300">
                   <div className="mb-[-2px] flex items-center space-x-2 border-b-2 border-indigo-600 px-4 py-2 focus-visible:bg-gray-100 focus-visible:outline-none">
@@ -79,13 +132,13 @@ export default async function ProfilePage({ params: { username } }: Props) {
                       Projects
                     </span>{" "}
                     <span className="rounded-full bg-indigo-100 px-2 py-px text-sm text-indigo-900">
-                      {user.projects.length}
+                      {profile.projects.length}
                     </span>
                   </div>
                 </div>
                 <div>
                   <div className="divide-y divide-gray-300">
-                    {user.projects.map((project) => (
+                    {profile.projects.map((project) => (
                       <div key={project.id}>
                         <Link
                           href={`/projects/${project.id}`}
@@ -119,13 +172,13 @@ export default async function ProfilePage({ params: { username } }: Props) {
                         </Link>
                       </div>
                     ))}
-                    {user.projects.length === 0 && (
+                    {profile.projects.length === 0 && (
                       <div className="bg-gray-100 px-8 py-24 text-center">
                         <div className="font-medium text-gray-700">
                           There's nothing here!
                         </div>
                         <p className="text-sm text-gray-600">
-                          {user.username} has not created any projects yet
+                          {profile.username} has not shared any projects yet
                         </p>
                       </div>
                     )}

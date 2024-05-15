@@ -10,9 +10,9 @@ import { Metadata, ResolvingMetadata } from "next";
 import { getUser, sessionTokenCookieName } from "../../../lib/getUser";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
-import { useState } from "react";
 import { ProjectNotesEditor } from "../../../components/ProjectNotesEditor";
 import { ProjectTitleEditor } from "../../../components/ProjectTitleEditor";
+import { changeProjectShared } from "../../../actions/changeProjectShared";
 
 interface ProjectPageProps {
   params: {
@@ -49,6 +49,36 @@ export default async function ProjectPage({
         </Nav>
       </div>
 
+      {!project.shared && (
+        <form className="bg-indigo-100 py-4" action={changeProjectShared}>
+          <input type="hidden" name="projectId" value={project.id} />
+          <input type="hidden" name="shared" value="true" />
+          <div className="mx-auto flex max-w-4xl items-center px-8">
+            <div>
+              Only you can see this project. Click share to let everyone see it!
+            </div>
+            <button
+              type="submit"
+              className="ml-auto flex items-center space-x-2 rounded-md bg-indigo-600 px-4 py-2 text-white"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                className="h-5 w-5"
+              >
+                <path d="M10 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z" />
+                <path
+                  fillRule="evenodd"
+                  d="M.664 10.59a1.651 1.651 0 0 1 0-1.186A10.004 10.004 0 0 1 10 3c4.257 0 7.893 2.66 9.336 6.41.147.381.146.804 0 1.186A10.004 10.004 0 0 1 10 17c-4.257 0-7.893-2.66-9.336-6.41ZM14 10a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              <span>Share</span>
+            </button>
+          </div>
+        </form>
+      )}
       <div className="mt-8">
         <div className="mx-auto max-w-4xl px-8">
           <div>

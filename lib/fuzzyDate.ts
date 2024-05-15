@@ -6,9 +6,9 @@ export function relativeDateStr(date: Date, now = new Date()): string {
   const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
   if (days < -1) return `${-days} days from now`;
-  if (days === -1) return "tomorrow";
-  if (days === 0) return "today";
-  if (days === 1) return "yesterday";
+  if (days === -1) return "Tomorrow";
+  if (days === 0) return "Today";
+  if (days === 1) return "Yesterday";
   if (days < 7) return `${days} days ago`;
 
   const dateFormatter = new Intl.DateTimeFormat("en-US", {

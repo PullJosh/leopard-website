@@ -281,6 +281,7 @@ export function NavUserInfo() {
         >
           <NavUserInfoGroup>
             <NavUserInfoMenuItem
+              onClick={`/users/${user.username}`}
               icon={
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -297,11 +298,11 @@ export function NavUserInfo() {
                   />
                 </svg>
               }
-              onClick={`/users/${user.username}`}
             >
               Profile
             </NavUserInfoMenuItem>
             <NavUserInfoMenuItem
+              onClick="/mystuff"
               icon={
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
