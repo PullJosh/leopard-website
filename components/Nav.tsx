@@ -277,52 +277,53 @@ export function NavUserInfo() {
 
         <MenuItems
           anchor="bottom end"
-          className="z-50 flex w-48 flex-col overflow-hidden rounded-xl border border-gray-300 bg-white p-2 shadow-lg [--anchor-gap:0.25rem]"
+          className="z-50 flex w-48 flex-col divide-y overflow-hidden rounded-xl border border-gray-300 bg-white shadow-lg [--anchor-gap:0.25rem]"
         >
-          <NavUserInfoMenuItem
-            icon={
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="h-6 w-6"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
-                />
-              </svg>
-            }
-            onClick={`/users/${user.username}`}
-          >
-            Profile
-          </NavUserInfoMenuItem>
-          <NavUserInfoMenuItem
-            icon={
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="h-6 w-6"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z"
-                />
-              </svg>
-            }
-          >
-            My Stuff
-          </NavUserInfoMenuItem>
+          <NavUserInfoGroup>
+            <NavUserInfoMenuItem
+              icon={
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="h-6 w-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                  />
+                </svg>
+              }
+              onClick={`/users/${user.username}`}
+            >
+              Profile
+            </NavUserInfoMenuItem>
+            <NavUserInfoMenuItem
+              icon={
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="h-6 w-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z"
+                  />
+                </svg>
+              }
+            >
+              My Stuff
+            </NavUserInfoMenuItem>
+          </NavUserInfoGroup>
           {user.role === "ADMIN" && (
-            <>
-              <div className="-mx-2 my-2 border-b" />
+            <NavUserInfoGroup>
               <NavUserInfoMenuItem
                 onClick="/admin"
                 icon={
@@ -344,36 +345,45 @@ export function NavUserInfo() {
               >
                 Admin
               </NavUserInfoMenuItem>
-            </>
+            </NavUserInfoGroup>
           )}
-          <div className="-mx-2 my-2 border-b" />
-          <NavUserInfoMenuItem
-            onClick={() => {
-              fetch("/api/sign-out")
-                .then((res) => res.json())
-                .then((res) => setUser(res.user));
-            }}
-            icon={
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                className="h-6 w-6"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M7.5 3.75A1.5 1.5 0 0 0 6 5.25v13.5a1.5 1.5 0 0 0 1.5 1.5h6a1.5 1.5 0 0 0 1.5-1.5V15a.75.75 0 0 1 1.5 0v3.75a3 3 0 0 1-3 3h-6a3 3 0 0 1-3-3V5.25a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3V9A.75.75 0 0 1 15 9V5.25a1.5 1.5 0 0 0-1.5-1.5h-6Zm10.72 4.72a.75.75 0 0 1 1.06 0l3 3a.75.75 0 0 1 0 1.06l-3 3a.75.75 0 1 1-1.06-1.06l1.72-1.72H9a.75.75 0 0 1 0-1.5h10.94l-1.72-1.72a.75.75 0 0 1 0-1.06Z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            }
-          >
-            Sign Out
-          </NavUserInfoMenuItem>
+          <NavUserInfoGroup>
+            <NavUserInfoMenuItem
+              onClick={() => {
+                fetch("/api/sign-out")
+                  .then((res) => res.json())
+                  .then((res) => setUser(res.user));
+              }}
+              icon={
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  className="h-6 w-6"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M7.5 3.75A1.5 1.5 0 0 0 6 5.25v13.5a1.5 1.5 0 0 0 1.5 1.5h6a1.5 1.5 0 0 0 1.5-1.5V15a.75.75 0 0 1 1.5 0v3.75a3 3 0 0 1-3 3h-6a3 3 0 0 1-3-3V5.25a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3V9A.75.75 0 0 1 15 9V5.25a1.5 1.5 0 0 0-1.5-1.5h-6Zm10.72 4.72a.75.75 0 0 1 1.06 0l3 3a.75.75 0 0 1 0 1.06l-3 3a.75.75 0 1 1-1.06-1.06l1.72-1.72H9a.75.75 0 0 1 0-1.5h10.94l-1.72-1.72a.75.75 0 0 1 0-1.06Z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              }
+            >
+              Sign Out
+            </NavUserInfoMenuItem>
+          </NavUserInfoGroup>
         </MenuItems>
       </Menu>
     </div>
   );
+}
+
+interface NavUserInfoGroupProps {
+  children: React.ReactNode;
+}
+
+function NavUserInfoGroup({ children }: NavUserInfoGroupProps) {
+  return <div className="flex flex-col p-2">{children}</div>;
 }
 
 type NavUserInfoMenuItemProps = {
