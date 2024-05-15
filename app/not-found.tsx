@@ -4,9 +4,7 @@ export default function NotFound() {
   return (
     <>
       <div className="border-b border-gray-300">
-        <Nav title="Leopard">
-          <NavSpace />
-        </Nav>
+        <Nav title="Leopard" />
       </div>
       <div className="mt-8">
         <div className="mx-auto max-w-4xl px-8">

@@ -36,7 +36,7 @@ export default async function ProjectPage({
 
   return (
     <>
-      <div className="border-b border-gray-300">
+      <div className="sticky top-[8px] z-30 border-b border-gray-300">
         <Nav>
           <NavSpace />
           {project.owner === null && (
@@ -59,7 +59,7 @@ export default async function ProjectPage({
             </div>
             <button
               type="submit"
-              className="ml-auto flex items-center space-x-2 rounded-md bg-indigo-600 px-4 py-2 text-white"
+              className="ml-auto flex items-center space-x-2 rounded-md bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700 active:bg-indigo-800"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -79,7 +79,7 @@ export default async function ProjectPage({
           </div>
         </form>
       )}
-      <div className="mt-8">
+      <div className="my-8">
         <div className="mx-auto max-w-4xl px-8">
           <div>
             <div className="mb-4 flex items-center">

@@ -59,13 +59,11 @@ export default async function ProfilePage({ params: { username } }: Props) {
 
   return (
     <>
-      <div className="border-b border-gray-300">
-        <Nav>
-          <NavSpace />
-        </Nav>
+      <div className="sticky top-[8px] z-30 border-b border-gray-300">
+        <Nav />
       </div>
 
-      <div className="mt-8">
+      <div className="my-8">
         <div className="mx-auto max-w-4xl px-8">
           <div className="grid grid-cols-[auto,1fr] grid-rows-[auto] gap-x-8">
             <div className="w-44">

@@ -20,6 +20,7 @@ import { ProjectTitleEditor } from "./ProjectTitleEditor";
 interface NavProps {
   width?: "default" | "full";
   title?: string | null;
+  titleHref?: string;
   children?: React.ReactNode;
 }
 
@@ -30,7 +31,8 @@ const NavContext = createContext<{
 export default function Nav({
   width = "default",
   title = null,
-  children,
+  titleHref = "/",
+  children = <NavSpace />,
 }: NavProps) {
   return (
     <NavContext.Provider value={{ width }}>
@@ -41,17 +43,43 @@ export default function Nav({
             "px-2": width === "full",
           })}
         >
-          <Link
-            href="/"
-            className="mr-4 flex items-center space-x-3 hover:underline"
-          >
-            <img
-              className="my-2 h-12 w-12"
-              src="/leopard-logo.svg"
-              alt="Leopard logo"
-            />
-            {title && <h1 className="text-lg font-semibold">{title}</h1>}
-          </Link>
+          {title && titleHref === "/" ? (
+            // The Leopard logo always links to the home page. If the page title
+            // also links to the homepage, combine them into one link.
+            <Link
+              href="/"
+              className="mr-4 flex items-center space-x-3 hover:underline"
+            >
+              <img
+                className="my-2 h-12 w-12"
+                src="/leopard-logo.svg"
+                alt="Leopard logo"
+              />
+              {title && <h1 className="text-lg font-semibold">{title}</h1>}
+            </Link>
+          ) : (
+            // ...Otherwise, render the logo and title as separate links.
+            <>
+              <Link
+                href="/"
+                className="mr-4 flex items-center space-x-3 hover:underline"
+              >
+                <img
+                  className="my-2 h-12 w-12"
+                  src="/leopard-logo.svg"
+                  alt="Leopard logo"
+                />
+              </Link>
+              {title && (
+                <Link
+                  href={titleHref}
+                  className="flex items-center hover:underline"
+                >
+                  <h1 className="text-lg font-semibold">{title}</h1>
+                </Link>
+              )}
+            </>
+          )}
 
           {children}
 

@@ -29,13 +29,11 @@ export default async function MyStuff() {
 
   return (
     <>
-      <div className="border-b border-gray-300">
-        <Nav>
-          <NavSpace />
-        </Nav>
+      <div className="sticky top-[8px] z-30 border-b border-gray-300">
+        <Nav />
       </div>
 
-      <div className="mt-8">
+      <div className="my-8">
         <div className="mx-auto max-w-4xl px-8">
           <h1 className="text-3xl font-semibold">My Stuff</h1>
           <div className="mt-4">
@@ -141,7 +139,7 @@ export default async function MyStuff() {
                         {project.shared ? (
                           <button
                             type="submit"
-                            className="flex items-center space-x-2 rounded-md border border-indigo-600 bg-white px-4 py-2 text-indigo-700"
+                            className="flex items-center space-x-2 rounded-md border border-indigo-600 bg-white px-4 py-2 text-indigo-700 hover:bg-gray-100 active:bg-indigo-100"
                           >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
@@ -161,7 +159,7 @@ export default async function MyStuff() {
                         ) : (
                           <button
                             type="submit"
-                            className="flex items-center space-x-2 rounded-md bg-indigo-600 px-4 py-2 text-white"
+                            className="flex items-center space-x-2 rounded-md bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700 active:bg-indigo-800"
                           >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"

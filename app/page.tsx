@@ -18,10 +18,8 @@ export default function Index() {
 
   return (
     <>
-      <div className="border-b border-gray-300">
-        <Nav title="Leopard">
-          <NavSpace />
-        </Nav>
+      <div className="sticky top-[8px] z-30 border-b border-gray-300">
+        <Nav title="Leopard" />
       </div>
 
       {process.env.NEXT_PUBLIC_IS_ALPHA === "true" && (
@@ -53,7 +51,7 @@ export default function Index() {
         >
           <div className="flex flex-grow flex-col justify-center py-12">
             <img
-              className="my-2 mx-auto h-20 w-20"
+              className="mx-auto my-2 h-20 w-20"
               src="/leopard-logo.svg"
               alt="Leopard logo"
             />

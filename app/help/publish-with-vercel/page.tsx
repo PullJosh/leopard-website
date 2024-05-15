@@ -8,14 +8,12 @@ export const metadata = {
 export default function PublishWithVercel() {
   return (
     <>
-      <div className="border-b border-gray-300">
-        <Nav>
-          <NavSpace />
-        </Nav>
+      <div className="sticky top-[8px] z-30 border-b border-gray-300">
+        <Nav title="Leopard" />
       </div>
 
       <Center>
-        <h2 className="mt-8 mb-4 text-4xl font-bold text-gray-800">
+        <h2 className="mb-4 mt-8 text-4xl font-bold text-gray-800">
           Publish your project as a website!
         </h2>
         <InfoBox>
@@ -292,7 +290,7 @@ interface StepProps {
 function Step({ title, number, children }: StepProps) {
   return (
     <div>
-      <h3 className="mt-8 mb-4 text-2xl font-semibold text-gray-700">
+      <h3 className="mb-4 mt-8 text-2xl font-semibold text-gray-700">
         <div className="mr-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-indigo-600 text-xl text-white">
           {number}
         </div>
