@@ -52,8 +52,13 @@ export default function Index() {
           } flex-col`}
         >
           <div className="flex flex-grow flex-col justify-center py-12">
+            <img
+              className="my-2 mx-auto h-20 w-20"
+              src="/leopard-logo.svg"
+              alt="Leopard logo"
+            />
             <h2 className="mb-3 text-center text-xl font-semibold text-gray-800">
-              Convert your Scratch projects to JavaScript!
+              Convert Scratch projects to JavaScript!
             </h2>
             <div className="mx-auto w-full max-w-3xl space-y-16 px-8">
               <ConvertBox />

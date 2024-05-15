@@ -671,46 +671,75 @@ export default function ConvertBox() {
         </div>
       </div>
 
+      {/* Spacer to move conversion box up on page */}
+      {!error && <div className="h-36" />}
+
       {/* Error box */}
       {error && (
-        <div className="space-y-2 rounded bg-red-200 px-4 py-3">
-          {error.status === 404 ? (
-            <>
-              <p>
-                <strong>Project not found. (Did you share it?)</strong>
-              </p>
-              <p>
-                Your project must be shared in order to be converted. A shared
-                project was not found
-                {project?.type === "url" && ` with the id ${project.id}`}.
-              </p>
-            </>
-          ) : (
-            <>
-              <p>
-                <strong>There was an error converting your project.</strong>
-              </p>
-              <p>
-                <code className="rounded bg-red-300 px-2 py-1 text-sm text-red-800">
-                  {error.info}
-                </code>
-              </p>
-              <p>
-                Leopard only supports new projects (created in Scratch 3.0). And
-                the only supported extension is "pen"; all others will fail.
-              </p>
-            </>
-          )}
-          <p>
-            If you aren't sure why your project is failing,{" "}
-            <a
-              href="https://scratch.mit.edu/discuss/topic/420162/"
-              className="underline"
-            >
-              ask on the forums
-            </a>
-            !
-          </p>
+        <div className="rounded-lg bg-red-200">
+          <div
+            className="relative rounded-t-md bg-red-200 text-red-300"
+            style={{
+              backgroundImage: `linear-gradient(-45deg, currentColor 25%, transparent 25%, transparent 50%, currentColor 50%, currentColor 75%, transparent 75%, transparent 100%)`,
+              backgroundSize: "8px 8px",
+            }}
+          >
+            <div className="my-2 ml-2 inline-flex items-center space-x-1 rounded-md bg-red-700 px-2 py-1 text-sm font-semibold uppercase text-white">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 16 16"
+                fill="currentColor"
+                className="h-4 w-4"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M6.701 2.25c.577-1 2.02-1 2.598 0l5.196 9a1.5 1.5 0 0 1-1.299 2.25H2.804a1.5 1.5 0 0 1-1.3-2.25l5.197-9ZM8 4a.75.75 0 0 1 .75.75v3a.75.75 0 1 1-1.5 0v-3A.75.75 0 0 1 8 4Zm0 8a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              <span>Conversion Error</span>
+            </div>
+          </div>
+          <div className="space-y-2 p-4 text-red-900">
+            {error.status === 404 ? (
+              <>
+                <p>
+                  <strong>Project not found. (Did you share it?)</strong>
+                </p>
+                <p>
+                  Your project must be shared in order to be converted. A shared
+                  project was not found
+                  {project?.type === "url" && ` with the id ${project.id}`}.
+                </p>
+              </>
+            ) : (
+              <>
+                <p>
+                  <strong>There was an error converting your project.</strong>
+                </p>
+                <p>
+                  <code className="rounded bg-red-300 px-2 py-1 text-sm text-red-800">
+                    {error.info}
+                  </code>
+                </p>
+                <p>
+                  Leopard only supports new projects (created in Scratch 3.0).
+                  And the only supported extension is "pen"; all others will
+                  fail.
+                </p>
+              </>
+            )}
+            <p>
+              If you aren't sure why your project is failing,{" "}
+              <a
+                href="https://scratch.mit.edu/discuss/topic/420162/"
+                className="underline"
+              >
+                ask on the forums
+              </a>
+              !
+            </p>
+          </div>
         </div>
       )}
     </div>

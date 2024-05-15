@@ -126,7 +126,11 @@ export default async function convertToLeopardWebsite(
     });
   } catch (err) {
     console.error(err);
-    return res.status(400).json({ error: (err as any).message });
+    let status = 400;
+    if ((err as any).message === "Project not found. Is it shared?") {
+      status = 404;
+    }
+    return res.status(status).json({ error: (err as any).message });
   }
 }
 
