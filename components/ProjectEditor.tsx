@@ -58,6 +58,12 @@ import {
 } from "../lib/ProjectEditorContext";
 import Link from "next/link";
 import { useToasts } from "./Toasts";
+import { useProjectPreview } from "../lib/useProjectPreview";
+import {
+  GreenFlagButton,
+  GreenFlagOverlay,
+  StopButton,
+} from "./ProjectPreview";
 
 interface ProjectEditorProps {
   projectId: string;
@@ -324,41 +330,26 @@ export function ProjectEditor({
 
   const active = usePath(activePath, root);
 
-  const previewIframeRef = useRef<HTMLIFrameElement>(null);
-  const previewURL = `/api/preview/${projectId}/index.html`;
-  const [previewRunning, setPreviewRunning] = useState(false);
-  const runPreview = useCallback(async () => {
-    if (!previewIframeRef.current) return;
-
-    if (previewRunning) {
-      previewIframeRef.current.contentWindow?.location.replace(previewURL);
-    } else {
-      setPreviewRunning(true);
-    }
-  }, [previewRunning, previewURL]);
-  const stopPreview = useCallback(() => {
-    setPreviewRunning(false);
-  }, []);
+  const [previewRef, preview] = useProjectPreview(projectId);
+  const saveAndRun = useCallback(
+    () => saveFileEdits().then(() => preview.start()),
+    [saveFileEdits, preview],
+  );
 
   // Ctrl + S outside of editor
-  useHotkeys("mod+s", () => saveFileEdits().then(runPreview), {
-    preventDefault: true,
-  });
+  useHotkeys("mod+s", saveAndRun, { preventDefault: true });
 
   // Ctrl + S inside of editor
   useEffect(() => {
     if (!monaco) return;
 
-    monaco.editor.addCommand({
-      id: "saveAndRun",
-      run: () => saveFileEdits().then(runPreview),
-    });
+    monaco.editor.addCommand({ id: "saveAndRun", run: saveAndRun });
 
     monaco.editor.addKeybindingRule({
       keybinding: monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS,
       command: "saveAndRun",
     });
-  }, [monaco, runPreview, saveFileEdits]);
+  }, [monaco, preview, saveAndRun]);
 
   const createDirectory = useCallback(
     (path: DirectoryPath) => {
@@ -595,70 +586,18 @@ export function ProjectEditor({
           )}
           <div className="flex w-[480px] flex-shrink-0 flex-grow-0 flex-col divide-y divide-gray-300 bg-gray-100">
             <div className="flex h-12 flex-shrink-0 items-center space-x-1 px-2">
-              <button
-                data-tooltip-id="green-flag"
-                className={classNames(
-                  "h-9 w-9 rounded-md hover:bg-gray-300 active:bg-green-200",
-                  // { "bg-gray-300": previewRunning },
-                )}
-                onClick={() => saveFileEdits().then(runPreview)}
-              >
-                <img
-                  className="h-full w-full"
-                  src="/green-flag.svg"
-                  alt="Green flag"
-                />
-              </button>
-              <button
-                className="h-9 w-9 rounded-md enabled:hover:bg-gray-300 enabled:active:bg-red-200 disabled:opacity-25"
-                onClick={() => stopPreview()}
-                disabled={!previewRunning}
-              >
-                <img
-                  className="h-full w-full"
-                  src="/stop-sign.svg"
-                  alt="Stop sign"
-                />
-              </button>
-              <Tooltip
-                className="z-50 !rounded-md !py-1 !pl-2 !pr-1 text-center"
-                id="green-flag"
-                place="bottom"
-                delayShow={500}
-                closeEvents={{
-                  click: true, // This is the one I actually care about enabling. The rest are just required because I'm overriding the entire `closeEvents` object.
-                  blur: true,
-                  dblclick: true,
-                  mouseleave: true,
-                  mouseup: true,
-                }}
-              >
-                <div className="flex space-x-2">
-                  <span>Save & run</span>
-                  <span className="flex items-center rounded border border-white/20 px-1 text-xs text-white/40">
-                    Ctrl + S
-                  </span>
-                </div>
-              </Tooltip>
-            </div>
-            <div className="relative p-0">
-              <iframe
-                ref={previewIframeRef}
-                className="h-[360px] w-[480px] bg-white"
-                src={previewRunning ? previewURL : "about:blank"}
+              <GreenFlagButton
+                onClick={saveAndRun}
+                tooltip={{ text: "Save & run", subtext: "Ctrl + S" }}
               />
-              {!previewRunning && (
-                <button
-                  className="absolute left-0 top-0 flex h-full w-full items-center justify-center bg-gray-800/30"
-                  onClick={() => saveFileEdits().then(runPreview)}
-                >
-                  <img
-                    className="h-20 w-20 rounded-full border-4 border-white bg-white/50 p-2"
-                    src="/green-flag.svg"
-                    alt="Green flag"
-                  />
-                </button>
-              )}
+              <StopButton onClick={preview.stop} disabled={!preview.running} />
+            </div>
+            <div className="relative">
+              <iframe
+                ref={previewRef}
+                className="h-[360px] w-[480px] bg-white"
+              />
+              {!preview.running && <GreenFlagOverlay onClick={saveAndRun} />}
             </div>
             <FileDirectory path={[]} smartSelect={true}>
               {({ items, createDirectory, createFile }) => (

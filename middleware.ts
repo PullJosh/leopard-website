@@ -22,7 +22,7 @@ export async function middleware(request: NextRequest) {
 }
 
 async function getUserFromAPI(request: NextRequest) {
-  const { user } = await fetch(process.env.BASE_URL + "/api/me", {
+  const { user } = await fetch(process.env.NEXT_PUBLIC_BASE_URL + "/api/me", {
     headers: {
       cookie: request.headers.get("cookie") ?? "",
     },

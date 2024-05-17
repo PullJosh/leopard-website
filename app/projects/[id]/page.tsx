@@ -13,6 +13,7 @@ import { notFound } from "next/navigation";
 import { ProjectNotesEditor } from "../../../components/ProjectNotesEditor";
 import { ProjectTitleEditor } from "../../../components/ProjectTitleEditor";
 import { changeProjectShared } from "../../../actions/changeProjectShared";
+import { ProjectPreviewWithControls } from "../../../components/ProjectPreview";
 
 interface ProjectPageProps {
   params: {
@@ -126,12 +127,8 @@ export default async function ProjectPage({
               </div>
             </div>
             <div className="flex space-x-4">
-              <iframe
-                className="box-content flex-shrink-0 flex-grow-0 rounded-lg border border-gray-300 bg-white"
-                width="480"
-                height="360"
-                src={`/api/preview/${id}/index.html`}
-              />
+              <ProjectPreviewWithControls projectId={id} />
+
               <div className="flex flex-grow flex-col">
                 {project.scratchProjectData && (
                   <>
