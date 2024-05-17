@@ -39,10 +39,8 @@ export default async function updateFiles(
 
   const user = await getUser(req);
 
-  if (project.ownerId !== null && !project.shared) {
-    if (project.ownerId !== user?.id) {
-      return res.status(403).json({ error: "Forbidden" });
-    }
+  if (project.ownerId !== null && project.ownerId !== user?.id) {
+    return res.status(403).json({ error: "Forbidden" });
   }
 
   const { changes }: UpdateFilesRequestJSON = req.body;

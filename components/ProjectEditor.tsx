@@ -234,13 +234,22 @@ export function ProjectEditor({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
-      })
-        .then((res) => res.json())
-        .then((res: UpdateFilesResponseJSON) => {
-          handleUpdateFilesResponse(res);
-        });
+      }).then(async (res) => {
+        if (res.status !== 200) {
+          console.error(res);
+          toasts.addToast({
+            style: "error",
+            children: "Failed to save file changes",
+            duration: 4000,
+          });
+          return;
+        }
+        handleUpdateFilesResponse(
+          (await res.json()) as UpdateFilesResponseJSON,
+        );
+      });
     },
-    [handleUpdateFilesResponse, projectId],
+    [handleUpdateFilesResponse, projectId, toasts],
   );
 
   const uploadFiles = useCallback(
@@ -292,6 +301,10 @@ export function ProjectEditor({
   );
 
   const saveFileEdits = useCallback(() => {
+    if (Object.keys(fileEdits).length === 0) {
+      return Promise.resolve();
+    }
+
     const body: UpdateFilesRequestJSON = {
       changes: Object.entries(fileEdits).map(([id, content]) => ({
         type: "update",
@@ -636,7 +649,7 @@ export function ProjectEditor({
               />
               {!previewRunning && (
                 <button
-                  className="absolute top-0 left-0 flex h-full w-full items-center justify-center bg-gray-800/30"
+                  className="absolute left-0 top-0 flex h-full w-full items-center justify-center bg-gray-800/30"
                   onClick={() => saveFileEdits().then(runPreview)}
                 >
                   <img
@@ -1015,7 +1028,7 @@ function FileTabs({ path, showFileUploadPicker }: FileTabsProps) {
           <div className="relative -mb-px flex-1 overflow-hidden">
             {scrollStatus.moreContentToLeft && (
               <button
-                className="absolute top-1/2 left-2 -mt-px h-8 w-8 -translate-y-1/2 overflow-hidden rounded-full bg-white/70 shadow backdrop-blur"
+                className="absolute left-2 top-1/2 -mt-px h-8 w-8 -translate-y-1/2 overflow-hidden rounded-full bg-white/70 shadow backdrop-blur"
                 onClick={() => {
                   scrollRef.current?.scrollBy({
                     left: -500,
@@ -1116,7 +1129,7 @@ function FileTabs({ path, showFileUploadPicker }: FileTabsProps) {
             </div>
             {scrollStatus.moreContentToRight && (
               <button
-                className="absolute top-1/2 right-2 -mt-px h-8 w-8 -translate-y-1/2 overflow-hidden rounded-full bg-white/80 shadow-md backdrop-blur"
+                className="absolute right-2 top-1/2 -mt-px h-8 w-8 -translate-y-1/2 overflow-hidden rounded-full bg-white/80 shadow-md backdrop-blur"
                 onClick={() => {
                   scrollRef.current?.scrollBy({
                     left: 500,
@@ -1171,9 +1184,9 @@ function FileEditor<FileType extends AbstractFile>({
 
   if (typeof file.content === "string") {
     return (
-      <div className="absolute top-0 left-0 h-full w-full">
+      <div className="absolute left-0 top-0 h-full w-full">
         <Editor
-          className="absolute top-0 left-0 h-full w-full"
+          className="absolute left-0 top-0 h-full w-full"
           path={pathToString(file.path)}
           defaultValue={
             file.id in fileEdits ? fileEdits[file.id] : file.content
@@ -1200,14 +1213,14 @@ function FileEditor<FileType extends AbstractFile>({
 
     if (audioFileExtensions.includes(fileExtension(file.path))) {
       return (
-        <div className="absolute top-0 left-0 flex h-full w-full items-center justify-center bg-gray-100">
+        <div className="absolute left-0 top-0 flex h-full w-full items-center justify-center bg-gray-100">
           <audio key={file.id} src={assetURL} controls />
         </div>
       );
     }
 
     return (
-      <div className="absolute top-0 left-0 flex h-full w-full items-center justify-center bg-gray-100">
+      <div className="absolute left-0 top-0 flex h-full w-full items-center justify-center bg-gray-100">
         <div className="text-center">
           <p>Editing this file type is not supported</p>
           <p>
@@ -1252,7 +1265,7 @@ function ImageEditor<FileType extends AbstractFile>({
   const [image, setImage] = useState<HTMLImageElement | null>(null);
 
   return (
-    <div className="absolute top-0 left-0 grid h-full w-full grid-rows-[1fr,auto] bg-gray-100">
+    <div className="absolute left-0 top-0 grid h-full w-full grid-rows-[1fr,auto] bg-gray-100">
       <div className="flex items-center justify-center">
         <img
           key={file.id}
@@ -1344,7 +1357,7 @@ export function CreateFileMenu({
   return (
     <div className={classNames("relative ml-auto self-center", className)}>
       <Menu>
-        <MenuButton className="data-[active]:bg-gray-300 flex h-full items-center rounded hover:bg-gray-200">
+        <MenuButton className="flex h-full items-center rounded hover:bg-gray-200 data-[active]:bg-gray-300">
           <svg className="h-full w-auto" viewBox="0 0 32 32">
             <line
               x1={16}
@@ -1375,7 +1388,7 @@ export function CreateFileMenu({
                 <button
                   disabled={disabled}
                   onClick={item.onClick}
-                  className="data-[focus]:bg-gray-200 group flex items-center justify-start space-x-2 px-2 py-1 text-left disabled:cursor-default"
+                  className="group flex items-center justify-start space-x-2 px-2 py-1 text-left disabled:cursor-default data-[focus]:bg-gray-200"
                 >
                   <div className="h-7 w-7 group-enabled:text-gray-500 group-disabled:text-gray-300">
                     {item.icon}

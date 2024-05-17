@@ -1,10 +1,11 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { getUser } from "../../../../../lib/getUser";
 import prisma from "../../../../../lib/prisma";
 import { getAssetHash, uploadS3Asset } from "../../../../../lib/uploadS3Asset";
 import { UpdateFilesResponseJSON } from "../../../../../pages/api/projects/[id]/updateFiles";
 
 export async function POST(
-  req: Request,
+  req: NextRequest,
   { params }: { params: { id: string } },
 ) {
   const formData = await req.formData();
@@ -20,6 +21,24 @@ export async function POST(
 
   console.log("uploadPath", uploadPath);
   console.log("files", files);
+
+  const user = await getUser(req);
+
+  if (!user) {
+    return new Response("Unauthorized", { status: 401 });
+  }
+
+  const project = await prisma.project.findUnique({
+    where: { id: params.id },
+  });
+
+  if (!project) {
+    return new Response("Project not found", { status: 404 });
+  }
+
+  if (project.ownerId !== null && project.ownerId !== user.id) {
+    return new Response("Forbidden", { status: 403 });
+  }
 
   let assetUploadPromises: Promise<any>[] = [];
   const prismaFileInputs = await Promise.all(
