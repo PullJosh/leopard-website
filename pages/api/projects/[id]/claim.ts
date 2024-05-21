@@ -2,6 +2,11 @@ import { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../../../lib/prisma";
 import { getUser } from "../../../../lib/getUser";
 import { getProject } from "./get";
+import {
+  getProjectCurrentFilesSize,
+  getUserCurrentFilesSize,
+  USER_SIZE_LIMIT,
+} from "../../../../lib/sizeLimits";
 
 export default async function claimProject(
   req: NextApiRequest,
@@ -31,6 +36,14 @@ export default async function claimProject(
     return res
       .status(401)
       .json({ error: "Must be signed in to claim a project" });
+  }
+
+  const projectSize = await getProjectCurrentFilesSize(id);
+  const currentUserSize = await getUserCurrentFilesSize(user.id);
+  if (projectSize + currentUserSize > USER_SIZE_LIMIT) {
+    return res.status(400).json({
+      error: "Claiming this project would exceed your storage quota",
+    });
   }
 
   await prisma.project.update({

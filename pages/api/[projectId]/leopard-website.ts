@@ -6,6 +6,11 @@ import type { Prisma } from "@prisma/client";
 import { getUser } from "../../../lib/getUser";
 import { nanoid } from "nanoid";
 import { getAssetHash, uploadS3Asset } from "../../../lib/uploadS3Asset";
+import {
+  getUserCurrentFilesSize,
+  PROJECT_SIZE_LIMIT,
+  USER_SIZE_LIMIT,
+} from "../../../lib/sizeLimits";
 
 interface Asset {
   buffer: Buffer;
@@ -55,7 +60,44 @@ export default async function convertToLeopardWebsite(
           );
       }
 
-      filesToCreate.push({ path: fileName, content });
+      filesToCreate.push({
+        path: fileName,
+        content,
+        size: Buffer.byteLength(content, "utf8"),
+      });
+    }
+
+    // Calculate total size of files and assets
+    // We need to do this before uploading the assets to avoid exceeding the size limit
+    const sizeSum = (arr: (number | undefined)[]) =>
+      arr.reduce<number>((a = 0, b = 0) => a + b, 0) ?? 0;
+
+    const totalSize = sizeSum([
+      ...filesToCreate.map(({ size }) => size),
+      ...[project.stage, ...project.sprites].flatMap((sprite) => [
+        ...sprite.costumes.map(({ asset }) => (asset as Asset).buffer.length),
+        ...sprite.sounds.map(({ asset }) => (asset as Asset).buffer.length),
+      ]),
+    ]);
+
+    // Maximum size of a single project
+    if (totalSize > PROJECT_SIZE_LIMIT) {
+      throw new Error("Project is too large. Maximum project size is 10 MB.");
+    }
+
+    // Check if user has enough storage space
+    const user = await getUser(req);
+    if (user) {
+      const existingFilesSize = await getUserCurrentFilesSize(user.id);
+      if (existingFilesSize + totalSize > USER_SIZE_LIMIT) {
+        throw new Error(
+          `Cannot create project, because it would exceed your 50 MB storage limit. So far you have used ${existingFilesSize} bytes, and this project would add an additional ${totalSize} bytes.`,
+        );
+      }
+    } else {
+      // If user is not logged in, we don't check for an account storage limit.
+      // Any user who later tries to claim this project will need to have enough
+      // storage. If nobody claims it, it will be deleted after 24 hours.
     }
 
     // Begin uploading assets and add them to filesToCreate
@@ -73,6 +115,7 @@ export default async function convertToLeopardWebsite(
         filesToCreate.push({
           path: `${target.name}/costumes/${costume.name}.${costume.ext}`,
           asset: name,
+          size: buffer.length,
         });
       }
 
@@ -89,6 +132,7 @@ export default async function convertToLeopardWebsite(
         filesToCreate.push({
           path: `${target.name}/sounds/${sound.name}.${sound.ext}`,
           asset: name,
+          size: buffer.length,
         });
       }
     }
@@ -97,7 +141,6 @@ export default async function convertToLeopardWebsite(
     await Promise.all(assetUploadPromises);
 
     // Create project in database
-    const user = await getUser(req);
     const projectDb = await prisma.project.create({
       data: {
         id: nanoid(10).toString(),

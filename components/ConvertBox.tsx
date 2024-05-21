@@ -212,7 +212,10 @@ export default function ConvertBox() {
           setError(null);
           setLoading(false);
         } else {
-          setError({ status: response.status, info: await response.text() });
+          setError({
+            status: response.status,
+            info: (await response.json()).error,
+          });
           setLoading(false);
         }
 

@@ -246,7 +246,7 @@ export function ProjectEditor({
           console.error(res);
           toasts.addToast({
             style: "error",
-            children: "Failed to save file changes",
+            children: (await res.json()).error,
             duration: 4000,
           });
           return;
@@ -285,13 +285,13 @@ export function ProjectEditor({
         method: "POST",
         body: formData,
       })
-        .then((res) => {
+        .then(async (res) => {
           if (!res.ok) {
             console.error(res);
-            throw new Error("Failed to upload files");
+            throw new Error(await res.text());
           }
 
-          return res.json();
+          return await res.json();
         })
         .then((res: UpdateFilesResponseJSON) => {
           handleUpdateFilesResponse(res);

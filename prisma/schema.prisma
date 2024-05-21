@@ -71,6 +71,7 @@ model File {
   // unless they are empty.
   content String?
   asset   String?
+  size    Int     @default(0) // in bytes
 
   @@unique([path, projectId])
 }

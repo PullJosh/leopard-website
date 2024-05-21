@@ -1,21 +1,24 @@
 import { NextApiRequest } from "next";
+import { NextRequest } from "next/server";
 
 import prisma from "./prisma";
 import type { Prisma } from "@prisma/client";
-
-import { NextRequest } from "next/server";
-import { RequestCookies } from "next/dist/compiled/@edge-runtime/cookies";
+import { cookies } from "next/headers";
 
 export const sessionTokenCookieName = "leopard_session_token";
 
 export function getSessionToken(req: NextRequest | NextApiRequest) {
-  const getCookie = (name: string) =>
-    (req.cookies instanceof RequestCookies
-      ? req.cookies.get(name)?.value
-      : req.cookies[name]) ?? undefined;
+  const getCookie = (name: string): string | undefined => {
+    try {
+      // App router
+      return cookies().get(name)?.value ?? undefined;
+    } catch (err) {
+      // Pages router
+      return (req as NextApiRequest).cookies[name] ?? undefined;
+    }
+  };
 
-  const token = getCookie(sessionTokenCookieName);
-  return token;
+  return getCookie(sessionTokenCookieName);
 }
 
 const userSelect = {
@@ -39,6 +42,9 @@ export async function getUser(reqOrToken: Req | Token): Promise<User | null> {
     typeof reqOrToken === "string" || reqOrToken === undefined
       ? reqOrToken
       : getSessionToken(reqOrToken);
+
+  console.log(typeof reqOrToken === "string" || reqOrToken === undefined);
+  console.log(token);
 
   if (!token) {
     return null;

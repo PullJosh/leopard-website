@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getUser } from "../../../../../lib/getUser";
 import prisma from "../../../../../lib/prisma";
+import {
+  getProjectCurrentFilesSize,
+  getUserCurrentFilesSize,
+  PROJECT_SIZE_LIMIT,
+  USER_SIZE_LIMIT,
+} from "../../../../../lib/sizeLimits";
 import { getAssetHash, uploadS3Asset } from "../../../../../lib/uploadS3Asset";
 import { UpdateFilesResponseJSON } from "../../../../../pages/api/projects/[id]/updateFiles";
 
@@ -28,6 +34,19 @@ export async function POST(
     return new Response("Unauthorized", { status: 401 });
   }
 
+  const currentProjectSize = await getProjectCurrentFilesSize(params.id);
+  const currentUserSize = await getUserCurrentFilesSize(user.id);
+  const newFilesSize = files.reduce((acc, file) => acc + (file.size ?? 0), 0);
+  if (currentProjectSize + newFilesSize > PROJECT_SIZE_LIMIT) {
+    return new Response("Project size limit exceeded", { status: 400 });
+  }
+  if (currentUserSize + newFilesSize > USER_SIZE_LIMIT) {
+    return new Response(
+      "Uploading these files would exceed user storage quota",
+      { status: 400 },
+    );
+  }
+
   const project = await prisma.project.findUnique({
     where: { id: params.id },
   });
@@ -45,12 +64,13 @@ export async function POST(
     files.map(async (file) => {
       const path = uploadPath === "" ? file.name : `${uploadPath}/${file.name}`;
 
-      // TODO: Check file.size
       if (isPlainText(file)) {
+        const text = await file.text();
         return {
           projectId: params.id,
           path,
-          content: await file.text(),
+          content: text,
+          size: Buffer.byteLength(text, "utf8"),
         };
       } else {
         const buffer = Buffer.from(await file.arrayBuffer());
@@ -64,6 +84,7 @@ export async function POST(
           projectId: params.id,
           path,
           asset: name,
+          size: buffer.length,
         };
       }
     }),
