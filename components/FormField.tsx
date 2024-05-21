@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import classNames from "classnames";
 
 interface FormFieldProps {
-  type: "text" | "password";
+  type: "text" | "email" | "password";
   label: string;
   name?: string;
   required?: boolean;

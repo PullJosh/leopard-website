@@ -9,6 +9,7 @@ import { createUserSession } from "../../lib/createUserSession";
 import prisma from "../../lib/prisma";
 
 const registerSchema = zod.object({
+  email: zod.string().email(),
   username: zod.string(),
   password: zod.string(),
   over13: zod.boolean(),
@@ -83,6 +84,11 @@ export default async function register(
       data: {
         passwordHash: await bcrypt.hash(password, 10),
         username,
+        email: {
+          create: {
+            address: body.data.email,
+          },
+        },
       },
     });
 

@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import { getAssetURL } from "../../../../lib/getAssetURL";
 
 import prisma from "../../../../lib/prisma";
 
@@ -41,10 +42,7 @@ export default async function PreviewFile(
     // TODO: Investigate how to prevent caching issues on the cloudflare end
     res
       .setHeader("Access-Control-Allow-Origin", "*")
-      .redirect(
-        302,
-        `https://pub-2c4c62070be24cd593a08b68263568f0.r2.dev/${file.asset}`,
-      );
+      .redirect(302, getAssetURL(file.asset));
     return;
   }
 }

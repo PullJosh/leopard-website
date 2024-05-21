@@ -1,3 +1,20 @@
+import { z } from "zod";
+
+export function validateEmail(email: string): string[] {
+  let errors: string[] = [];
+
+  if (email.length === 0) {
+    errors.push("You must provide an email address");
+    return errors;
+  }
+
+  if (!z.string().email().safeParse(email).success) {
+    errors.push("Invalid email address");
+  }
+
+  return errors;
+}
+
 export function validateUsername(username: string): string[] {
   let errors: string[] = [];
 

@@ -3,15 +3,7 @@
 
 import { NextResponse } from "next/server";
 import prisma from "../../../../lib/prisma";
-import S3 from "aws-sdk/clients/s3";
-
-const s3 = new S3({
-  endpoint: `https://${process.env.CLOUDFLARE_R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
-  accessKeyId: `${process.env.CLOUDFLARE_R2_KEY_ID}`,
-  secretAccessKey: `${process.env.CLOUDFLARE_R2_KEY_SECRET}`,
-  signatureVersion: "v4",
-  region: "auto",
-});
+import { s3 } from "../../../../lib/s3";
 
 export async function GET(request: Request) {
   const projects = await prisma.project.findMany({
@@ -44,7 +36,7 @@ export async function GET(request: Request) {
   if (fileKeys.length > 0) {
     await s3
       .deleteObjects({
-        Bucket: "leopard-projects-dev",
+        Bucket: process.env.NEXT_PUBLIC_PROJECT_ASSETS_BUCKET_NAME as string,
         Delete: {
           Objects: fileKeys.map((key) => ({ Key: key })),
         },

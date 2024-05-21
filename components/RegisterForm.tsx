@@ -1,12 +1,17 @@
 import { Dispatch, SetStateAction, useMemo, useState } from "react";
-import { validatePassword, validateUsername } from "../lib/validateUserInfo";
+import {
+  validateEmail,
+  validatePassword,
+  validateUsername,
+} from "../lib/validateUserInfo";
 import { useSession } from "../components/SessionProvider";
 import { FormErrorMessage } from "./FormErrorMessage";
 import { FormField } from "./FormField";
 import { Checkbox } from "./CheckBox";
-import { useRouter } from "next/navigation";
 
 interface RegisterFormProps {
+  email: string;
+  setEmail: Dispatch<SetStateAction<string>>;
   username: string;
   setUsername: Dispatch<SetStateAction<string>>;
   password: string;
@@ -14,6 +19,8 @@ interface RegisterFormProps {
 }
 
 export function RegisterForm({
+  email,
+  setEmail,
   username,
   setUsername,
   password,
@@ -23,14 +30,14 @@ export function RegisterForm({
   const [error, setError] = useState<string | null>(null);
 
   const formIsValid = useMemo(() => {
+    if (validateEmail(email).length > 0) return false;
     if (validateUsername(username).length > 0) return false;
     if (validatePassword(password).length > 0) return false;
     if (!over13) return false;
     return true;
-  }, [over13, password, username]);
+  }, [email, over13, password, username]);
 
   const { setUser } = useSession();
-  const router = useRouter();
 
   return (
     <form
@@ -41,7 +48,7 @@ export function RegisterForm({
         // setCommunityGuidelinesOpen(true);
 
         const form = event.currentTarget;
-        const body = { username, password, over13 };
+        const body = { email, username, password, over13 };
 
         fetch(form.action, {
           method: "POST",
@@ -52,6 +59,7 @@ export function RegisterForm({
             const json = await res.json();
             if (res.status === 200) {
               setUser(json.user);
+              setEmail("");
               setUsername("");
               setPassword("");
             } else {
@@ -65,6 +73,18 @@ export function RegisterForm({
       }}
     >
       {error && <FormErrorMessage>{error}</FormErrorMessage>}
+
+      <FormField
+        type="email"
+        label="Email"
+        name="email"
+        required={true}
+        value={email}
+        setValue={setEmail}
+        placeholder="Email"
+        validate={validateEmail}
+        helpText="Your email is used to verify your account and reset your password."
+      />
 
       <FormField
         type="text"

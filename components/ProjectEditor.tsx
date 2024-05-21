@@ -64,6 +64,7 @@ import {
   GreenFlagOverlay,
   StopButton,
 } from "./ProjectPreview";
+import { getAssetURL } from "../lib/getAssetURL";
 
 interface ProjectEditorProps {
   projectId: string;
@@ -631,7 +632,7 @@ export function ProjectEditor({
                                 extension={ext}
                                 imageSrc={
                                   item && imageFileExtensions.includes(ext)
-                                    ? `https://pub-2c4c62070be24cd593a08b68263568f0.r2.dev/${item.asset}`
+                                    ? getAssetURL(item.asset!)
                                     : undefined
                                 }
                               />
@@ -703,7 +704,7 @@ function FileList({ path }: FileListProps) {
             {imageFileExtensions.includes(fileExtension(file.path)) && (
               <img
                 key={file.id}
-                src={`https://pub-2c4c62070be24cd593a08b68263568f0.r2.dev/${file.asset}`}
+                src={getAssetURL(file.asset!)}
                 alt={`Image file ${file.path}`}
                 className="h-6 w-6 border border-gray-300 object-contain"
               />
@@ -778,7 +779,7 @@ function getDirectoryThumbnailImage<FileType extends AbstractFile>(
 
   if (!imageFile) return null;
 
-  return `https://pub-2c4c62070be24cd593a08b68263568f0.r2.dev/${imageFile.asset}`;
+  return getAssetURL(imageFile.asset!);
 }
 
 interface DirectoryIconProps {
@@ -1037,7 +1038,7 @@ function FileTabs({ path, showFileUploadPicker }: FileTabsProps) {
                         <FileIcon
                           className="h-7 w-7"
                           extension={ext}
-                          imageSrc={`https://pub-2c4c62070be24cd593a08b68263568f0.r2.dev/${item.asset}`}
+                          imageSrc={getAssetURL(item.asset!)}
                         />
                       ) : (
                         <>
@@ -1144,7 +1145,7 @@ function FileEditor<FileType extends AbstractFile>({
   }
 
   if (file.asset) {
-    const assetURL = `https://pub-2c4c62070be24cd593a08b68263568f0.r2.dev/${file.asset}`;
+    const assetURL = getAssetURL(file.asset);
 
     if (imageFileExtensions.includes(fileExtension(file.path))) {
       return <ImageEditor file={file} />;
@@ -1209,7 +1210,7 @@ function ImageEditor<FileType extends AbstractFile>({
         <img
           key={file.id}
           ref={(el) => setImage(el)}
-          src={`https://pub-2c4c62070be24cd593a08b68263568f0.r2.dev/${file.asset}`}
+          src={getAssetURL(file.asset!)}
           alt={`Image file ${file.path}`}
           className="border border-gray-300 bg-gray-200"
           style={{

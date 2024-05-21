@@ -1,9 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import fetch from "node-fetch";
 import { Project } from "sb-edit";
-import { exportProjectWithURLAssetsToCodeSandbox } from "../../../lib/convertProject";
+import { exportProjectWithBufferAssetsToZip } from "../../../lib/convertProject";
 
-export default async function convertToCodesandbox(
+export default async function convertToZip(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
@@ -30,17 +30,20 @@ export default async function convertToCodesandbox(
   }
 
   try {
-    type AssetType = string;
     const project = await Project.fromSb3JSON(projectJSON, {
-      getAsset: async ({ md5, ext }): Promise<AssetType> =>
-        `https://assets.scratch.mit.edu/internalapi/asset/${md5}.${ext}/get/`,
+      getAsset: async ({ md5, ext }) => {
+        const url = `https://assets.scratch.mit.edu/internalapi/asset/${md5}.${ext}/get/`;
+        const res = await fetch(url);
+        const buffer = Buffer.from(await res.arrayBuffer()); // TODO: It might be possible to optimize this by not converting to a buffer or by streaming
+        return buffer;
+      },
     });
 
-    const sandboxId = await exportProjectWithURLAssetsToCodeSandbox(project);
-
-    res
-      .status(200)
-      .json({ url: `https://codesandbox.io/s/${sandboxId}?file=/index.js` });
+    const convertedZip = exportProjectWithBufferAssetsToZip(project);
+    const buffer = await convertedZip.generateAsync({ type: "nodebuffer" });
+    res.setHeader("Content-Type", "application/zip");
+    res.setHeader("Content-Disposition", "attachment; filename=converted.zip");
+    res.end(buffer);
   } catch (err) {
     if (err instanceof Error) {
       return res.status(400).json({ error: err.message });

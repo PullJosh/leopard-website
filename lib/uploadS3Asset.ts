@@ -1,13 +1,5 @@
-import S3 from "aws-sdk/clients/s3";
 import crypto from "crypto";
-
-const s3 = new S3({
-  endpoint: `https://${process.env.CLOUDFLARE_R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
-  accessKeyId: `${process.env.CLOUDFLARE_R2_KEY_ID}`,
-  secretAccessKey: `${process.env.CLOUDFLARE_R2_KEY_SECRET}`,
-  signatureVersion: "v4",
-  region: "auto",
-});
+import { s3 } from "./s3";
 
 export function getAssetHash(buffer: Buffer) {
   return crypto.createHash("md5").update(buffer).digest("hex");
@@ -20,7 +12,7 @@ export async function uploadS3Asset(
 ) {
   return await s3
     .putObject({
-      Bucket: "leopard-projects-dev",
+      Bucket: process.env.NEXT_PUBLIC_PROJECT_ASSETS_BUCKET_NAME as string,
       Key: name,
       Body: body,
       ContentType: contentType,

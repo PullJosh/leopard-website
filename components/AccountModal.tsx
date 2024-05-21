@@ -78,6 +78,7 @@ export default function AccountModal({ children }: AccountModalProps) {
 
   const [activeTab, setActiveTab] = useState(0);
 
+  const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
@@ -175,9 +176,11 @@ export default function AccountModal({ children }: AccountModalProps) {
                   <DialogTitle className="text-center text-lg font-bold">
                     Create a Leopard account
                   </DialogTitle>
-                  <div className="mx-auto mt-2 mb-4 h-1 w-12 bg-indigo-600" />
+                  <div className="mx-auto mb-4 mt-2 h-1 w-12 bg-indigo-600" />
 
                   <RegisterForm
+                    email={email}
+                    setEmail={setEmail}
                     username={username}
                     setUsername={setUsername}
                     password={password}
@@ -188,7 +191,7 @@ export default function AccountModal({ children }: AccountModalProps) {
                   <DialogTitle className="text-center text-lg font-bold">
                     Sign in to Leopard
                   </DialogTitle>
-                  <div className="mx-auto mt-2 mb-4 h-1 w-12 bg-indigo-600" />
+                  <div className="mx-auto mb-4 mt-2 h-1 w-12 bg-indigo-600" />
 
                   <SignInForm
                     username={username}

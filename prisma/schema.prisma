@@ -18,6 +18,8 @@ enum Role {
 model User {
   id           String    @id @default(cuid())
   username     String    @unique
+  emailId      String    @unique
+  email        UserEmail @relation(fields: [emailId], references: [id], onDelete: Cascade)
   passwordHash String
   role         Role      @default(USER)
   sessions     Session[]
@@ -33,6 +35,16 @@ model Session {
   expires   DateTime
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model UserEmail {
+  id                 String    @id @default(cuid())
+  address            String    @unique
+  verified           Boolean   @default(false)
+  verifiedAt         DateTime?
+  verificationToken  String?
+  verificationSentAt DateTime?
+  user               User?
 }
 
 model Project {
