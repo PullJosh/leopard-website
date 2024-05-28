@@ -81,7 +81,7 @@ export default async function AdminProjectPage({
               <td>{file.id}</td>
               <td>
                 {file.asset !== null || file.content !== null ? (
-                  <Link href={getPreviewURL(project.id, file.path)}>
+                  <Link href={getPreviewURL(project.id, file.path).href}>
                     {file.path}
                   </Link>
                 ) : (
