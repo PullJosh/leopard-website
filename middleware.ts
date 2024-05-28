@@ -70,15 +70,5 @@ function getSubdomains(host: string) {
   // Remove port if it exists
   host = host.split(":")[0];
 
-  let parts: string[] = [];
-
-  if (host.endsWith(".localhost.test")) {
-    parts = host.split(".").slice(0, -2);
-  }
-
-  if (host.endsWith(".leopardjs.com")) {
-    parts = host.split(".").slice(0, -2);
-  }
-
-  return parts;
+  return host.split(".").slice(0, -2);
 }
