@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import prisma from "../../../../lib/prisma";
 import Link from "next/link";
+import { getPreviewURL } from "../../../../lib/previewURLs";
 
 interface AdminProjectPageProps {
   params: {
@@ -80,7 +81,7 @@ export default async function AdminProjectPage({
               <td>{file.id}</td>
               <td>
                 {file.asset !== null || file.content !== null ? (
-                  <Link href={`/api/preview/${project.id}/${file.path}`}>
+                  <Link href={getPreviewURL(project.id, file.path)}>
                     {file.path}
                   </Link>
                 ) : (

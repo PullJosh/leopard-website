@@ -1,14 +1,12 @@
 "use client";
 
 import { useCallback, useMemo, useRef, useState } from "react";
+import { getPreviewURL } from "./previewURLs";
 
 export function useProjectPreview(id: string) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
-  const baseURL = useMemo(
-    () => new URL(`/api/preview/${id}/`, process.env.NEXT_PUBLIC_BASE_URL),
-    [id],
-  );
+  const baseURL = useMemo(() => getPreviewURL(id, "/"), [id]);
   const [running, setRunning] = useState(false);
 
   const start = useCallback(

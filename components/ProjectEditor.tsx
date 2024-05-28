@@ -64,7 +64,7 @@ import {
   GreenFlagOverlay,
   StopButton,
 } from "./ProjectPreview";
-import { getAssetURL } from "../lib/getAssetURL";
+import { getAssetURL } from "../lib/previewURLs";
 
 interface ProjectEditorProps {
   projectId: string;
