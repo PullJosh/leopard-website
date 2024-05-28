@@ -43,9 +43,6 @@ export async function getUser(reqOrToken: Req | Token): Promise<User | null> {
       ? reqOrToken
       : getSessionToken(reqOrToken);
 
-  console.log(typeof reqOrToken === "string" || reqOrToken === undefined);
-  console.log(token);
-
   if (!token) {
     return null;
   }

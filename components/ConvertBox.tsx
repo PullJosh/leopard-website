@@ -235,7 +235,6 @@ export default function ConvertBox() {
             if (response.ok) {
               window.location.href = data.url;
             } else {
-              console.log(data);
               setError({ status: response.status, info: data.error });
               setLoading(false);
             }
@@ -345,8 +344,6 @@ export default function ConvertBox() {
                   return false;
                 }}
                 onChange={(newProject: ChosenProject | "URL" | "SB3") => {
-                  console.log("newProject", newProject);
-
                   // Slight hack. Some of the options are meant to be actions
                   // that paste from the clipboard or upload a file. If the user
                   // has chosen one of those, perform the appropriate action.
@@ -389,7 +386,6 @@ export default function ConvertBox() {
 
                   // If we get here, the user has chosen a real project
                   // from the combobox.
-                  console.log("setting project", newProject);
                   setProject(newProject);
                   setProjectQuery("");
                   setError(null);

@@ -14,7 +14,6 @@ export function CopyButton({ content }: CopyButtonProps) {
       className="mx-auto flex h-8 w-8 items-center justify-center rounded hover:bg-gray-300 active:bg-gray-400"
       onClick={() => {
         navigator.clipboard.writeText(content);
-        console.log("copying");
         addToast({
           children: (
             <div className="flex items-center space-x-2">

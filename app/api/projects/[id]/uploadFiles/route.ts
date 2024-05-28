@@ -25,9 +25,6 @@ export async function POST(
     });
   }
 
-  console.log("uploadPath", uploadPath);
-  console.log("files", files);
-
   const user = await getUser(req);
 
   if (!user) {

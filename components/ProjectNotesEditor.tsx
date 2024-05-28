@@ -23,7 +23,6 @@ export function ProjectNotesEditor({
 
   const submit = useCallback(() => {
     // Don't submit if the value hasn't changed
-    console.log("Value", value, savedValue.current);
     if (value === savedValue.current) return;
 
     fetch(`/api/projects/${projectId}/description`, {

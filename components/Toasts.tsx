@@ -93,7 +93,6 @@ export function ToastsProvider({ children }: ToastsProviderProps) {
     setToasts((toasts) => [...toasts, toast]);
 
     setTimeout(() => {
-      console.log("removing toast");
       setToasts((toasts) => toasts.filter((t) => t !== toast));
     }, toast.duration + 500); // Leave 500ms for any kind of exit animation before removing the toast
   }, []);
@@ -107,8 +106,6 @@ export function ToastsProvider({ children }: ToastsProviderProps) {
 
 export function Toasts() {
   const { toasts } = useContext(ToastsContext);
-
-  console.log(toasts);
 
   return (
     <div className="fixed bottom-2 right-4 z-50">
