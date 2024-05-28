@@ -1,4 +1,4 @@
-# leopard-website
+# Leopard Website
 
 ## Running Locally
 
