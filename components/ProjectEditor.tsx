@@ -65,6 +65,12 @@ import {
   StopButton,
 } from "./ProjectPreview";
 import { getAssetURL } from "../lib/previewURLs";
+import {
+  DirectoryIcon,
+  FileIcon,
+  SmallDirectoryIcon,
+  SmallFileIcon,
+} from "./FileIcons";
 
 interface ProjectEditorProps {
   projectId: string;
@@ -498,7 +504,7 @@ export function ProjectEditor({
                   <div className="flex items-center space-x-1 border-b border-gray-300 bg-white px-2 py-1 text-sm">
                     {activePath.map((part, i) => (
                       <Fragment key={i}>
-                        <span className="text-gray-400">/</span>
+                        {i > 0 && <span className="text-gray-400">/</span>}
                         <button
                           onClick={() =>
                             setActivePath(activePath.slice(0, i + 1))
@@ -524,10 +530,11 @@ export function ProjectEditor({
                             second.type === "file" ? (
                               <FileEditor file={second.file} />
                             ) : (
-                              <div className="grid h-full flex-grow grid-cols-[1fr,4fr] grid-rows-1 overflow-hidden">
-                                <div className="grid h-full grid-cols-1 grid-rows-1 overflow-y-auto">
-                                  <FileList path={second.path} />
-                                </div>
+                              <div className="grid h-full flex-grow grid-cols-[1fr,4fr] grid-rows-1 items-stretch divide-x divide-gray-300 overflow-hidden">
+                                <FileTree
+                                  path={second.path}
+                                  showFileUploadPicker={showFileUploadPicker}
+                                />
                                 <div className="relative flex items-center justify-center bg-gray-100">
                                   {activePath.length === 2 && (
                                     <div>Select a file to start editing</div>
@@ -782,143 +789,6 @@ function getDirectoryThumbnailImage<FileType extends AbstractFile>(
   return getAssetURL(imageFile.asset!);
 }
 
-interface DirectoryIconProps {
-  imageSrc?: string;
-}
-
-function DirectoryIcon({ imageSrc }: DirectoryIconProps) {
-  return (
-    <svg width="100%" height="100%" viewBox="0 0 40 32">
-      <path
-        d="M0,2.346L0,27.725C0,30.084 1.916,32 4.275,32L35.725,32C38.084,32 40,30.084 40,27.725L40,7.775C40,5.416 38.084,3.5 35.725,3.5L19.2,3.5C18.538,3.5 18,2.962 18,2.3L18,2.286L17.999,2.286C17.968,1.019 16.929,0 15.654,0L2.346,0C1.051,0 0,1.051 0,2.346Z"
-        className="fill-gray-600"
-      />
-      <rect
-        x={0}
-        y={6}
-        width={40}
-        height={26}
-        rx={4}
-        className="fill-gray-500"
-      />
-      {imageSrc && (
-        <image
-          href={imageSrc}
-          x={3}
-          y={9}
-          width={34}
-          height={20}
-          preserveAspectRatio="xMidYMid"
-        />
-      )}
-    </svg>
-  );
-}
-
-interface FileIconProps {
-  extension: string;
-  imageSrc?: string;
-  className?: string;
-}
-
-function FileIcon({ extension, imageSrc, className }: FileIconProps) {
-  extension = extension.toLowerCase();
-
-  if (imageSrc) {
-    return (
-      <svg className={className} width="100%" height="100%" viewBox="0 0 25 25">
-        <rect
-          x={0.5}
-          y={0.5}
-          width={24}
-          height={24}
-          strokeWidth={1}
-          className="fill-white stroke-gray-300"
-        />
-        <image
-          href={imageSrc}
-          x={2}
-          y={2}
-          width={21}
-          height={21}
-          preserveAspectRatio="xMidYMid"
-        />
-      </svg>
-    );
-  }
-
-  return (
-    <svg className={className} width="100%" height="100%" viewBox="0 0 25 32">
-      <rect x={0} y={0} width={25} height={32} rx={2} className="fill-white" />
-      <g>
-        {new Array(7).fill(null).map((_, i) => (
-          <rect
-            key={i}
-            x={2}
-            y={3 + i * 4}
-            width={i === 6 ? 10.5 : 21}
-            height={2}
-            className="fill-gray-300"
-          />
-        ))}
-      </g>
-      {extension === "js" && (
-        <g>
-          <rect
-            x={6}
-            y={10}
-            width={12}
-            height={12}
-            rx={2}
-            className="fill-yellow-500"
-          />
-          <text
-            x={12.5}
-            y={16}
-            style={{
-              fontFamily: "'Arial-BoldMT', 'Arial', sans-serif",
-              fontWeight: 700,
-              fontSize: 8,
-            }}
-            textAnchor="middle"
-            dominantBaseline="central"
-            className="fill-black"
-          >
-            JS
-          </text>
-        </g>
-      )}
-      {extension === "html" && (
-        <g>
-          <rect
-            x={4}
-            y={10}
-            width={16}
-            height={12}
-            rx={2}
-            className="fill-blue-700"
-          />
-          <text
-            x={12.5}
-            y={16}
-            style={{
-              fontFamily: "'Arial-BoldMT', 'Arial', sans-serif",
-              fontWeight: 700,
-              fontSize: 5,
-            }}
-            dx={-0.5}
-            textAnchor="middle"
-            dominantBaseline="central"
-            className="fill-white"
-          >
-            HTML
-          </text>
-        </g>
-      )}
-    </svg>
-  );
-}
-
 interface FileTabsProps {
   path: Path;
   showFileUploadPicker: () => void;
@@ -996,76 +866,72 @@ function FileTabs({ path, showFileUploadPicker }: FileTabsProps) {
               }}
               onScroll={() => updateScrollStatus()}
             >
-              {items.map(({ key, type, item, active, renaming, onClick }) => {
-                const hasUnsavedChanges =
-                  type === "file" && !!item && item.id in ctx.fileEdits;
+              {items.map(
+                ({ key, type, item, activeParent, renaming, onClick }) => {
+                  const hasUnsavedChanges =
+                    type === "file" && !!item && item.id in ctx.fileEdits;
 
-                const ext = fileExtension(
-                  (item?.name ?? renaming?.name ?? "") as FileName,
-                );
+                  const ext = fileExtension(
+                    (item?.name ?? renaming?.name ?? "") as FileName,
+                  );
 
-                return (
-                  <button
-                    key={key}
-                    className={classNames(
-                      "flex h-12 flex-initial items-center space-x-1 self-stretch rounded-t-lg border-x px-5",
-                      {
-                        "border-gray-300 bg-white text-indigo-800": active,
-                        "border-transparent": !active,
-                      },
-                    )}
-                    onClick={(event) => {
-                      onClick();
+                  const WrapperElem = renaming ? "div" : "button";
 
-                      // Scroll to the clicked tab
-                      event.currentTarget.scrollIntoView({
-                        block: "center",
-                        behavior: "auto",
-                      });
-                    }}
-                  >
-                    {type === "directory" && (
-                      <>
-                        {/* prettier-ignore */}
-                        <svg className="-mb-[2px] h-7 w-7" viewBox="0 0 48 48">
-                          <rect className="fill-gray-500" x={8} y={8} width={14} height={8} rx={3} />
-                          <rect className="fill-gray-500" x={8} y={12} width={32} height={24} rx={3} />
-                        </svg>
-                      </>
-                    )}
-                    {type === "file" &&
-                      (item && imageFileExtensions.includes(ext) ? (
-                        <FileIcon
-                          className="h-7 w-7"
-                          extension={ext}
-                          imageSrc={getAssetURL(item.asset!)}
+                  return (
+                    <WrapperElem
+                      key={key}
+                      className={classNames(
+                        "flex h-12 flex-initial items-center space-x-1 self-stretch rounded-t-lg border-x px-5",
+                        {
+                          "border-gray-300 bg-white": activeParent,
+                          "border-transparent": !activeParent,
+                        },
+                      )}
+                      onClick={(event) => {
+                        onClick();
+
+                        // Scroll to the clicked tab
+                        event.currentTarget.scrollIntoView({
+                          block: "center",
+                          behavior: "auto",
+                        });
+                      }}
+                    >
+                      {type === "directory" && (
+                        <SmallDirectoryIcon className="-mb-[2px] h-7 w-7" />
+                      )}
+                      {type === "file" &&
+                        (item && imageFileExtensions.includes(ext) ? (
+                          <FileIcon
+                            className="h-7 w-7"
+                            extension={ext}
+                            imageSrc={getAssetURL(item.asset!)}
+                          />
+                        ) : (
+                          <SmallFileIcon
+                            className="-mb-px h-7 w-7"
+                            ext={ext}
+                            showLines={true}
+                          />
+                        ))}
+
+                      {renaming ? (
+                        <FileDirectoryFileNameInput
+                          className="w-24 text-center text-sm"
+                          {...renaming}
                         />
                       ) : (
-                        <>
-                          {/* prettier-ignore */}
-                          <svg className="-mb-px h-7 w-7" viewBox="0 0 48 48">
-                            <rect className={{ html: "fill-blue-700", js: "fill-yellow-600" }[ext] ?? "fill-gray-500"} x={12} y={8} width={24} height={32} rx={3} />
-                            <rect className="fill-white" x={16} y={13} width={16} height={3} />
-                            <rect className="fill-white" x={16} y={20} width={16} height={3} />
-                            <rect className="fill-white" x={16} y={27} width={8} height={3} />
-                          </svg>
-                        </>
-                      ))}
-
-                    {renaming ? (
-                      <FileDirectoryFileNameInput
-                        className="w-24 text-center text-sm"
-                        {...renaming}
-                      />
-                    ) : (
-                      <span>{item?.name ?? ""}</span>
-                    )}
-                    {hasUnsavedChanges && (
-                      <span className="block h-2 w-2 rounded-full bg-indigo-600" />
-                    )}
-                  </button>
-                );
-              })}
+                        <span className="whitespace-nowrap">
+                          {item?.name ?? ""}
+                        </span>
+                      )}
+                      {hasUnsavedChanges && (
+                        <span className="block h-2 w-2 rounded-full bg-indigo-600" />
+                      )}
+                    </WrapperElem>
+                  );
+                },
+              )}
             </div>
             {scrollStatus.moreContentToRight && (
               <button
@@ -1109,6 +975,169 @@ function FileTabs({ path, showFileUploadPicker }: FileTabsProps) {
           )}
         </div>
       )}
+    </FileDirectory>
+  );
+}
+
+interface FileTreeProps {
+  path: Path;
+  showFileUploadPicker: () => void;
+}
+
+function FileTree({ path, showFileUploadPicker }: FileTreeProps) {
+  const ctx = useContext(ProjectEditorContext);
+
+  const topLevelDivRef = useRef<HTMLDivElement | null>(null);
+
+  return (
+    <FileDirectory path={path} enableOpenDirectories={true}>
+      {({ items, level, createDirectory, createFile }) => {
+        const content = (
+          <div className="flex flex-col">
+            {items.length === 0 && level === 0 && (
+              <div className="py-1 text-xs italic text-gray-500">
+                No files or folders
+              </div>
+            )}
+            {items.map(
+              ({
+                key,
+                type,
+                item,
+                active,
+                open,
+                toggleOpen,
+                renaming,
+                onClick,
+                contents,
+              }) => {
+                const hasUnsavedChanges =
+                  type === "file" && !!item && item.id in ctx.fileEdits;
+
+                const ext = fileExtension(
+                  (item?.name ?? renaming?.name ?? "") as FileName,
+                );
+
+                const WrapperElem = renaming ? "div" : "button";
+
+                return (
+                  <Fragment key={key}>
+                    <div
+                      className={classNames("flex", {
+                        "bg-gray-200 text-gray-900": active,
+                        "border-transparent text-gray-700": !active,
+                      })}
+                      style={{ paddingLeft: `${1.2 * level}rem` }}
+                    >
+                      {type === "directory" && (
+                        <button
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            toggleOpen();
+                          }}
+                          className="pl-2"
+                        >
+                          <svg className="h-6 w-6" viewBox="0 0 24 24">
+                            <polyline
+                              points={
+                                open
+                                  ? "7 11, 12 16, 17 11"
+                                  : "11 7, 16 12, 11 17"
+                              }
+                              fill="none"
+                              className="stroke-gray-600"
+                              strokeWidth={2}
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        </button>
+                      )}
+                      <WrapperElem
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          onClick();
+                        }}
+                        className="flex flex-grow items-center space-x-1 px-2 py-1 text-left text-sm"
+                      >
+                        {type === "file" &&
+                          (item && imageFileExtensions.includes(ext) ? (
+                            <FileIcon
+                              className="h-6 w-6 flex-shrink-0"
+                              extension={ext}
+                              imageSrc={getAssetURL(item.asset!)}
+                            />
+                          ) : (
+                            <SmallFileIcon
+                              className="h-6 w-6 flex-shrink-0"
+                              ext={ext}
+                              showLines={true}
+                            />
+                          ))}
+
+                        {renaming ? (
+                          <FileDirectoryFileNameInput
+                            className="w-full text-left text-sm"
+                            {...renaming}
+                          />
+                        ) : (
+                          <span className="w-full overflow-hidden overflow-ellipsis whitespace-nowrap">
+                            {item?.name ?? ""}
+                          </span>
+                        )}
+                        {hasUnsavedChanges && (
+                          <span className="block h-2 w-2 flex-shrink-0 self-center rounded-full bg-indigo-600" />
+                        )}
+                      </WrapperElem>
+                    </div>
+                    {open && (
+                      <div className="relative">
+                        <div
+                          className="absolute top-0 z-50 h-full border-l border-gray-300"
+                          style={{ left: `${1.2 * (level + 1)}rem` }}
+                        />
+                        {contents()}
+                      </div>
+                    )}
+                  </Fragment>
+                );
+              },
+            )}
+          </div>
+        );
+
+        // We are in a nested folder
+        if (level > 0) {
+          return content;
+        }
+
+        // We are rendering the top level
+        return (
+          <div
+            ref={topLevelDivRef}
+            className="flex flex-col overflow-y-auto bg-gray-100"
+          >
+            <div className="flex justify-end p-1">
+              <CreateFileMenu
+                className="h-7"
+                onClickCreateFile={() => createFile()}
+                onClickCreateFolder={() => createDirectory()}
+                onClickUploadFile={() => showFileUploadPicker()}
+              />
+            </div>
+            <div
+              className="flex flex-grow flex-col pb-8"
+              onClick={() => {
+                // When you click in empty space, select the top level path
+                // (de-selecting any active file or sub-folder)
+                ctx.setActivePath(path);
+              }}
+            >
+              {content}
+            </div>
+          </div>
+        );
+      }}
     </FileDirectory>
   );
 }
@@ -1228,31 +1257,6 @@ function ImageEditor<FileType extends AbstractFile>({
   );
 }
 
-const folderIcon = (
-  <svg className="h-full w-full" viewBox="0 0 48 48">
-    <rect x={8} y={8} width={14} height={8} rx={3} className="fill-current" />
-    <rect x={8} y={12} width={32} height={24} rx={3} className="fill-current" />
-    <rect x={22} y={16} width={4} height={16} className="fill-white" />
-    <rect x={16} y={22} width={16} height={4} className="fill-white" />
-  </svg>
-);
-
-const fileIcon = (
-  <svg className="h-full w-full" viewBox="0 0 48 48">
-    <rect x={12} y={8} width={24} height={32} rx={3} className="fill-current" />
-    <rect x={22} y={16} width={4} height={16} className="fill-white" />
-    <rect x={16} y={22} width={16} height={4} className="fill-white" />
-  </svg>
-);
-
-const uploadFileIcon = (
-  <svg className="h-full w-full" viewBox="0 0 48 48">
-    <rect x={12} y={8} width={24} height={32} rx={3} className="fill-current" />
-    <rect x={22} y={16} width={4} height={16} className="fill-white" />
-    <rect x={16} y={22} width={16} height={4} className="fill-white" />
-  </svg>
-);
-
 interface CreateFileMenuProps {
   className?: string;
   onClickCreateFolder?: () => void;
@@ -1276,19 +1280,19 @@ export function CreateFileMenu({
   const menuItems: MenuItem[] = [
     {
       id: "folder",
-      icon: folderIcon,
+      icon: <SmallDirectoryIcon className="h-full w-full" showPlus={true} />,
       text: "Folder",
       onClick: onClickCreateFolder,
     },
     {
       id: "file",
-      icon: fileIcon,
+      icon: <SmallFileIcon className="h-full w-full" showPlus={true} />,
       text: "File",
       onClick: onClickCreateFile,
     },
     {
       id: "upload",
-      icon: uploadFileIcon,
+      icon: <SmallFileIcon className="h-full w-full" showPlus={true} />,
       text: "Upload files",
       onClick: onClickUploadFile,
     },
@@ -1330,7 +1334,7 @@ export function CreateFileMenu({
                   onClick={item.onClick}
                   className="group flex items-center justify-start space-x-2 px-2 py-1 text-left disabled:cursor-default data-[focus]:bg-gray-200"
                 >
-                  <div className="h-7 w-7 group-enabled:text-gray-500 group-disabled:text-gray-300">
+                  <div className="h-7 w-7 group-disabled:opacity-50">
                     {item.icon}
                   </div>
                   <span className="text-gray-800 group-disabled:text-gray-500">
