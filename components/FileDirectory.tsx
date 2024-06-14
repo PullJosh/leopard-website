@@ -366,13 +366,3 @@ export function FileDirectoryFileNameInput({
     />
   );
 }
-
-export interface FileGridProps {
-  path: DirectoryPath;
-  smartSelect?: boolean;
-}
-
-export interface FileGridRef {
-  createDirectory: () => void;
-  createFile: () => void;
-}
