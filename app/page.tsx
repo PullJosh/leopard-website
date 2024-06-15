@@ -5,6 +5,8 @@ import Link from "next/link";
 import Center from "../components/Center";
 import ConvertBox from "../components/ConvertBox";
 import Nav, { NavSpace } from "../components/Nav";
+import { PatreonIcon } from "../components/icons/Patreon";
+import { sponsors } from "./sponsors/sponsors";
 
 export default function Index() {
   const bottomSectionRef = useRef<HTMLDivElement>(null);
@@ -67,7 +69,55 @@ export default function Index() {
         </div>
       </Center>
 
-      <div ref={bottomSectionRef} className="bg-gray-200 py-16">
+      <div
+        ref={bottomSectionRef}
+        className="border-y border-gray-300 bg-white py-8"
+      >
+        <Center>
+          <div className="flex space-x-8">
+            <div className="flex flex-grow-0 flex-col">
+              <h1 className="mb-1 text-xl font-bold">Sponsors</h1>
+              <p className="self-stretch">
+                Leopard is made possible by generous
+                <br />
+                support from sponsors and donors.
+              </p>
+              <div className="mt-4 flex justify-start">
+                <a
+                  href="https://www.patreon.com/bePatron?u=128069536"
+                  className="z-10 flex items-center justify-center space-x-2 pr-4 text-center text-indigo-600 hover:text-indigo-800 active:text-indigo-900"
+                >
+                  <PatreonIcon className="h-4 w-4 fill-current" />
+                  <span>Support Leopard</span>
+                </a>
+                <div className="-mx-px h-6 self-center border-r-2 border-gray-300" />
+                <Link
+                  href="/sponsors"
+                  className="z-10 flex items-center justify-center space-x-2 pl-4 text-center text-indigo-600 hover:text-indigo-800 active:text-indigo-900"
+                >
+                  Learn more →
+                </Link>
+              </div>
+            </div>
+            <div className="flex flex-grow items-center justify-center">
+              {sponsors.map((sponsor) => (
+                <a
+                  key={sponsor.name}
+                  href={sponsor.url}
+                  className="flex items-center space-x-4 text-gray-500 transition-colors hover:text-gray-700"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <div className="w-16">{sponsor.logo}</div>
+                  <span className="text-2xl font-bold">{sponsor.name}</span>
+                </a>
+              ))}
+            </div>
+          </div>
+        </Center>
+      </div>
+
+      <div className="bg-gray-100 py-16">
         <Center>
           <h2 className="mb-2 text-2xl font-bold text-gray-800">
             Scratch is great, but it can be limiting.

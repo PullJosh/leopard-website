@@ -12,6 +12,7 @@ import { changeProjectShared } from "../../actions/changeProjectShared";
 import { UnscrapableEmailLink } from "../../components/UnscrapableEmailLink";
 import { getUserCurrentFilesSize, USER_SIZE_LIMIT } from "../../lib/sizeLimits";
 import classNames from "classnames";
+import { PatreonIcon } from "../../components/icons/Patreon";
 
 export const metadata = {
   title: "My Stuff",
@@ -322,14 +323,7 @@ export default async function MyStuff() {
                   href="https://www.patreon.com/bePatron?u=128069536"
                   className="flex items-center justify-center space-x-2 rounded-md bg-indigo-600 px-4 py-2 text-center text-white hover:bg-indigo-700 active:bg-indigo-800"
                 >
-                  <svg
-                    version="1.1"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 1080 1080"
-                    className="h-4 w-4 fill-white"
-                  >
-                    <path d="M1033.05,324.45c-0.19-137.9-107.59-250.92-233.6-291.7c-156.48-50.64-362.86-43.3-512.28,27.2 C106.07,145.41,49.18,332.61,47.06,519.31c-1.74,153.5,13.58,557.79,241.62,560.67c169.44,2.15,194.67-216.18,273.07-321.33 c55.78-74.81,127.6-95.94,216.01-117.82C929.71,603.22,1033.27,483.3,1033.05,324.45z" />
-                  </svg>
+                  <PatreonIcon className="h-4 w-4 fill-white" />
                   <span>Support Leopard</span>
                 </a>
               </div>

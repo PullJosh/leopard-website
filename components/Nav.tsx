@@ -60,10 +60,7 @@ export default function Nav({
           ) : (
             // ...Otherwise, render the logo and title as separate links.
             <>
-              <Link
-                href="/"
-                className="mr-4 flex items-center space-x-3 hover:underline"
-              >
+              <Link href="/" className="mr-3 flex items-center hover:underline">
                 <img
                   className="my-2 h-12 w-12"
                   src="/leopard-logo.svg"
