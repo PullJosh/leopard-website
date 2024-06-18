@@ -1,12 +1,14 @@
 import type { StaticImageData } from "next/image";
 
 import BXCodingCover from "../../public/sponsors/bxcoding/bxcoding-cover.jpeg";
+import BXCodingColorLogo from "../../public/sponsors/bxcoding/bxcoding-logo.png";
 
 interface Sponsor {
   name: string;
   url: string;
   logo: React.ReactNode;
   cover: StaticImageData;
+  colorLogo: StaticImageData;
   description: React.ReactNode;
   supportDescription?: React.ReactNode;
 }
@@ -36,6 +38,7 @@ export const sponsors: Sponsor[] = [
       </svg>
     ),
     cover: BXCodingCover,
+    colorLogo: BXCodingColorLogo,
     description: (
       <p>
         BX Coding educates underserved K-12 students in the STEM fields through

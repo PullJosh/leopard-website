@@ -41,7 +41,7 @@ export default function SponsorsPage() {
                 key={sponsor.name}
                 name={sponsor.name}
                 url={sponsor.url}
-                logo={sponsor.logo}
+                logo={sponsor.colorLogo}
                 cover={sponsor.cover}
                 supportDescription={sponsor.supportDescription}
               >
@@ -58,7 +58,7 @@ export default function SponsorsPage() {
 interface SponsorCardProps {
   name: string;
   url: string;
-  logo: React.ReactNode;
+  logo: StaticImageData;
   cover: StaticImageData;
   children: React.ReactNode;
   supportDescription?: React.ReactNode;
@@ -76,8 +76,8 @@ function SponsorCard({
     <section className="relative overflow-hidden rounded-xl border border-gray-300 bg-white shadow-md">
       <Image src={cover} alt="" />
       <div className="relative p-6">
-        <div className="absolute -top-12 right-6 h-24 w-24 overflow-hidden rounded-full bg-white p-4 text-gray-900">
-          {logo}
+        <div className="absolute -top-12 right-6 h-24 w-24 overflow-hidden rounded-full bg-white p-3 text-gray-900">
+          <Image src={logo} alt={`${name} logo`} />
         </div>
         <h2 className="mb-2 text-2xl font-bold text-gray-900">{name}</h2>
         <div className="space-y-2 text-sm text-gray-700">{children}</div>
