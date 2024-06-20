@@ -13,7 +13,6 @@ import {
   useState,
 } from "react";
 import Editor, { useMonaco } from "@monaco-editor/react";
-import { Tooltip } from "react-tooltip";
 import {
   AbstractFile,
   DirectoryType,
@@ -71,6 +70,7 @@ import {
   SmallDirectoryIcon,
   SmallFileIcon,
 } from "./FileIcons";
+import { ContextMenu } from "./ContextMenu";
 
 interface ProjectEditorProps {
   projectId: string;
@@ -499,6 +499,13 @@ export function ProjectEditor({
                     <FileTabs
                       path={first.path}
                       showFileUploadPicker={showFileUploadPicker}
+                      deleteFileOrDirectory={(path) =>
+                        updateFiles({
+                          changes: [
+                            { type: "delete", path: pathToString(path) },
+                          ],
+                        })
+                      }
                     />
                   </div>
                   <div className="flex items-center space-x-1 border-b border-gray-300 bg-white px-2 py-1 text-sm">
@@ -534,6 +541,16 @@ export function ProjectEditor({
                                 <FileTree
                                   path={second.path}
                                   showFileUploadPicker={showFileUploadPicker}
+                                  deleteFileOrDirectory={(path) =>
+                                    updateFiles({
+                                      changes: [
+                                        {
+                                          type: "delete",
+                                          path: pathToString(path),
+                                        },
+                                      ],
+                                    })
+                                  }
                                 />
                                 <div className="relative flex items-center justify-center bg-gray-100">
                                   {activePath.length === 2 && (
@@ -621,54 +638,90 @@ export function ProjectEditor({
                   </div>
                   <div className="relative flex flex-1 flex-wrap content-start gap-4 overflow-y-auto p-4">
                     {items.map(
-                      ({ key, type, item, active, renaming, onClick }) => {
+                      ({
+                        key,
+                        type,
+                        item,
+                        activeParent,
+                        renaming,
+                        onClick,
+                      }) => {
                         const ext = fileExtension(
                           (item?.name ?? renaming?.name ?? "") as FileName,
                         );
 
                         const WrapperElem = renaming ? "div" : "button";
                         return (
-                          <WrapperElem
+                          <ContextMenu
                             key={key}
-                            className="flex h-16 w-14 flex-col items-stretch"
-                            onClick={onClick}
-                            disabled={active}
+                            items={
+                              item
+                                ? [
+                                    {
+                                      id: "delete",
+                                      label: `Delete ${item.name}`,
+                                      style: "danger",
+                                      onClick: (event) => {
+                                        event.stopPropagation();
+                                        updateFiles({
+                                          changes: [
+                                            {
+                                              type: "delete",
+                                              path: pathToString(item.path),
+                                            },
+                                          ],
+                                        });
+                                      },
+                                    },
+                                  ]
+                                : []
+                            }
                           >
-                            {type === "file" ? (
-                              <FileIcon
-                                extension={ext}
-                                imageSrc={
-                                  item && imageFileExtensions.includes(ext)
-                                    ? getAssetURL(item.asset!)
-                                    : undefined
-                                }
-                              />
-                            ) : (
-                              <DirectoryIcon
-                                imageSrc={
-                                  item
-                                    ? getDirectoryThumbnailImage(item) ??
-                                      undefined
-                                    : undefined
-                                }
-                              />
-                            )}
-                            {renaming ? (
-                              <FileDirectoryFileNameInput
-                                className="text-center text-xs"
-                                {...renaming}
-                              />
-                            ) : (
-                              <div
-                                className={classNames(
-                                  "overflow-hidden overflow-ellipsis whitespace-nowrap py-1 text-center text-xs",
-                                  { "text-indigo-600": active },
-                                )}
+                            {({ onContextMenu }) => (
+                              <WrapperElem
+                                className="flex h-16 w-16 flex-col items-stretch"
+                                onClick={onClick}
+                                onContextMenu={onContextMenu}
                               >
-                                {item?.name ?? ""}
-                              </div>
+                                {type === "file" ? (
+                                  <FileIcon
+                                    extension={ext}
+                                    imageSrc={
+                                      item && imageFileExtensions.includes(ext)
+                                        ? getAssetURL(item.asset!)
+                                        : undefined
+                                    }
+                                  />
+                                ) : (
+                                  <DirectoryIcon
+                                    imageSrc={
+                                      item
+                                        ? getDirectoryThumbnailImage(item) ??
+                                          undefined
+                                        : undefined
+                                    }
+                                  />
+                                )}
+                                {renaming ? (
+                                  <FileDirectoryFileNameInput
+                                    className="text-center text-xs"
+                                    {...renaming}
+                                  />
+                                ) : (
+                                  <div className="flex items-center justify-center">
+                                    <div
+                                      className={classNames(
+                                        "w-0 flex-shrink flex-grow overflow-hidden overflow-ellipsis whitespace-nowrap py-1 text-center text-xs",
+                                        { "text-indigo-600": activeParent },
+                                      )}
+                                    >
+                                      {item?.name ?? ""}
+                                    </div>
+                                  </div>
+                                )}
+                              </WrapperElem>
                             )}
-                          </WrapperElem>
+                          </ContextMenu>
                         );
                       },
                     )}
@@ -681,46 +734,6 @@ export function ProjectEditor({
       </div>
       {/* <JSTranslationsModal /> */}
     </ProjectEditorContext.Provider>
-  );
-}
-
-interface FileListProps {
-  path: DirectoryPath;
-}
-
-function FileList({ path }: FileListProps) {
-  const ctx = useContext(ProjectEditorContext);
-  const directory = useDirectory(path);
-
-  if (directory === null) return null;
-
-  return (
-    <div className="flex flex-col border-r border-gray-300 bg-gray-100">
-      {directory.files.map((file) => {
-        const selected = pathMatches(file.path, ctx.activePath);
-
-        return (
-          <button
-            key={file.id}
-            className={classNames(
-              "flex items-center space-x-2 px-2 py-1 text-left text-sm",
-              { "bg-gray-200 text-indigo-800": selected },
-            )}
-            onClick={() => ctx.setActivePath(file.path)}
-          >
-            {imageFileExtensions.includes(fileExtension(file.path)) && (
-              <img
-                key={file.id}
-                src={getAssetURL(file.asset!)}
-                alt={`Image file ${file.path}`}
-                className="h-6 w-6 border border-gray-300 object-contain"
-              />
-            )}
-            <span>{file.name}</span>
-          </button>
-        );
-      })}
-    </div>
   );
 }
 
@@ -792,9 +805,14 @@ function getDirectoryThumbnailImage<FileType extends AbstractFile>(
 interface FileTabsProps {
   path: Path;
   showFileUploadPicker: () => void;
+  deleteFileOrDirectory: (path: Path) => void;
 }
 
-function FileTabs({ path, showFileUploadPicker }: FileTabsProps) {
+function FileTabs({
+  path,
+  showFileUploadPicker,
+  deleteFileOrDirectory,
+}: FileTabsProps) {
   const ctx = useContext(ProjectEditorContext);
 
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -878,57 +896,78 @@ function FileTabs({ path, showFileUploadPicker }: FileTabsProps) {
                   const WrapperElem = renaming ? "div" : "button";
 
                   return (
-                    <WrapperElem
+                    <ContextMenu
                       key={key}
-                      className={classNames(
-                        "flex h-12 flex-initial items-center space-x-1 self-stretch rounded-t-lg border-x px-5",
-                        {
-                          "border-gray-300 bg-white": activeParent,
-                          "border-transparent": !activeParent,
-                        },
-                      )}
-                      onClick={(event) => {
-                        onClick();
-
-                        // Scroll to the clicked tab
-                        event.currentTarget.scrollIntoView({
-                          block: "center",
-                          behavior: "auto",
-                        });
-                      }}
+                      items={
+                        item
+                          ? [
+                              {
+                                id: "delete",
+                                label: `Delete ${item.name}`,
+                                style: "danger",
+                                onClick: (event) => {
+                                  event.stopPropagation();
+                                  deleteFileOrDirectory(item.path);
+                                },
+                              },
+                            ]
+                          : []
+                      }
                     >
-                      {type === "directory" && (
-                        <SmallDirectoryIcon className="-mb-[2px] h-7 w-7" />
-                      )}
-                      {type === "file" &&
-                        (item && imageFileExtensions.includes(ext) ? (
-                          <FileIcon
-                            className="h-7 w-7"
-                            extension={ext}
-                            imageSrc={getAssetURL(item.asset!)}
-                          />
-                        ) : (
-                          <SmallFileIcon
-                            className="-mb-px h-7 w-7"
-                            ext={ext}
-                            showLines={true}
-                          />
-                        ))}
+                      {({ onContextMenu }) => (
+                        <WrapperElem
+                          className={classNames(
+                            "flex h-12 flex-initial items-center space-x-1 self-stretch rounded-t-lg border-x px-5",
+                            {
+                              "border-gray-300 bg-white": activeParent,
+                              "border-transparent": !activeParent,
+                            },
+                          )}
+                          onClick={(event) => {
+                            onClick();
 
-                      {renaming ? (
-                        <FileDirectoryFileNameInput
-                          className="w-24 text-center text-sm"
-                          {...renaming}
-                        />
-                      ) : (
-                        <span className="whitespace-nowrap">
-                          {item?.name ?? ""}
-                        </span>
+                            // Scroll to the clicked tab
+                            event.currentTarget.scrollIntoView({
+                              block: "center",
+                              behavior: "auto",
+                            });
+                          }}
+                          onContextMenu={onContextMenu}
+                        >
+                          {type === "directory" && (
+                            <SmallDirectoryIcon className="-mb-[2px] h-7 w-7" />
+                          )}
+                          {type === "file" &&
+                            (item && imageFileExtensions.includes(ext) ? (
+                              <FileIcon
+                                className="h-7 w-7"
+                                extension={ext}
+                                imageSrc={getAssetURL(item.asset!)}
+                              />
+                            ) : (
+                              <SmallFileIcon
+                                className="-mb-px h-7 w-7"
+                                ext={ext}
+                                showLines={true}
+                              />
+                            ))}
+
+                          {renaming ? (
+                            <FileDirectoryFileNameInput
+                              className="w-24 text-center text-sm"
+                              {...renaming}
+                            />
+                          ) : (
+                            <span className="whitespace-nowrap">
+                              {item?.name ?? ""}
+                            </span>
+                          )}
+                          {hasUnsavedChanges && (
+                            <span className="block h-2 w-2 rounded-full bg-indigo-600" />
+                          )}
+                        </WrapperElem>
                       )}
-                      {hasUnsavedChanges && (
-                        <span className="block h-2 w-2 rounded-full bg-indigo-600" />
-                      )}
-                    </WrapperElem>
+                    </ContextMenu>
                   );
                 },
               )}
@@ -982,9 +1021,14 @@ function FileTabs({ path, showFileUploadPicker }: FileTabsProps) {
 interface FileTreeProps {
   path: Path;
   showFileUploadPicker: () => void;
+  deleteFileOrDirectory: (path: Path) => void;
 }
 
-function FileTree({ path, showFileUploadPicker }: FileTreeProps) {
+function FileTree({
+  path,
+  showFileUploadPicker,
+  deleteFileOrDirectory,
+}: FileTreeProps) {
   const ctx = useContext(ProjectEditorContext);
 
   const topLevelDivRef = useRef<HTMLDivElement | null>(null);
@@ -1021,85 +1065,107 @@ function FileTree({ path, showFileUploadPicker }: FileTreeProps) {
                 const WrapperElem = renaming ? "div" : "button";
 
                 return (
-                  <Fragment key={key}>
-                    <div
-                      className={classNames("flex", {
-                        "bg-gray-200 text-gray-900": active,
-                        "border-transparent text-gray-700": !active,
-                      })}
-                      style={{ paddingLeft: `${1.2 * level}rem` }}
-                    >
-                      {type === "directory" && (
-                        <button
-                          onClick={(event) => {
-                            event.stopPropagation();
-                            toggleOpen();
-                          }}
-                          className="pl-2"
-                        >
-                          <svg className="h-6 w-6" viewBox="0 0 24 24">
-                            <polyline
-                              points={
-                                open
-                                  ? "7 11, 12 16, 17 11"
-                                  : "11 7, 16 12, 11 17"
-                              }
-                              fill="none"
-                              className="stroke-gray-600"
-                              strokeWidth={2}
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                          </svg>
-                        </button>
-                      )}
-                      <WrapperElem
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          onClick();
-                        }}
-                        className="flex flex-grow items-center space-x-1 px-2 py-1 text-left text-sm"
-                      >
-                        {type === "file" &&
-                          (item && imageFileExtensions.includes(ext) ? (
-                            <FileIcon
-                              className="h-6 w-6 flex-shrink-0"
-                              extension={ext}
-                              imageSrc={getAssetURL(item.asset!)}
-                            />
-                          ) : (
-                            <SmallFileIcon
-                              className="h-6 w-6 flex-shrink-0"
-                              ext={ext}
-                              showLines={true}
-                            />
-                          ))}
-
-                        {renaming ? (
-                          <FileDirectoryFileNameInput
-                            className="w-full text-left text-sm"
-                            {...renaming}
-                          />
-                        ) : (
-                          <span className="w-full overflow-hidden overflow-ellipsis whitespace-nowrap">
-                            {item?.name ?? ""}
-                          </span>
-                        )}
-                        {hasUnsavedChanges && (
-                          <span className="block h-2 w-2 flex-shrink-0 self-center rounded-full bg-indigo-600" />
-                        )}
-                      </WrapperElem>
-                    </div>
-                    {open && (
-                      <div className="relative">
+                  <ContextMenu
+                    key={key}
+                    items={
+                      item
+                        ? [
+                            {
+                              id: "delete",
+                              label: `Delete ${item.name}`,
+                              style: "danger",
+                              onClick: (event) => {
+                                event.stopPropagation();
+                                deleteFileOrDirectory(item.path);
+                              },
+                            },
+                          ]
+                        : []
+                    }
+                  >
+                    {({ onContextMenu }) => (
+                      <>
                         <div
-                          className="absolute top-0 z-50 h-full border-l border-gray-300"
-                          style={{ left: `${1.2 * (level + 1)}rem` }}
-                        />
-                        {contents()}
-                      </div>
+                          className={classNames("flex", {
+                            "bg-gray-200 text-gray-900": active,
+                            "border-transparent text-gray-700": !active,
+                          })}
+                          style={{ paddingLeft: `${1.2 * level}rem` }}
+                          onContextMenu={onContextMenu}
+                        >
+                          {type === "directory" && (
+                            <button
+                              onClick={(event) => {
+                                event.stopPropagation();
+                                toggleOpen();
+                              }}
+                              className="pl-2"
+                            >
+                              <svg className="h-6 w-6" viewBox="0 0 24 24">
+                                <polyline
+                                  points={
+                                    open
+                                      ? "7 11, 12 16, 17 11"
+                                      : "11 7, 16 12, 11 17"
+                                  }
+                                  fill="none"
+                                  className="stroke-gray-600"
+                                  strokeWidth={2}
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                />
+                              </svg>
+                            </button>
+                          )}
+                          <WrapperElem
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              onClick();
+                            }}
+                            className="flex flex-grow items-center space-x-1 px-2 py-1 text-left text-sm"
+                          >
+                            {type === "file" &&
+                              (item && imageFileExtensions.includes(ext) ? (
+                                <FileIcon
+                                  className="h-6 w-6 flex-shrink-0"
+                                  extension={ext}
+                                  imageSrc={getAssetURL(item.asset!)}
+                                />
+                              ) : (
+                                <SmallFileIcon
+                                  className="h-6 w-6 flex-shrink-0"
+                                  ext={ext}
+                                  showLines={true}
+                                />
+                              ))}
+
+                            {renaming ? (
+                              <FileDirectoryFileNameInput
+                                className="w-full text-left text-sm"
+                                {...renaming}
+                              />
+                            ) : (
+                              <span className="w-full overflow-hidden overflow-ellipsis whitespace-nowrap">
+                                {item?.name ?? ""}
+                              </span>
+                            )}
+                            {hasUnsavedChanges && (
+                              <span className="block h-2 w-2 flex-shrink-0 self-center rounded-full bg-indigo-600" />
+                            )}
+                          </WrapperElem>
+                        </div>
+                        {open && (
+                          <div className="relative">
+                            <div
+                              className="absolute top-0 z-50 h-full border-l border-gray-300"
+                              style={{ left: `${1.2 * (level + 1)}rem` }}
+                            />
+                            {contents()}
+                          </div>
+                        )}
+                      </>
                     )}
-                  </Fragment>
+                  </ContextMenu>
                 );
               },
             )}

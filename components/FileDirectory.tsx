@@ -108,27 +108,43 @@ export function FileDirectory({
     [],
   );
 
-  const revealPath = useCallback((path: Path) => {
-    setDirectoriesOpen((oldOpen) => {
-      let open = { ...oldOpen };
+  const revealPath = useCallback(
+    (path: Path) => {
+      if (enableOpenDirectories) {
+        setDirectoriesOpen((oldOpen) => {
+          let open = { ...oldOpen };
 
-      // Open all directories in the path
-      for (let i = 1; i < path.length + 1; i++) {
-        const directoryPath = path.slice(0, i);
-        console.log("Reveal", path, directoryPath);
-        if (isDirectoryPath(directoryPath)) {
-          open[pathToString(directoryPath)] = true;
-        }
+          // Open all directories in the path
+          for (let i = 1; i < path.length + 1; i++) {
+            const directoryPath = path.slice(0, i);
+            console.log("Reveal", path, directoryPath);
+            if (isDirectoryPath(directoryPath)) {
+              open[pathToString(directoryPath)] = true;
+            }
+          }
+
+          return open;
+        });
       }
+    },
+    [enableOpenDirectories],
+  );
 
-      return open;
-    });
-  }, []);
+  // When you click to create a new file or directory, we need to determine
+  // which directory to create it in.
+  const getCreationParentPath = useCallback(() => {
+    // If this file directory allows the user to open and close sub-directories
+    // (such as a tree view) then create the new file or directory within the
+    // active directory. Otherwise, create it in the current directory.
+    const creationTarget = enableOpenDirectories ? ctx.activePath : path;
+
+    return isFilePath(creationTarget)
+      ? (creationTarget.slice(0, -1) as DirectoryPath)
+      : creationTarget;
+  }, [ctx.activePath, enableOpenDirectories, path]);
 
   const createDirectory = () => {
-    const parent = isFilePath(ctx.activePath)
-      ? ctx.activePath.slice(0, -1)
-      : ctx.activePath;
+    const parent = getCreationParentPath();
 
     revealPath(parent);
 
@@ -140,9 +156,7 @@ export function FileDirectory({
   };
 
   const createFile = () => {
-    const parent = isFilePath(ctx.activePath)
-      ? ctx.activePath.slice(0, -1)
-      : ctx.activePath;
+    const parent = getCreationParentPath();
 
     revealPath(parent);
 

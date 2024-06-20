@@ -7,11 +7,12 @@ import {
   PROJECT_SIZE_LIMIT,
   USER_SIZE_LIMIT,
 } from "../../../../lib/sizeLimits";
+import { Path, pathContains, stringToPath } from "../../../../lib/fileHelpers";
 
 type FileChange =
   | { type: "create"; path: string; content?: string }
   | { type: "update"; id: string; path?: string; content?: string }
-  | { type: "delete"; id: string };
+  | { type: "delete"; path: string };
 
 export interface UpdateFilesRequestJSON {
   changes: FileChange[];
@@ -51,7 +52,17 @@ export default async function updateFiles(
 
   const { changes }: UpdateFilesRequestJSON = req.body;
 
-  const sizeDelta = await getSizeDelta(changes);
+  const getFileIdsToDelete = (deletedPaths: Path[]) => {
+    return project.files
+      .filter(({ path }) => {
+        return deletedPaths.some((deletePath) =>
+          pathContains(deletePath, stringToPath(path)),
+        );
+      })
+      .map((file) => file.id);
+  };
+
+  const sizeDelta = await getSizeDelta(changes, getFileIdsToDelete);
   const currentProjectSize = await getProjectCurrentFilesSize(id);
   console.log("Size delta:", sizeDelta);
   console.log("Current project size:", currentProjectSize);
@@ -73,26 +84,43 @@ export default async function updateFiles(
   }
 
   const files = await prisma.$transaction(
-    changes.map((change) => commitChangeInPrisma(change, id)),
+    changes.map((change) =>
+      commitChangeInPrisma(change, id, getFileIdsToDelete),
+    ),
   );
+
+  const deletePaths = changes
+    .filter(({ type }) => type === "delete")
+    .map(({ path }) => stringToPath(path!));
 
   const responseJSON: UpdateFilesResponseJSON = {
     id: project.id,
-    files: files.map((file) => ({
-      id: file.id,
-      path: file.path,
-      content: file.content ?? undefined,
-      asset: file.asset ?? undefined,
-    })),
-    deletedFiles: changes
-      .map((change) => (change.type === "delete" ? change.id : null))
-      .filter(Boolean) as string[],
+    files: files
+      .map((fileOrBatchDelete) => {
+        if (!("id" in fileOrBatchDelete)) {
+          // Is a batch delete
+          return null;
+        }
+
+        return {
+          id: fileOrBatchDelete.id,
+          path: fileOrBatchDelete.path,
+          content: fileOrBatchDelete.content ?? undefined,
+          asset: fileOrBatchDelete.asset ?? undefined,
+        };
+      })
+      .filter(Boolean) as UpdateFilesResponseJSON["files"],
+    deletedFiles: getFileIdsToDelete(deletePaths),
   };
 
   return res.json(responseJSON);
 }
 
-function commitChangeInPrisma(change: FileChange, projectId: string) {
+function commitChangeInPrisma(
+  change: FileChange,
+  projectId: string,
+  getFileIdsToDelete: (deletedPaths: Path[]) => string[],
+) {
   switch (change.type) {
     case "create":
       return prisma.file.create({
@@ -113,11 +141,16 @@ function commitChangeInPrisma(change: FileChange, projectId: string) {
         },
       });
     case "delete":
-      return prisma.file.delete({ where: { id: change.id } });
+      return prisma.file.deleteMany({
+        where: { id: { in: getFileIdsToDelete([stringToPath(change.path)]) } },
+      });
   }
 }
 
-async function getSizeDelta(changes: FileChange[]): Promise<number> {
+async function getSizeDelta(
+  changes: FileChange[],
+  getFileIdsToDelete: (deletedPaths: Path[]) => string[],
+): Promise<number> {
   let sizeDelta = 0;
   let fileIdsToFetch = [];
 
@@ -132,7 +165,7 @@ async function getSizeDelta(changes: FileChange[]): Promise<number> {
         fileIdsToFetch.push(change.id);
         break;
       case "delete":
-        fileIdsToFetch.push(change.id);
+        fileIdsToFetch.push(...getFileIdsToDelete([stringToPath(change.path)]));
         break;
     }
   }
