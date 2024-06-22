@@ -25,7 +25,17 @@ const userSelect = {
   id: true,
   username: true,
   role: true,
+  birthdayMonth: true,
   createdAt: true,
+  emails: {
+    select: {
+      id: true,
+      address: true,
+      verified: true,
+      verificationSentAt: true,
+      verifiedAt: true,
+    },
+  },
 
   passwordHash: false,
 } satisfies Prisma.UserSelect;

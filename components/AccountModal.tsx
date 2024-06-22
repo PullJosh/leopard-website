@@ -26,6 +26,7 @@ import { useSession } from "./SessionProvider";
 import { RegisterForm } from "./RegisterForm";
 import { SignInForm } from "./SignInForm";
 import { Checkbox } from "./CheckBox";
+import { isEmailAddress } from "../lib/validateUserInfo";
 
 const AccountModalContext = createContext<{
   open: boolean;
@@ -76,11 +77,12 @@ export default function AccountModal({ children }: AccountModalProps) {
   const [communityGuidelinesOpen, setCommunityGuidelinesOpen] = useState(false);
   const [communityModeratorsOpen, setCommunityModeratorsOpen] = useState(false);
 
-  const [activeTab, setActiveTab] = useState(0);
+  const [activeTab, setActiveTabRaw] = useState(0);
 
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [birthday, setBirthday] = useState("");
 
   const { user } = useSession();
 
@@ -90,6 +92,33 @@ export default function AccountModal({ children }: AccountModalProps) {
       setOpen(false);
     }
   }, [user]);
+
+  const setActiveTab = useCallback(
+    (index: number) => {
+      setActiveTabRaw(index);
+
+      // The register form has two separate fields for email and username,
+      // but the sign in form uses the `username` state for a joint field
+      // that could contain either. When switching back and forth between
+      // tabs, we want to split/merge the states intelligently.
+
+      // Switching to the sign in tab (from register)
+      if (index === 1) {
+        if (!username) {
+          setUsername(email);
+        }
+      }
+
+      // Switching to the register tab (from sign in)
+      if (index === 0) {
+        if (isEmailAddress(username)) {
+          setEmail(username);
+          setUsername("");
+        }
+      }
+    },
+    [email, username],
+  );
 
   return (
     <AccountModalContext.Provider
@@ -116,9 +145,13 @@ export default function AccountModal({ children }: AccountModalProps) {
           setOpen(false);
         }}
       >
-        <div className="fixed inset-0 z-50 flex w-screen flex-col items-center justify-center bg-gray-900/40 p-4">
+        <div className="fixed inset-0 z-50 flex w-screen flex-col items-center justify-center overflow-y-auto bg-gray-900/40 p-4">
           <DialogPanel className="flex w-full max-w-sm flex-shrink flex-col overflow-hidden rounded-lg bg-white shadow-2xl">
-            <TabGroup selectedIndex={activeTab} onChange={setActiveTab}>
+            <TabGroup
+              selectedIndex={activeTab}
+              onChange={setActiveTab}
+              className="flex flex-col overflow-hidden"
+            >
               <div className="flex bg-gray-300">
                 <TabList className="flex flex-grow">
                   {["Register", "Sign In"].map((tabName) => (
@@ -171,7 +204,7 @@ export default function AccountModal({ children }: AccountModalProps) {
                   </button>
                 </TabList>
               </div>
-              <TabPanels className="overflow-auto">
+              <TabPanels className="overflow-y-auto">
                 <TabPanel className="p-8">
                   <DialogTitle className="text-center text-lg font-bold">
                     Create a Leopard account
@@ -185,6 +218,8 @@ export default function AccountModal({ children }: AccountModalProps) {
                     setUsername={setUsername}
                     password={password}
                     setPassword={setPassword}
+                    birthday={birthday}
+                    setBirthday={setBirthday}
                   />
                 </TabPanel>
                 <TabPanel className="p-8">

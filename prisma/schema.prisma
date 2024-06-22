@@ -16,15 +16,15 @@ enum Role {
 }
 
 model User {
-  id           String    @id @default(cuid())
-  username     String    @unique
-  emailId      String    @unique
-  email        UserEmail @relation(fields: [emailId], references: [id], onDelete: Cascade)
-  passwordHash String
-  role         Role      @default(USER)
-  sessions     Session[]
-  projects     Project[]
-  createdAt    DateTime  @default(now())
+  id            String         @id @default(cuid())
+  username      String         @unique
+  passwordHash  String
+  birthdayMonth DateTime?
+  role          Role           @default(USER)
+  emails        EmailAddress[]
+  sessions      Session[]
+  projects      Project[]
+  createdAt     DateTime       @default(now())
 }
 
 model Session {
@@ -37,14 +37,15 @@ model Session {
   updatedAt DateTime @updatedAt
 }
 
-model UserEmail {
+model EmailAddress {
   id                 String    @id @default(cuid())
-  address            String    @unique
+  address            String
+  userId             String
+  user               User      @relation(fields: [userId], references: [id])
   verified           Boolean   @default(false)
   verifiedAt         DateTime?
-  verificationToken  String?
+  verificationToken  String?   @unique
   verificationSentAt DateTime?
-  user               User?
 }
 
 model Project {

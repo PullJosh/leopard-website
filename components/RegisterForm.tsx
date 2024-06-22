@@ -3,11 +3,13 @@ import {
   validateEmail,
   validatePassword,
   validateUsername,
+  validateBirthdayMonth,
+  cleanUpBirthdayMonth,
+  getAge,
 } from "../lib/validateUserInfo";
 import { useSession } from "../components/SessionProvider";
 import { FormErrorMessage } from "./FormErrorMessage";
 import { FormField } from "./FormField";
-import { Checkbox } from "./CheckBox";
 
 interface RegisterFormProps {
   email: string;
@@ -16,6 +18,8 @@ interface RegisterFormProps {
   setUsername: Dispatch<SetStateAction<string>>;
   password: string;
   setPassword: Dispatch<SetStateAction<string>>;
+  birthday: string;
+  setBirthday: Dispatch<SetStateAction<string>>;
 }
 
 export function RegisterForm({
@@ -25,17 +29,23 @@ export function RegisterForm({
   setUsername,
   password,
   setPassword,
+  birthday,
+  setBirthday,
 }: RegisterFormProps) {
-  const [over13, setOver13] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const age = useMemo(
+    () => (validateBirthdayMonth(birthday) ? getAge(new Date(birthday)) : 0),
+    [birthday],
+  );
 
   const formIsValid = useMemo(() => {
     if (validateEmail(email).length > 0) return false;
     if (validateUsername(username).length > 0) return false;
     if (validatePassword(password).length > 0) return false;
-    if (!over13) return false;
+    if (age < 13) return false;
     return true;
-  }, [email, over13, password, username]);
+  }, [age, email, password, username]);
 
   const { setUser } = useSession();
 
@@ -48,7 +58,7 @@ export function RegisterForm({
         // setCommunityGuidelinesOpen(true);
 
         const form = event.currentTarget;
-        const body = { email, username, password, over13 };
+        const body = { email, username, password, birthday };
 
         fetch(form.action, {
           method: "POST",
@@ -110,17 +120,18 @@ export function RegisterForm({
         helpText="Minimum 8 characters"
       />
 
-      <div>
-        <label className="group flex cursor-pointer items-center">
-          <Checkbox
-            name="over-13"
-            checked={over13}
-            onChange={(event) => setOver13(event.target.checked)}
-            required={true}
-          />
-          <span>I am over 13 years old</span>
-        </label>
-      </div>
+      <FormField
+        type="month"
+        label="Birthday Month"
+        name="birthday"
+        required={true}
+        value={birthday}
+        setValue={setBirthday}
+        placeholder="YYYY-MM"
+        validate={validateBirthdayMonth}
+        cleanUp={cleanUpBirthdayMonth}
+        helpText="Your birthday is used to verify your age. It will never be shared with anyone."
+      />
 
       <div className="flex justify-end">
         <button

@@ -1,18 +1,23 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { validatePassword, validateUsername } from "../../lib/validateUserInfo";
+import {
+  validateBirthdayMonth,
+  validatePassword,
+  validateUsername,
+} from "../../lib/validateUserInfo";
 import bcrypt from "bcrypt";
 import zod from "zod";
 
 import { setSessionTokenCookie } from "../../lib/setSessionTokenCookie";
-import { createUserSession } from "../../lib/createUserSession";
 
 import prisma from "../../lib/prisma";
+import { sendEmail } from "../../lib/email/sendEmail";
+import { emailAddressVerificationTemplate } from "../../lib/email/templates/emailAddressVerification";
 
 const registerSchema = zod.object({
   email: zod.string().email(),
   username: zod.string(),
   password: zod.string(),
-  over13: zod.boolean(),
+  birthday: zod.string(),
 });
 
 export default async function register(
@@ -28,13 +33,7 @@ export default async function register(
     });
   }
 
-  const { username, password, over13 } = body.data;
-
-  if (!over13) {
-    return res.status(400).json({
-      message: "You must be over 13 to register",
-    });
-  }
+  const { email, username, password, birthday } = body.data;
 
   // if (!tos) {
   //   return res.status(400).json({
@@ -56,7 +55,15 @@ export default async function register(
     });
   }
 
-  const existingUser = await prisma.user.findFirst({
+  // `validateBirthdayMonth` also checks if the user is at least 13 years old
+  const birthdayErrors = validateBirthdayMonth(birthday);
+  if (birthdayErrors.length > 0) {
+    return res.status(400).json({
+      message: `Invalid birthday (${birthdayErrors.join(";")})`,
+    });
+  }
+
+  const existingUsernameUser = await prisma.user.findFirst({
     where: {
       username: {
         equals: username,
@@ -65,31 +72,56 @@ export default async function register(
     },
   });
 
-  if (existingUser) {
-    if (await bcrypt.compare(password, existingUser.passwordHash)) {
-      const session = await createUserSession(existingUser.id);
-      return setSessionTokenCookie(res, session)
-        .status(200)
-        .json({ user: existingUser });
-    }
-
+  if (existingUsernameUser) {
     return res.status(400).json({
       message:
         "A user with that username already exists. Did you mean to sign in instead?",
     });
   }
 
+  const existingEmailAddress = await prisma.emailAddress.findFirst({
+    where: {
+      address: {
+        equals: email,
+        mode: "insensitive",
+      },
+    },
+  });
+
+  if (existingEmailAddress) {
+    return res.status(400).json({
+      message:
+        "A user with that email address already exists. Did you mean to sign in instead?",
+    });
+  }
+
   try {
+    const verificationToken = crypto.randomUUID();
+
     const user = await prisma.user.create({
       data: {
         passwordHash: await bcrypt.hash(password, 10),
         username,
-        email: {
-          create: {
-            address: body.data.email,
-          },
+        birthdayMonth: new Date(birthday),
+        emails: {
+          create: [
+            {
+              address: email,
+              verificationToken,
+              verificationSentAt: new Date(),
+            },
+          ],
         },
       },
+    });
+
+    // Send verification email
+    await sendEmail({
+      to: [email],
+      ...emailAddressVerificationTemplate({
+        username,
+        verificationURL: `/verify-email?token=${verificationToken}`,
+      }),
     });
 
     let expires = new Date();

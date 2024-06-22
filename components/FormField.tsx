@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import classNames from "classnames";
 
 interface FormFieldProps {
-  type: "text" | "email" | "password";
+  type: "text" | "email" | "password" | "date" | "month";
   label: string;
   name?: string;
   required?: boolean;
@@ -11,6 +11,8 @@ interface FormFieldProps {
   placeholder?: string;
   helpText?: string;
   validate?: (value: string) => string[];
+  cleanUp?: (value: string) => string;
+  disabled?: boolean;
 }
 
 export function FormField({
@@ -23,6 +25,8 @@ export function FormField({
   placeholder,
   helpText,
   validate,
+  cleanUp,
+  disabled,
 }: FormFieldProps) {
   const [errors, setErrors] = useState<string[] | null>(null);
 
@@ -56,8 +60,14 @@ export function FormField({
             }
           }}
           onBlur={(event) => {
+            let value = event.target.value;
+            if (cleanUp) {
+              console.log(value, cleanUp(value));
+              value = cleanUp(value);
+              setValue(value);
+            }
             if (validate) {
-              setErrors(validate(event.target.value));
+              setErrors(validate(value));
             }
           }}
           placeholder={placeholder}
@@ -66,6 +76,7 @@ export function FormField({
             "border-red-700": !isValid,
           })}
           required={required}
+          disabled={disabled}
         />
       </label>
       {isValid ? (

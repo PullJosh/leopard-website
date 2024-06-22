@@ -34,7 +34,7 @@ export function SignInForm({
         event.preventDefault();
 
         const form = event.currentTarget;
-        const body = { username, password };
+        const body = { email_or_username: username, password };
 
         fetch(form.action, {
           method: "POST",
@@ -62,8 +62,8 @@ export function SignInForm({
 
       <FormField
         type="text"
-        label="Username"
-        name="username"
+        label="Email or Username"
+        name="email_or_username"
         required={true}
         value={username}
         setValue={setUsername}
