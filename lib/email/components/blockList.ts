@@ -1,4 +1,4 @@
-import { EmailContent } from "../sendEmail";
+import { EmailContent } from "../emailUtils";
 
 export function blockListComponent(blocks: EmailContent[]): EmailContent {
   return {
