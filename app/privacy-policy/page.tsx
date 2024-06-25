@@ -1,5 +1,6 @@
 import Center from "../../components/Center";
 import Nav from "../../components/Nav";
+import { UnscrapableEmailLink } from "../../components/UnscrapableEmailLink";
 
 export default function PrivacyPolicyPage() {
   return (
@@ -60,8 +61,11 @@ export default function PrivacyPolicyPage() {
                 </svg>
                 <p className="!my-0">
                   <strong>Questions or concerns?</strong> If you have questions
-                  or comments about this privacy policy, you can email us at
-                  JoshPullen27@gmail.com.
+                  or comments about this privacy policy, you can{" "}
+                  <UnscrapableEmailLink base64EncodedEmail="Sm9zaFB1bGxlbjI3QGdtYWlsLmNvbQ==">
+                    email us
+                  </UnscrapableEmailLink>
+                  .
                 </p>
               </div>
               <div className="text-sm text-gray-700">
@@ -167,8 +171,11 @@ export default function PrivacyPolicyPage() {
 
             <h2>What are my rights? How can I have my information deleted?</h2>
             <p>
-              If you wish, you can contact us at JoshPullen27@gmail.com to
-              request a copy of your information or to request that your
+              If you wish, you can{" "}
+              <UnscrapableEmailLink base64EncodedEmail="Sm9zaFB1bGxlbjI3QGdtYWlsLmNvbQ==">
+                contact us
+              </UnscrapableEmailLink>{" "}
+              to request a copy of your information or to request that your
               information be deleted.
             </p>
             <p>
