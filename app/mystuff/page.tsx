@@ -68,7 +68,7 @@ export default async function MyStuff() {
   return (
     <>
       <div className="sticky top-[8px] z-30 border-b border-gray-300">
-        <Nav />
+        <Nav title="My Stuff" titleHref="/mystuff" />
       </div>
 
       <div className="my-8">
