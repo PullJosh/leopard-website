@@ -196,6 +196,19 @@ export default function Index() {
                 possible!
               </p>
             </div>
+            <div className="mb-4 flex-shrink-0 flex-grow-0 sm:mb-0">
+              <h5 className="mb-1 font-semibold text-gray-900">Community</h5>
+              <ul>
+                <li>
+                  <Link
+                    className="text-gray-700 hover:underline"
+                    href="/privacy-policy"
+                  >
+                    Privacy Policy
+                  </Link>
+                </li>
+              </ul>
+            </div>
             <div className="flex-shrink-0 flex-grow-0">
               <h5 className="mb-1 font-semibold text-gray-900">Source Code</h5>
               <ul>
