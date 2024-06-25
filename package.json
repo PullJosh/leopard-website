@@ -17,7 +17,6 @@
   "dependencies": {
     "@headlessui/react": "^2.0.3",
     "@monaco-editor/react": "^4.6.0",
-    "@next/third-parties": "^14.1.4",
     "@prisma/client": "^5.15.1",
     "aws-sdk": "^2.1261.0",
     "bcrypt": "^5.1.1",

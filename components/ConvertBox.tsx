@@ -7,7 +7,6 @@ import {
   useRef,
   useState,
 } from "react";
-import * as gtag from "../lib/gtag";
 import classNames from "classnames";
 import { useRouter } from "next/navigation";
 import {
@@ -164,15 +163,6 @@ export default function ConvertBox() {
     input: ChosenProject,
     outputType: ConversionOutputType,
   ) => {
-    gtag.event({
-      category: "Translate Project",
-      action: "Edit in CodeSandbox",
-      // @ts-expect-error - gtag types incorrectly state that label is supposed to be `undefined`
-      label: input.type === "url" ? input.id : "sb3",
-      // @ts-expect-error - gtag types incorrectly state that value is supposed to be `undefined`
-      value: outputType,
-    });
-
     setLoading(true);
 
     const assertUnreachable = (x: never): void => {};

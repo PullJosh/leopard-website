@@ -5,7 +5,6 @@
 First, make a `.env` file. Copy the contents of `.env.template` and fill it in with the necessary details. To do so, you will need:
 
 - A postgres database
-- A Google Analytics ID
 - An AWS account with two S3 buckets, one for project assets and one for project assets which are being used for uploads to CodeSandbox.
 
 Next, we need to make it possible to use subdomains on `localhost`. By default, this is not possible, but we can set up our computer to make any .test URL, such as http://localhost.test/ or even http://any-subdomain.anything.test/, map to 127.0.0.1, the localhost IP address.
