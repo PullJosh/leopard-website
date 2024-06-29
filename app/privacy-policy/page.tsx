@@ -106,7 +106,7 @@ export default function PrivacyPolicyPage() {
                     <strong>Projects you create:</strong> Projects you create
                     and share are visible to the whole world. We do our best to
                     ensure that your private projects are visible only to you,
-                    but we do rely on external providers to host your conent.
+                    but we do rely on external providers to host your content.
                   </li>
                   <li>
                     <strong>Comments and messages you send:</strong> Your
