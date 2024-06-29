@@ -202,6 +202,14 @@ export default function Index() {
                 <li>
                   <Link
                     className="text-gray-700 hover:underline"
+                    href="/community-guidelines"
+                  >
+                    Community Guidelines
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    className="text-gray-700 hover:underline"
                     href="/privacy-policy"
                   >
                     Privacy Policy
