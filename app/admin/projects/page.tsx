@@ -6,25 +6,29 @@ export default async function AdminProjects() {
     select: {
       id: true,
       title: true,
+      shared: true,
       owner: {
         select: {
           username: true,
         },
       },
+      scratchProjectId: true,
       createdAt: true,
       updatedAt: true,
     },
   });
 
   return (
-    <div className="prose">
+    <div className="prose max-w-max">
       <h1>Projects</h1>
       <table>
         <thead>
           <tr>
             <th>Project ID</th>
             <th>Project Name</th>
+            <th>Shared</th>
             <th>Owner</th>
+            <th>Scratch Project ID</th>
             <th>Created</th>
             <th>Updated</th>
           </tr>
@@ -38,6 +42,7 @@ export default async function AdminProjects() {
               <td>
                 <Link href={`/projects/${project.id}`}>{project.title}</Link>
               </td>
+              <td>{project.shared ? "Yes" : "No"}</td>
               <td>
                 {project.owner ? (
                   <Link href={`/useres/${project.owner.username}`}>
@@ -46,6 +51,13 @@ export default async function AdminProjects() {
                 ) : (
                   <em>Anonymous</em>
                 )}
+              </td>
+              <td>
+                <Link
+                  href={`https://scratch.mit.edu/projects/${project.scratchProjectId}`}
+                >
+                  {project.scratchProjectId}
+                </Link>
               </td>
               <td>{project.createdAt.toLocaleDateString()}</td>
               <td>{project.updatedAt.toLocaleDateString()}</td>
