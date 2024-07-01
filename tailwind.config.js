@@ -1,5 +1,6 @@
 const defaultTheme = require("tailwindcss/defaultTheme");
 
+/** @type {import('tailwindcss').Config} */
 module.exports = {
   mode: "jit",
   content: [
@@ -11,6 +12,10 @@ module.exports = {
     "./pages/**/*.jsx",
     "./pages/**/*.ts",
     "./pages/**/*.js",
+    "./app/**/*.tsx",
+    "./app/**/*.jsx",
+    "./app/**/*.ts",
+    "./app/**/*.js",
   ],
   theme: {
     extend: {
@@ -142,5 +147,5 @@ module.exports = {
     backgroundColor: ["responsive", "hover", "focus", "focus-within"],
     boxShadow: ["responsive", "hover", "focus", "focus-within"],
   },
-  plugins: [],
+  plugins: [require("@tailwindcss/typography")],
 };
