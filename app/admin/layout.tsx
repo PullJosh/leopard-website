@@ -1,5 +1,4 @@
-import Link from "next/link";
-import Nav, { NavSpace } from "../../components/Nav";
+import Nav from "../../components/Nav";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
