@@ -77,12 +77,16 @@ interface ProjectEditorProps {
   defaultProject: ProjectResponseJSON;
 
   translationsReferencePanel?: React.ReactNode;
+  showMentorsPopup?: boolean;
+  mentor?: { githubId: number; githubUsername: string };
 }
 
 export function ProjectEditor({
   projectId,
   defaultProject,
   translationsReferencePanel,
+  showMentorsPopup = false,
+  mentor,
 }: ProjectEditorProps) {
   const [project, setProject] = useState(defaultProject);
 
@@ -407,6 +411,8 @@ export function ProjectEditor({
     input.click();
   }, [activePath, uploadFiles]);
 
+  const [mentorsPopupOpen, setMentorsPopupOpen] = useState(showMentorsPopup);
+
   return (
     <ProjectEditorContext.Provider
       value={{
@@ -458,7 +464,7 @@ export function ProjectEditor({
             )}
           </Nav>
         </div>
-        <div className="flex flex-1 divide-x divide-gray-300 overflow-hidden">
+        <div className="relative flex flex-1 divide-x divide-gray-300 overflow-hidden">
           {ready ? (
             <div className="relative flex w-0 flex-1 flex-col">
               {/* <div className="flex h-0 flex-grow items-center justify-center">
@@ -730,6 +736,120 @@ export function ProjectEditor({
               )}
             </FileDirectory>
           </div>
+
+          {mentorsPopupOpen ? (
+            <div className="absolute bottom-10 left-4 mb-4 flex max-w-lg items-end space-x-2 !border-none">
+              {mentor && (
+                <button
+                  className="flex-shrink-0"
+                  onClick={() => {
+                    setMentorsPopupOpen(false);
+                  }}
+                >
+                  <img
+                    src={`https://avatars.githubusercontent.com/u/${mentor.githubId}?v=4`}
+                    alt={`Profile picture of ${mentor.githubUsername}`}
+                    className="h-16 w-16 rounded-full border"
+                  />
+                </button>
+              )}
+
+              <div className="relative rounded-2xl border bg-white px-6 py-4 shadow-xl">
+                <button
+                  className="absolute right-4 top-4 rounded-full hover:bg-gray-200 active:bg-gray-300"
+                  onClick={() => setMentorsPopupOpen(false)}
+                >
+                  <svg
+                    className="h-6 w-6 text-gray-700"
+                    viewBox="0 0 24 24"
+                    strokeLinejoin="round"
+                  >
+                    <title>Close</title>
+                    <path
+                      strokeLinecap="round"
+                      strokeWidth={2}
+                      stroke="currentColor"
+                      fill="none"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+
+                <strong className="mb-1 block text-lg font-semibold text-gray-900">
+                  Project not working?
+                </strong>
+                <p className="text-gray-700">
+                  Projects don't always translate perfectly. If your project
+                  isn't doing what you want, the{" "}
+                  <Link
+                    className="font-medium text-indigo-700 hover:underline"
+                    href="https://github.com/leopard-js/leopard-mentors/discussions"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Leopard Mentors
+                  </Link>{" "}
+                  would be happy to help.
+                </p>
+                <div className="mt-4 flex justify-end">
+                  <button
+                    className="mr-2 block rounded-md px-4 py-2 text-gray-700 ring-1 ring-gray-200 hover:bg-gray-100 active:bg-gray-200"
+                    onClick={() => {
+                      setMentorsPopupOpen(false);
+                    }}
+                  >
+                    It's working great
+                  </button>
+                  <Link
+                    className="block rounded-md bg-indigo-700 px-4 py-2 text-white hover:bg-indigo-800 active:bg-indigo-900"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    href={(() => {
+                      let url = new URL(
+                        "https://github.com/leopard-js/leopard-mentors/discussions/new",
+                      );
+                      url.searchParams.append("category", "cleanup-crew");
+                      url.searchParams.append("title", project.title);
+                      if (project.scratchProjectId) {
+                        url.searchParams.append(
+                          "scratch-project",
+                          `https://scratch.mit.edu/projects/${project.scratchProjectId}`,
+                        );
+                      }
+                      url.searchParams.append(
+                        "leopard-project",
+                        new URL(
+                          `/projects/${project.id}`,
+                          process.env.NEXT_PUBLIC_BASE_URL,
+                        ).href,
+                      );
+                      return url.href;
+                    })()}
+                  >
+                    Help me fix it
+                  </Link>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <button
+              className="absolute bottom-10 left-4 mb-4 flex max-w-lg items-center space-x-2 !border-none"
+              onClick={() => {
+                setMentorsPopupOpen(true);
+              }}
+            >
+              {mentor && (
+                <img
+                  src={`https://avatars.githubusercontent.com/u/${mentor.githubId}?v=4`}
+                  alt={`Profile picture of ${mentor.githubUsername}`}
+                  className="h-8 w-8 rounded-full border"
+                />
+              )}
+              <div className="rounded-2xl border bg-white px-3 py-2 text-gray-900 shadow-xl">
+                Project not working?
+              </div>
+            </button>
+          )}
         </div>
       </div>
       {/* <JSTranslationsModal /> */}

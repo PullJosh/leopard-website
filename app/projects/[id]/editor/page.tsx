@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { JSTranslationsReferencePanel } from "../../../../components/JSTranslationsReferencePanel";
 import { palettes } from "../../../../lib/translationPalettes";
 import { JSTranslationsReferenceTable } from "../../../../components/JSTranslationsTable";
+import { mentors } from "../../../../lib/mentors";
 
 interface ProjectEditorPageProps {
   params: {
@@ -39,6 +40,11 @@ export default async function ProjectEditorPage({
           }))}
         />
       }
+      // Show mentor popup if project is new (created less than a minute ago)
+      showMentorsPopup={
+        Date.now() - new Date(project.createdAt).getTime() < 1000 * 60
+      }
+      mentor={mentors[Math.floor(Math.random() * mentors.length)]}
     />
   );
 }

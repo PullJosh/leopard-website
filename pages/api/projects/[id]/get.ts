@@ -15,6 +15,8 @@ export interface ProjectResponseJSON {
   description: string;
   owner: { id: string; username: string } | null;
   shared: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export async function getProject(
@@ -63,6 +65,8 @@ export async function getProject(
         }
       : null,
     shared: project.shared,
+    createdAt: project.createdAt.toISOString(),
+    updatedAt: project.updatedAt.toISOString(),
   };
 
   return responseJSON;
