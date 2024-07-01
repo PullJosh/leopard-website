@@ -21,6 +21,8 @@ import {
 } from "@headlessui/react";
 import { useToasts } from "./Toasts";
 
+import { templates, isTemplateId } from "../lib/projectTemplates";
+
 const getProjectURL = (id: number) => `https://scratch.mit.edu/projects/${id}/`;
 
 const getProjectId = (url: string) => {
@@ -31,11 +33,6 @@ const getProjectId = (url: string) => {
 };
 
 type ChosenProject = { type: "url"; id: number } | { type: "file"; file: File };
-
-const templates = [{ id: 1019731531, name: "Blank Project" }];
-
-const isTemplateId = (id: number) =>
-  templates.some((template) => template.id === id);
 
 type ConversionError = { status: number; info: string };
 

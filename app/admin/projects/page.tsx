@@ -1,6 +1,9 @@
 import Link from "next/link";
 import prisma from "../../../lib/prisma";
 
+import { isTemplateId } from "../../../lib/projectTemplates";
+import classNames from "classnames";
+
 export default async function AdminProjects() {
   const projects = await prisma.project.findMany({
     select: {
@@ -55,6 +58,11 @@ export default async function AdminProjects() {
               <td>
                 <Link
                   href={`https://scratch.mit.edu/projects/${project.scratchProjectId}`}
+                  className={classNames({
+                    "opacity-30":
+                      project.scratchProjectId &&
+                      isTemplateId(Number(project.scratchProjectId)),
+                  })}
                 >
                   {project.scratchProjectId}
                 </Link>
