@@ -67,7 +67,7 @@ export function validateBirthdayMonth(birthday: string): string[] {
   }
 
   if (!/\d{4}-\d{2}/.test(birthday)) {
-    errors.push("Birthday month must be in YYYY-MM format");
+    errors.push("Birthday must include month and year");
   }
 
   const date = new Date(birthday);
@@ -85,29 +85,6 @@ export function validateBirthdayMonth(birthday: string): string[] {
   }
 
   return errors;
-}
-
-export function cleanUpBirthdayMonth(birthday: string): string {
-  // Safari autofill generates the invalid value MM/YYYY, which new Date()
-  // will not parse correctly, so let's fix that right away
-  const mmyyyyRegex = /(\d{2})\/(\d{4})/;
-  if (mmyyyyRegex.test(birthday)) {
-    return birthday.replace(mmyyyyRegex, "$2-$1");
-  }
-
-  const date = new Date(birthday);
-  if (isNaN(date.getTime())) {
-    return birthday; // If you can't fix it, leave it alone
-  }
-
-  // Some strings will be parsed as a date that we don't actually want to trust.
-  // For example, new Date("5") gives May 01 2001 in Chrome.
-  if (/^\d+$/.test(birthday)) {
-    return birthday;
-  }
-
-  // If we trust the parsed date, return it as YYYY-MM
-  return `${date.getUTCFullYear()}-${date.getUTCMonth() + 1}`;
 }
 
 export function getAge(birthday: Date) {

@@ -4,7 +4,6 @@ import {
   validatePassword,
   validateUsername,
   validateBirthdayMonth,
-  cleanUpBirthdayMonth,
   getAge,
 } from "../lib/validateUserInfo";
 import { useSession } from "../components/SessionProvider";
@@ -129,7 +128,6 @@ export function RegisterForm({
         setValue={setBirthday}
         placeholder="YYYY-MM"
         validate={validateBirthdayMonth}
-        cleanUp={cleanUpBirthdayMonth}
         helpText="Your birthday is used to verify your age. It will never be shared with anyone."
       />
 
