@@ -26,19 +26,31 @@ export async function GET(request: Request) {
   const projectIds = projects.map((project) => project.id);
   console.log(projectIds);
 
-  const fileKeys = projects
+  let assetKeys = projects
     .flatMap((project) => project.files.map((file) => file.asset))
     .filter((key) => key !== null) as string[];
 
-  console.log(fileKeys, fileKeys.length);
+  console.log(assetKeys, assetKeys.length);
+
+  // Only delete assets that are not used by any other projects
+  const assetKeysToDelete = (
+    await prisma.file.groupBy({
+      by: ["asset"],
+      where: { asset: { in: assetKeys } },
+      _count: { asset: true },
+      having: { asset: { _count: { equals: 1 } } },
+    })
+  ).map((group) => group.asset as string);
+
+  console.log(assetKeysToDelete);
 
   // Delete assets from bucket
-  if (fileKeys.length > 0) {
+  if (assetKeysToDelete.length > 0) {
     await s3
       .deleteObjects({
         Bucket: process.env.NEXT_PUBLIC_PROJECT_ASSETS_BUCKET_NAME as string,
         Delete: {
-          Objects: fileKeys.map((key) => ({ Key: key })),
+          Objects: assetKeysToDelete.map((key) => ({ Key: key })),
         },
       })
       .promise();
