@@ -71,6 +71,7 @@ import {
   SmallFileIcon,
 } from "./FileIcons";
 import { ContextMenu } from "./ContextMenu";
+import TopBorder from "./TopBorder";
 
 interface ProjectEditorProps {
   projectId: string;
@@ -425,45 +426,44 @@ export function ProjectEditor({
         createFile,
       }}
     >
+      <TopBorder />
       <div className="flex h-[calc(100vh-8px)] w-screen flex-col">
         <style jsx global>{`
           body {
             overscroll-behavior: none;
           }
         `}</style>
-        <div className="flex-initial border-b border-gray-300">
-          <Nav width="full">
-            {project && (
-              <NavProjectDescription
-                id={project.id}
-                title={project.title}
-                owner={project.owner}
-                remixSource={
-                  project.scratchProjectData
-                    ? {
-                        type: "scratch",
-                        id: project.scratchProjectData.id,
-                        title: project.scratchProjectData.title,
-                        username: project.scratchProjectData.author.username,
-                      }
-                    : undefined
-                }
-              />
-            )}
-            <NavSpace />
-            <div className="mr-2 flex py-3">
-              <SeeProjectPageButton id={projectId} />
-            </div>
-            {project && project.owner === null && (
-              <NavAnonymousProjectWarning
-                className="mr-2"
-                projectId={project.id}
-                setProject={setProject!}
-                autoClaimOnSignIn={true}
-              />
-            )}
-          </Nav>
-        </div>
+        <Nav width="full">
+          {project && (
+            <NavProjectDescription
+              id={project.id}
+              title={project.title}
+              owner={project.owner}
+              remixSource={
+                project.scratchProjectData
+                  ? {
+                      type: "scratch",
+                      id: project.scratchProjectData.id,
+                      title: project.scratchProjectData.title,
+                      username: project.scratchProjectData.author.username,
+                    }
+                  : undefined
+              }
+            />
+          )}
+          <NavSpace />
+          <div className="mr-2 flex py-3">
+            <SeeProjectPageButton id={projectId} />
+          </div>
+          {project && project.owner === null && (
+            <NavAnonymousProjectWarning
+              className="mr-2"
+              projectId={project.id}
+              setProject={setProject!}
+              autoClaimOnSignIn={true}
+            />
+          )}
+        </Nav>
         <div className="relative flex flex-1 divide-x divide-gray-300 overflow-hidden">
           {ready ? (
             <div className="relative flex w-0 flex-1 flex-col">
