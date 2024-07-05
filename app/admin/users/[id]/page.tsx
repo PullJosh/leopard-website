@@ -58,7 +58,7 @@ export default async function AdminUserPage({
   }
 
   return (
-    <div className="prose max-w-max">
+    <div className="prose max-w-full">
       <h1>{user.username}</h1>
       <ul>
         <li>

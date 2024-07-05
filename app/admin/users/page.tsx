@@ -36,7 +36,7 @@ export default async function AdminUsers() {
   ).length;
 
   return (
-    <div className="prose max-w-max">
+    <div className="prose max-w-full">
       <h1>Users ({usersCount})</h1>
       <p className="lead">
         {verifiedUsersCount} verified, {unverifiedUsersCount} unverified;{" "}
@@ -45,7 +45,6 @@ export default async function AdminUsers() {
       <table>
         <thead>
           <tr>
-            <th>User ID</th>
             <th>Username</th>
             <th>Email(s)</th>
             <th>Role</th>
@@ -56,11 +55,9 @@ export default async function AdminUsers() {
         <tbody>
           {users.map((user) => (
             <tr key={user.id}>
-              <td>
-                <Link href={`/admin/users/${user.id}`}>{user.id}</Link>
-              </td>
-              <td>
+              <td className="align-middle">
                 <Link href={`/users/${user.username}`}>{user.username}</Link>
+                <div className="text-xs text-gray-500">{user.id}</div>
               </td>
               <td>
                 <ul className="my-0 list-disc">

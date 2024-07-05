@@ -14,7 +14,7 @@ export default function PrivacyPolicyPage() {
           <div className="mb-6 text-sm italic text-gray-700">
             Last updated: <time>June 25th, 2024</time>
           </div>
-          <div className="prose prose-sm max-w-max sm:prose-base">
+          <div className="prose prose-sm max-w-full sm:prose-base">
             <div className="flex gap-4 border-t-4 border-indigo-700 bg-gradient-to-b from-indigo-200/50 to-indigo-200/10 p-8">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
