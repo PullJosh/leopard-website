@@ -21,9 +21,24 @@ export default async function AdminProjects() {
     },
   });
 
+  const projectsCount = projects.length;
+  const sharedProjectsCount = projects.filter((p) => p.shared).length;
+  const anonymousProjectsCount = projects.filter((p) => !p.owner).length;
+  const unsharedProjectsCount =
+    projectsCount - sharedProjectsCount - anonymousProjectsCount;
+
+  const projectsToday = projects.filter(
+    (p) => p.createdAt > new Date(Date.now() - 24 * 60 * 60 * 1000),
+  ).length;
+
   return (
     <div className="prose max-w-max">
-      <h1>Projects</h1>
+      <h1>Projects ({projectsCount})</h1>
+      <p className="lead">
+        {sharedProjectsCount} shared, {unsharedProjectsCount} unshared,{" "}
+        {anonymousProjectsCount} anonymous; {projectsToday} created in last 24
+        hours
+      </p>
       <table>
         <thead>
           <tr>
