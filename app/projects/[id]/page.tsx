@@ -41,7 +41,7 @@ export default async function ProjectPage({
   return (
     <>
       <TopBorder />
-      <Nav>
+      <Nav title="Leopard">
         <NavSpace />
         {project.owner === null && (
           <NavAnonymousProjectWarning
