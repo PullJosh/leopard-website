@@ -35,7 +35,13 @@ export function AssetPreview({ files }: AssetPreviewProps) {
                   className="flex max-w-[calc(min(100%,24rem))] flex-col items-center border border-gray-500"
                 >
                   <img
-                    className="max-w-full flex-shrink-0 flex-grow-0"
+                    className="max-w-full flex-shrink-0 flex-grow-0 text-gray-300"
+                    style={{
+                      backgroundImage:
+                        "linear-gradient(45deg, currentColor 25%, transparent 25%), linear-gradient(-45deg, currentColor 25%, transparent 25%), linear-gradient(45deg, transparent 75%, currentColor 75%), linear-gradient(-45deg, transparent 75%, currentColor 75%)",
+                      backgroundSize: "10px 10px",
+                      backgroundPosition: "0 0, 0 5px, 5px -5px, -5px 0px",
+                    }}
                     key={file.id}
                     src={getAssetURL(file.asset)}
                     alt={`Image ${file.path}`}
