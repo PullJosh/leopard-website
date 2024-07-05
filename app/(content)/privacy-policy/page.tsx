@@ -10,7 +10,7 @@ export default function PrivacyPolicyPage() {
           Last updated: <time>June 25th, 2024</time>
         </div>
         <div className="prose prose-sm max-w-full sm:prose-base">
-          <div className="flex gap-4 border-t-4 border-indigo-700 bg-gradient-to-b from-indigo-200/50 to-indigo-200/10 p-8">
+          <div className="relative flex gap-4 rounded-2xl border border-dashed border-indigo-200 bg-indigo-100 p-8">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
@@ -44,8 +44,8 @@ export default function PrivacyPolicyPage() {
             </div>
           </div>
 
-          <div className="mt-8 grid gap-8 sm:grid-cols-2">
-            <div className="flex gap-4 border-t-4 border-gray-700 bg-gradient-to-b from-gray-300/50 to-gray-300/10 p-8">
+          <div className="mt-8 grid items-start gap-8 sm:grid-cols-2">
+            <div className="flex gap-4 rounded-xl border border-dashed border-gray-400 bg-gray-200 p-8">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
