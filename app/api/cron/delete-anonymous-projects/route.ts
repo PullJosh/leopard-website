@@ -5,6 +5,8 @@ import { NextResponse } from "next/server";
 import prisma from "../../../../lib/prisma";
 import { s3 } from "../../../../lib/s3";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(request: Request) {
   const projects = await prisma.project.findMany({
     where: {
