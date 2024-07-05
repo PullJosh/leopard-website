@@ -1,13 +1,8 @@
 import { notFound } from "next/navigation";
 import prisma from "../../../../lib/prisma";
 import Link from "next/link";
-import { getAssetURL, getPreviewURL } from "../../../../lib/previewURLs";
-import {
-  audioFileExtensions,
-  fileExtension,
-  FileName,
-  imageFileExtensions,
-} from "../../../../lib/fileHelpers";
+import { getPreviewURL } from "../../../../lib/previewURLs";
+import { AssetPreview } from "../AssetPreview";
 
 interface AdminProjectPageProps {
   params: {
@@ -51,7 +46,7 @@ export default async function AdminProjectPage({
   }
 
   return (
-    <div className="prose max-w-max">
+    <div className="prose max-w-full">
       <h1>{project.title}</h1>
       <ul>
         <li>
@@ -101,68 +96,7 @@ export default async function AdminProjectPage({
       </table>
 
       <h2>Asset Previews</h2>
-      <div className="not-prose flex flex-wrap">
-        {filterUnique(
-          project.files.filter((file) => file.asset !== null),
-          (file) => file.asset as string,
-        )
-          .map((file) => {
-            if (typeof file.asset !== "string") return null;
-            const ext = fileExtension(file.asset as FileName);
-
-            if (imageFileExtensions.includes(ext)) {
-              return (
-                <div
-                  key={file.asset}
-                  className="flex flex-col items-center border border-gray-500"
-                >
-                  <img
-                    className="max-w-sm flex-shrink-0 flex-grow-0"
-                    key={file.id}
-                    src={getAssetURL(file.asset)}
-                    alt={`Image ${file.path}`}
-                  />
-                  <div className="mt-auto text-center text-xs">{file.path}</div>
-                </div>
-              );
-            }
-
-            return null;
-          })
-          .filter(Boolean)}
-      </div>
-      <div className="not-prose mt-8 flex flex-wrap">
-        {filterUnique(
-          project.files.filter((file) => file.asset !== null),
-          (file) => file.asset as string,
-        )
-          .map((file) => {
-            if (typeof file.asset !== "string") return null;
-            const ext = fileExtension(file.asset as FileName);
-
-            if (audioFileExtensions.includes(ext)) {
-              return (
-                <div key={file.asset} className="border border-gray-500">
-                  <audio src={getAssetURL(file.asset)} controls />
-                  <div className="text-center text-xs">{file.path}</div>
-                </div>
-              );
-            }
-
-            return null;
-          })
-          .filter(Boolean)}
-      </div>
+      <AssetPreview files={project.files} />
     </div>
   );
-}
-
-function filterUnique<T>(array: T[], key: (item: T) => string) {
-  const seen = new Set<string>();
-  return array.filter((item) => {
-    const k = key(item);
-    if (seen.has(k)) return false;
-    seen.add(k);
-    return true;
-  });
 }
