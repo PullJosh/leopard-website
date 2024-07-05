@@ -1,8 +1,7 @@
-import Center from "../../components/Center";
-import Nav from "../../components/Nav";
+import Center from "../../../components/Center";
 
 import { notFound } from "next/navigation";
-import prisma from "../../lib/prisma";
+import prisma from "../../../lib/prisma";
 import Link from "next/link";
 import classNames from "classnames";
 
@@ -30,9 +29,6 @@ export default async function VerifyEmailPage({
 
   return (
     <>
-      <div className="sticky top-[8px] z-30 border-b border-gray-300">
-        <Nav title="Email Verification" />
-      </div>
       {updateEmail ? (
         <div className="bg-green-200 py-4">
           <Center className="flex space-x-2">

@@ -1,4 +1,5 @@
 import Nav from "../../components/Nav";
+import TopBorder from "../../components/TopBorder";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -6,11 +7,12 @@ interface AdminLayoutProps {
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
   return (
-    <>
-      <div className="sticky top-[8px] z-30 border-b border-gray-300">
-        <Nav title="Admin" titleHref="/admin" />
+    <div className="flex min-h-screen flex-col">
+      <TopBorder />
+      <Nav title="Admin" titleHref="/admin" width="wide" />
+      <div className="flex-grow">
+        <div className="mx-auto max-w-6xl p-8">{children}</div>
       </div>
-      <div className="mx-auto max-w-6xl p-8">{children}</div>
-    </>
+    </div>
   );
 }

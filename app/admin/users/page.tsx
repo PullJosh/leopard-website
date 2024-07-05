@@ -56,7 +56,7 @@ export default async function AdminUsers() {
           {users.map((user) => (
             <tr key={user.id}>
               <td className="align-middle">
-                <Link href={`/users/${user.username}`}>{user.username}</Link>
+                <Link href={`/admin/users/${user.id}`}>{user.username}</Link>
                 <div className="text-xs text-gray-500">{user.id}</div>
               </td>
               <td>

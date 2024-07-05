@@ -1,17 +1,16 @@
 import classNames from "classnames";
 
 import Image from "next/image";
-import DefaultProfilePicture from "../../../public/default-profile-picture.svg";
+import DefaultProfilePicture from "../../../../public/default-profile-picture.svg";
 
 import Link from "next/link";
 
 import { Metadata, ResolvingMetadata } from "next";
-import Nav, { NavSpace } from "../../../components/Nav";
 
-import prisma from "../../../lib/prisma";
-import { relativeDateStr } from "../../../lib/fuzzyDate";
+import prisma from "../../../../lib/prisma";
+import { relativeDateStr } from "../../../../lib/fuzzyDate";
 import { cookies } from "next/headers";
-import { getUser, sessionTokenCookieName } from "../../../lib/getUser";
+import { getUser, sessionTokenCookieName } from "../../../../lib/getUser";
 
 interface Props {
   params: {
@@ -59,10 +58,6 @@ export default async function ProfilePage({ params: { username } }: Props) {
 
   return (
     <>
-      <div className="sticky top-[8px] z-30 border-b border-gray-300">
-        <Nav />
-      </div>
-
       <div className="my-8">
         <div className="mx-auto max-w-4xl px-8">
           <div className="grid grid-cols-[auto,1fr] grid-rows-[auto] gap-x-8">

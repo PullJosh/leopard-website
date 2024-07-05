@@ -14,6 +14,9 @@ import { ProjectNotesEditor } from "../../../components/ProjectNotesEditor";
 import { ProjectTitleEditor } from "../../../components/ProjectTitleEditor";
 import { changeProjectShared } from "../../../actions/changeProjectShared";
 import { ProjectPreviewWithControls } from "../../../components/ProjectPreview";
+import TopBorder from "../../../components/TopBorder";
+import { Footer } from "../../../components/Footer";
+import classNames from "classnames";
 
 interface ProjectPageProps {
   params: {
@@ -37,18 +40,17 @@ export default async function ProjectPage({
 
   return (
     <>
-      <div className="sticky top-[8px] z-30 border-b border-gray-300">
-        <Nav>
-          <NavSpace />
-          {project.owner === null && (
-            <NavAnonymousProjectWarning
-              className="mr-2"
-              projectId={project.id}
-              autoClaimOnSignIn={true}
-            />
-          )}
-        </Nav>
-      </div>
+      <TopBorder />
+      <Nav>
+        <NavSpace />
+        {project.owner === null && (
+          <NavAnonymousProjectWarning
+            className="mr-2"
+            projectId={project.id}
+            autoClaimOnSignIn={true}
+          />
+        )}
+      </Nav>
 
       {!project.shared && (
         <form className="bg-indigo-100 py-4" action={changeProjectShared}>
@@ -185,6 +187,8 @@ export default async function ProjectPage({
           </div>
         </div>
       </div>
+
+      <Footer />
     </>
   );
 }

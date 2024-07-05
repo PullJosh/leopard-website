@@ -1,4 +1,5 @@
-import Nav, { NavSpace } from "../components/Nav";
+import { Footer } from "../components/Footer";
+import Nav from "../components/Nav";
 
 export default function NotFound() {
   return (
@@ -14,6 +15,7 @@ export default function NotFound() {
           </p>
         </div>
       </div>
+      <Footer />
     </>
   );
 }

@@ -1,7 +1,7 @@
 import type { StaticImageData } from "next/image";
 
-import BXCodingCover from "../../public/sponsors/bxcoding/bxcoding-cover.jpeg";
-import BXCodingColorLogo from "../../public/sponsors/bxcoding/bxcoding-logo.png";
+import BXCodingCover from "../../../public/sponsors/bxcoding/bxcoding-cover.jpeg";
+import BXCodingColorLogo from "../../../public/sponsors/bxcoding/bxcoding-logo.png";
 
 interface Sponsor {
   name: string;

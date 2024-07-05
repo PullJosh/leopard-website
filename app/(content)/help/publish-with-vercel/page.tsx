@@ -1,5 +1,4 @@
-import Center from "../../../components/Center";
-import Nav, { NavSpace } from "../../../components/Nav";
+import Center from "../../../../components/Center";
 
 export const metadata = {
   title: "Publish your project as a website",
@@ -8,10 +7,6 @@ export const metadata = {
 export default function PublishWithVercel() {
   return (
     <>
-      <div className="sticky top-[8px] z-30 border-b border-gray-300">
-        <Nav title="Leopard" />
-      </div>
-
       <Center>
         <h2 className="mb-4 mt-8 text-4xl font-bold text-gray-800">
           Publish your project as a website!

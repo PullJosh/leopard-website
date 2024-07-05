@@ -37,7 +37,6 @@ export default async function RootLayout({
         <SessionProvider serverUser={user}>
           <ToastsProvider>
             <AccountModal>
-              <TopBorder />
               {children}
               <Toasts />
             </AccountModal>

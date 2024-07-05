@@ -16,16 +16,17 @@ import { RemixIcon } from "./RemixIcon";
 import { ErrorIcon } from "./icons/ErrorIcon";
 import { useRouter } from "next/navigation";
 import { ProjectTitleEditor } from "./ProjectTitleEditor";
+import { useWindowScrollPosition } from "../lib/useWindowScrollPosition";
 
 interface NavProps {
-  width?: "default" | "full";
+  width?: "default" | "wide" | "full";
   title?: string | null;
   titleHref?: string;
   children?: React.ReactNode;
 }
 
 const NavContext = createContext<{
-  width: "default" | "full";
+  width: "default" | "wide" | "full";
 }>({ width: "default" });
 
 export default function Nav({
@@ -34,55 +35,76 @@ export default function Nav({
   titleHref = "/",
   children = <NavSpace />,
 }: NavProps) {
+  const scrollY = useWindowScrollPosition();
+
   return (
     <NavContext.Provider value={{ width }}>
-      <header className="flex h-16 justify-start bg-white">
-        <div
-          className={classNames("mx-auto flex w-full justify-start", {
-            "max-w-4xl px-8": width === "default",
-            "px-2": width === "full",
-          })}
-        >
-          {title && titleHref === "/" ? (
-            // The Leopard logo always links to the home page. If the page title
-            // also links to the homepage, combine them into one link.
-            <Link
-              href="/"
-              className="mr-4 flex items-center space-x-3 hover:underline"
-            >
-              <img
-                className="my-2 h-12 w-12"
-                src="/leopard-logo.svg"
-                alt="Leopard logo"
-              />
-              {title && <h1 className="text-lg font-semibold">{title}</h1>}
-            </Link>
-          ) : (
-            // ...Otherwise, render the logo and title as separate links.
-            <>
-              <Link href="/" className="mr-3 flex items-center hover:underline">
+      <div
+        className={classNames(
+          "sticky top-[8px] z-30 border-b border-gray-300 shadow-black/10",
+          { shadow: scrollY > 0 },
+        )}
+        style={
+          {
+            "--tw-shadow-color": `rgba(0, 0, 0, ${Math.min(
+              scrollY / 1000,
+              0.05,
+            )})`,
+          } as React.CSSProperties
+        }
+      >
+        <header className="flex h-16 justify-start bg-white">
+          <div
+            className={classNames("mx-auto flex w-full justify-start", {
+              "max-w-4xl px-8": width === "default",
+              "max-w-6xl px-8": width === "wide",
+              "px-2": width === "full",
+            })}
+          >
+            {title && titleHref === "/" ? (
+              // The Leopard logo always links to the home page. If the page title
+              // also links to the homepage, combine them into one link.
+              <Link
+                href="/"
+                className="mr-4 flex items-center space-x-3 hover:underline"
+              >
                 <img
                   className="my-2 h-12 w-12"
                   src="/leopard-logo.svg"
                   alt="Leopard logo"
                 />
+                {title && <h1 className="text-lg font-semibold">{title}</h1>}
               </Link>
-              {title && (
+            ) : (
+              // ...Otherwise, render the logo and title as separate links.
+              <>
                 <Link
-                  href={titleHref}
-                  className="flex items-center hover:underline"
+                  href="/"
+                  className="mr-3 flex items-center hover:underline"
                 >
-                  <h1 className="text-lg font-semibold">{title}</h1>
+                  <img
+                    className="my-2 h-12 w-12"
+                    src="/leopard-logo.svg"
+                    alt="Leopard logo"
+                  />
                 </Link>
-              )}
-            </>
-          )}
+                {title && (
+                  <Link
+                    href={titleHref}
+                    className="flex items-center hover:underline"
+                  >
+                    <h1 className="text-lg font-semibold">{title}</h1>
+                  </Link>
+                )}
+              </>
+            )}
 
-          {children}
+            {children}
 
-          <NavUserInfo />
-        </div>
-      </header>
+            <NavUserInfo />
+          </div>
+        </header>
+      </div>
     </NavContext.Provider>
   );
 }
