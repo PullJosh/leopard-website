@@ -8,10 +8,17 @@ import {
   USER_SIZE_LIMIT,
 } from "../../../../lib/sizeLimits";
 import { Path, pathContains, stringToPath } from "../../../../lib/fileHelpers";
+import { getAssetHash, uploadS3Asset } from "../../../../lib/uploadS3Asset";
 
 type FileChange =
   | { type: "create"; path: string; content?: string }
-  | { type: "update"; id: string; path?: string; content?: string }
+  | {
+      type: "update";
+      id: string;
+      path?: string;
+      content?: string;
+      asset?: { base64: string; ext: string };
+    }
   | { type: "delete"; path: string };
 
 export interface UpdateFilesRequestJSON {
@@ -62,7 +69,27 @@ export default async function updateFiles(
       .map((file) => file.id);
   };
 
-  const sizeDelta = await getSizeDelta(changes, getFileIdsToDelete);
+  let assetUpdates = new Map<
+    string,
+    { hash: string; buffer: Buffer; ext: string; mimeType?: string }
+  >();
+  for (const change of changes) {
+    if (change.type === "update") {
+      const asset = change.asset;
+      if (asset) {
+        const buffer = Buffer.from(asset.base64.split(",")[1], "base64");
+        const mimeType = asset.base64.match(/data:(.*?);/)?.[1];
+        const hash = getAssetHash(buffer);
+        assetUpdates.set(change.id, { hash, buffer, ext: asset.ext, mimeType });
+      }
+    }
+  }
+
+  const sizeDelta = await getSizeDelta(
+    changes,
+    getFileIdsToDelete,
+    assetUpdates,
+  );
   const currentProjectSize = await getProjectCurrentFilesSize(id);
   console.log("Size delta:", sizeDelta);
   console.log("Current project size:", currentProjectSize);
@@ -83,9 +110,14 @@ export default async function updateFiles(
     }
   }
 
+  for (const assetUpdate of Array.from(assetUpdates.values())) {
+    const name = assetName(assetUpdate.hash, assetUpdate.ext || undefined);
+    await uploadS3Asset(assetUpdate.buffer, name, assetUpdate.mimeType);
+  }
+
   const files = await prisma.$transaction(
     changes.map((change) =>
-      commitChangeInPrisma(change, id, getFileIdsToDelete),
+      commitChangeInPrisma(change, id, getFileIdsToDelete, assetUpdates),
     ),
   );
 
@@ -120,6 +152,7 @@ function commitChangeInPrisma(
   change: FileChange,
   projectId: string,
   getFileIdsToDelete: (deletedPaths: Path[]) => string[],
+  assetUpdates: Map<string, { hash: string; buffer: Buffer; ext: string }>,
 ) {
   switch (change.type) {
     case "create":
@@ -132,11 +165,15 @@ function commitChangeInPrisma(
         },
       });
     case "update":
+      const assetUpdate = assetUpdates.get(change.id);
       return prisma.file.update({
         where: { id: change.id },
         data: {
           path: change.path,
           content: change.content,
+          asset: assetUpdate
+            ? assetName(assetUpdate.hash, assetUpdate.ext)
+            : undefined,
           size: Buffer.byteLength(change.content ?? "", "utf8"),
         },
       });
@@ -150,6 +187,7 @@ function commitChangeInPrisma(
 async function getSizeDelta(
   changes: FileChange[],
   getFileIdsToDelete: (deletedPaths: Path[]) => string[],
+  assetUpdates: Map<string, { hash: string; buffer: Buffer }>,
 ): Promise<number> {
   let sizeDelta = 0;
   let fileIdsToFetch = [];
@@ -161,7 +199,9 @@ async function getSizeDelta(
         break;
       case "update":
         // For an update, we'll add the new size now and subtract the old size later
-        sizeDelta += Buffer.byteLength(change.content ?? "", "utf8");
+        sizeDelta += change.asset
+          ? assetUpdates.get(change.id)!.buffer.byteLength
+          : Buffer.byteLength(change.content ?? "", "utf8");
         fileIdsToFetch.push(change.id);
         break;
       case "delete":
@@ -182,4 +222,8 @@ async function getSizeDelta(
   }
 
   return sizeDelta;
+}
+
+function assetName(hash: string, ext?: string) {
+  return ext ? `${hash}.${ext}` : hash;
 }

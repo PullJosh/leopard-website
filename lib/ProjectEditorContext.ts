@@ -21,10 +21,17 @@ interface ProjectEditorContext<FileType extends AbstractFile> {
   root: DirectoryType<FileType>;
   activePath: Path;
   setActivePath: (newPath: Path) => void;
-  fileEdits: { [key: string]: string };
-  setFileEdits: Dispatch<SetStateAction<{ [key: string]: string }>>;
+  fileEdits: FileEdits;
+  setFileEdits: Dispatch<SetStateAction<FileEdits>>;
   createDirectory: (path: DirectoryPath) => Promise<void>;
   createFile: (path: FilePath, content?: string) => Promise<void>;
+}
+
+export interface FileEdits {
+  [key: string]: {
+    content?: string;
+    asset?: string; // base64 encoded file (NOT an s3 key)
+  };
 }
 
 export const ProjectEditorContext = createContext<

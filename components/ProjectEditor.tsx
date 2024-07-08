@@ -51,6 +51,7 @@ import { JSTranslationsReferencePanel } from "./JSTranslationsReferencePanel";
 import { ProjectResponseJSON } from "../pages/api/projects/[id]/get";
 import { FileDirectory, FileDirectoryFileNameInput } from "./FileDirectory";
 import {
+  FileEdits,
   ProjectEditorContext,
   useDirectory,
   usePath,
@@ -72,6 +73,9 @@ import {
 } from "./FileIcons";
 import { ContextMenu } from "./ContextMenu";
 import TopBorder from "./TopBorder";
+
+import dynamic from "next/dynamic";
+const ImageEditor = dynamic(() => import("./ImageEditor"), { ssr: false });
 
 interface ProjectEditorProps {
   projectId: string;
@@ -197,7 +201,7 @@ export function ProjectEditor({
   }, [monaco, root, setActivePath]);
   */
 
-  const [fileEdits, setFileEdits] = useState<{ [key: string]: string }>({}); // file id -> content
+  const [fileEdits, setFileEdits] = useState<FileEdits>({});
 
   const handleUpdateFilesResponse = useCallback(
     (res: UpdateFilesResponseJSON) => {
@@ -324,15 +328,23 @@ export function ProjectEditor({
     }
 
     const body: UpdateFilesRequestJSON = {
-      changes: Object.entries(fileEdits).map(([id, content]) => ({
+      changes: Object.entries(fileEdits).map(([id, { content, asset }]) => ({
         type: "update",
         id,
         content,
+        asset: asset
+          ? {
+              base64: asset,
+              ext: fileExtension(
+                findFile(root, (file) => file.id === id)!.name,
+              ),
+            }
+          : undefined,
       })),
     };
 
     return updateFiles(body);
-  }, [fileEdits, updateFiles]);
+  }, [fileEdits, root, updateFiles]);
 
   const firstPath = activePath.slice(0, 1);
   const first = usePath(firstPath, root);
@@ -1344,12 +1356,12 @@ function FileEditor<FileType extends AbstractFile>({
           className="absolute left-0 top-0 h-full w-full"
           path={pathToString(file.path)}
           defaultValue={
-            file.id in fileEdits ? fileEdits[file.id] : file.content
+            file.id in fileEdits ? fileEdits[file.id].content : file.content
           }
           onChange={(value) => {
             setFileEdits((fileEdits) => ({
               ...fileEdits,
-              [file.id]: value ?? "",
+              [file.id]: { content: value ?? "" },
             }));
           }}
           keepCurrentModel={false}
@@ -1363,7 +1375,22 @@ function FileEditor<FileType extends AbstractFile>({
     const assetURL = getAssetURL(file.asset);
 
     if (imageFileExtensions.includes(fileExtension(file.path))) {
-      return <ImageEditor file={file} />;
+      return (
+        <ImageEditor
+          key={file.id}
+          file={file}
+          editedImageBase64={fileEdits[file.id]?.asset}
+          onChange={(newImageBase64: string) => {
+            setFileEdits((fileEdits) => ({
+              ...fileEdits,
+              [file.id]: { asset: newImageBase64 },
+            }));
+            setTimeout(() => {
+              console.log(fileEdits);
+            }, 100);
+          }}
+        />
+      );
     }
 
     if (audioFileExtensions.includes(fileExtension(file.path))) {
@@ -1408,39 +1435,6 @@ function FileEditor<FileType extends AbstractFile>({
   }
 
   return null;
-}
-
-interface ImageEditorProps<FileType extends AbstractFile> {
-  file: FileType;
-}
-
-function ImageEditor<FileType extends AbstractFile>({
-  file,
-}: ImageEditorProps<FileType>) {
-  const [image, setImage] = useState<HTMLImageElement | null>(null);
-
-  return (
-    <div className="absolute left-0 top-0 grid h-full w-full grid-rows-[1fr,auto] bg-gray-100">
-      <div className="flex items-center justify-center">
-        <img
-          key={file.id}
-          ref={(el) => setImage(el)}
-          src={getAssetURL(file.asset!)}
-          alt={`Image file ${file.path}`}
-          className="border border-gray-300 bg-gray-200"
-          style={{
-            backgroundImage:
-              "linear-gradient(45deg, white 25%, transparent 25%), linear-gradient(-45deg, white 25%, transparent 25%), linear-gradient(45deg, transparent 75%, white 75%), linear-gradient(-45deg, transparent 75%, white 75%)",
-            backgroundSize: "20px 20px",
-            backgroundPosition: "0 0, 0 10px, 10px -10px, -10px 0px",
-          }}
-        />
-      </div>
-      <div className="bg-gray-200 px-2 py-1 text-sm">
-        Size: {image?.width}x{image?.height}
-      </div>
-    </div>
-  );
 }
 
 interface CreateFileMenuProps {
