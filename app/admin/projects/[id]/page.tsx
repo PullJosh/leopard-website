@@ -46,7 +46,7 @@ export default async function AdminProjectPage({
   }
 
   return (
-    <div className="prose max-w-full">
+    <div className="prose">
       <h1>{project.title}</h1>
       <ul>
         <li>

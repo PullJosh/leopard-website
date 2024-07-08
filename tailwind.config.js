@@ -1,5 +1,13 @@
 const defaultTheme = require("tailwindcss/defaultTheme");
 
+const round = (num) =>
+  num
+    .toFixed(7)
+    .replace(/(\.[0-9]+?)0+$/, "$1")
+    .replace(/\.0$/, "");
+const rem = (px) => `${round(px / 16)}rem`;
+const em = (px, base) => `${round(px / base)}em`;
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   mode: "jit",
@@ -22,6 +30,28 @@ module.exports = {
       fontFamily: {
         sans: ["Inter var", ...defaultTheme.fontFamily.sans],
       },
+      typography: ({ theme }) => ({
+        DEFAULT: {
+          css: {
+            maxWidth: "unset",
+            code: {
+              fontWeight: "500",
+              backgroundColor: theme("colors.gray.300"),
+              paddingTop: em(2, 12),
+              paddingRight: em(4, 12),
+              paddingBottom: em(2, 12),
+              paddingLeft: em(4, 12),
+              borderRadius: rem(3),
+            },
+            "code::before": {
+              display: "none",
+            },
+            "code::after": {
+              display: "none",
+            },
+          },
+        },
+      }),
     },
     colors: {
       transparent: "transparent",

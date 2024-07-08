@@ -58,7 +58,7 @@ export default async function AdminUserPage({
   }
 
   return (
-    <div className="prose max-w-full">
+    <div className="prose">
       <h1>{user.username}</h1>
       <p>
         <Link href={`/users/${user.username}`}>View public profile</Link>

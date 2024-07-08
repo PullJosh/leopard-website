@@ -32,7 +32,7 @@ export default async function AdminProjects() {
   ).length;
 
   return (
-    <div className="prose max-w-full">
+    <div className="prose">
       <h1>Projects ({projectsCount})</h1>
       <p className="lead">
         {sharedProjectsCount} shared, {unsharedProjectsCount} unshared,{" "}

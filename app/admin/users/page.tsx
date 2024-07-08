@@ -36,7 +36,7 @@ export default async function AdminUsers() {
   ).length;
 
   return (
-    <div className="prose max-w-full">
+    <div className="prose">
       <h1>Users ({usersCount})</h1>
       <p className="lead">
         {verifiedUsersCount} verified, {unverifiedUsersCount} unverified;{" "}

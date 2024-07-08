@@ -37,7 +37,7 @@ export default async function AssetScan({
   });
 
   return (
-    <div className="prose w-full max-w-full">
+    <div className="prose w-full">
       <h1>All Uploaded Assets</h1>
       <PaginationButtons currentPage={page} />
 
