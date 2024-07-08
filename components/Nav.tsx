@@ -16,13 +16,14 @@ import { RemixIcon } from "./RemixIcon";
 import { ErrorIcon } from "./icons/ErrorIcon";
 import { useRouter } from "next/navigation";
 import { ProjectTitleEditor } from "./ProjectTitleEditor";
-import { useWindowScrollPosition } from "../lib/useWindowScrollPosition";
+import { useScrollPosition } from "../lib/useScrollPosition";
 
 interface NavProps {
   width?: "default" | "wide" | "full";
   title?: string | null;
   titleHref?: string;
   children?: React.ReactNode;
+  scrollRef?: React.RefObject<HTMLElement>;
 }
 
 const NavContext = createContext<{
@@ -34,8 +35,9 @@ export default function Nav({
   title = null,
   titleHref = "/",
   children = <NavSpace />,
+  scrollRef,
 }: NavProps) {
-  const scrollY = useWindowScrollPosition();
+  const scrollY = useScrollPosition(scrollRef);
 
   return (
     <NavContext.Provider value={{ width }}>
@@ -111,6 +113,30 @@ export default function Nav({
 
 export function NavSpace() {
   return <div className="flex-grow" />;
+}
+
+interface NavLinksProps {
+  children: React.ReactNode;
+}
+
+export function NavLinks({ children }: NavLinksProps) {
+  return <div className="flex items-stretch px-4">{children}</div>;
+}
+
+interface NavLinkProps {
+  href: string;
+  children: React.ReactNode;
+}
+
+export function NavLink({ href, children }: NavLinkProps) {
+  return (
+    <Link
+      href={href}
+      className="flex items-center rounded-md px-3 text-gray-700 hover:underline"
+    >
+      {children}
+    </Link>
+  );
 }
 
 interface NavProjectDescriptionProps {

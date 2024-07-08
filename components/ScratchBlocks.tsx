@@ -1,5 +1,6 @@
 "use client";
 
+import classNames from "classnames";
 import { useEffect, useRef } from "react";
 
 // @ts-ignore Scratchblocks is not typed
@@ -11,6 +12,7 @@ interface ScratchBlocksProps {
   languages?: string[];
   inline?: boolean;
   scale?: number;
+  className?: string;
 }
 
 export default function ScratchBlocks({
@@ -19,7 +21,7 @@ export default function ScratchBlocks({
   languages = undefined,
   inline = false,
   scale = 1,
-  ...props
+  className,
 }: ScratchBlocksProps) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -39,5 +41,9 @@ export default function ScratchBlocks({
     ref.current!.appendChild(svg);
   }, [blockStyle, languages, scale, children, inline]);
 
-  return <div ref={ref} {...props} />;
+  if (inline) {
+    return <span ref={ref} className={classNames("inline-block", className)} />;
+  } else {
+    return <div ref={ref} className={className} />;
+  }
 }
