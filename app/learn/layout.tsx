@@ -28,6 +28,10 @@ const tableOfContents: TOCSection = {
       title: "Major differences between Scratch and JavaScript",
       url: "/learn/differences-between-scratch-and-javascript",
     },
+    {
+      title: "How do I create a Leopard project?",
+      url: "/learn/how-to-create-a-leopard-project",
+    },
   ],
 };
 

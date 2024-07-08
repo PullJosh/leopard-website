@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import { Code } from "./Code";
+import classNames from "classnames";
 
 interface ReadonlyCodeDemoProps {
   html?: string;
@@ -9,6 +10,7 @@ interface ReadonlyCodeDemoProps {
   js?: string;
   describeLanguages?: boolean;
   previewCSS?: string;
+  className?: string;
 }
 
 export default function ReadonlyCodeDemo({
@@ -17,6 +19,7 @@ export default function ReadonlyCodeDemo({
   js,
   describeLanguages = [html, css, js].filter(Boolean).length > 1,
   previewCSS,
+  className,
 }: ReadonlyCodeDemoProps) {
   const previewURL = useCodePreviewURL({
     html,
@@ -25,7 +28,12 @@ export default function ReadonlyCodeDemo({
   });
 
   return (
-    <div className="not-prose grid grid-cols-2 gap-x-4">
+    <div
+      className={classNames(
+        "not-prose clear-both grid grid-cols-2 gap-x-4",
+        className,
+      )}
+    >
       <div className="space-y-4">
         {html && (
           <div>
