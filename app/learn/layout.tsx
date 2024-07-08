@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Footer } from "../../components/Footer";
 import Nav, { NavLink, NavLinks, NavSpace } from "../../components/Nav";
 import TopBorder from "../../components/TopBorder";
@@ -40,8 +40,8 @@ interface LearnLayoutProps {
 }
 
 export default function LearnLayout({ children }: LearnLayoutProps) {
-  const width = useWindowWidth();
   const xlWidth = Number(theme.screens.xl.replace("px", ""));
+  const width = useWindowWidth(xlWidth);
   const xl = width >= xlWidth;
 
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -61,18 +61,14 @@ export default function LearnLayout({ children }: LearnLayoutProps) {
           <NavSpace />
         </Nav>
       </div>
-      {xl && (
-        <nav className="border-r border-gray-300 bg-white">
-          <TableOfContents />
-        </nav>
-      )}
+      <nav className="hidden border-r border-gray-300 bg-white xl:block">
+        <TableOfContents />
+      </nav>
       <div className="flex flex-grow flex-col xl:overflow-auto" ref={scrollRef}>
         <Center className="flex-grow">
-          {!xl && (
-            <nav className="mt-8 rounded-lg border border-gray-300 bg-white">
-              <TableOfContents />
-            </nav>
-          )}
+          <nav className="mt-8 rounded-lg border border-gray-300 bg-white xl:hidden">
+            <TableOfContents />
+          </nav>
           <div className="mb-auto py-8">{children}</div>
         </Center>
         <Footer />
@@ -81,13 +77,14 @@ export default function LearnLayout({ children }: LearnLayoutProps) {
   );
 }
 
-function useWindowWidth() {
-  const [width, setWidth] = useState(window.innerWidth);
+function useWindowWidth(defaultWidth = 0) {
+  const [width, setWidth] = useState(defaultWidth);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     function handleResize() {
       setWidth(window.innerWidth);
     }
+    setWidth(window.innerWidth);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
@@ -108,7 +105,7 @@ function TableOfContents() {
       >
         <Link href={tableOfContents.url}>{tableOfContents.title}</Link>
       </h2>
-      <ul>
+      <ul className="space-y-1">
         {tableOfContents.children?.map((section, i) => (
           <li
             key={i}
