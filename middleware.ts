@@ -2,6 +2,11 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
+  // In maintenance mode, rewrite all requests to /$maintenance
+  if (process.env.MAINTENANCE_MODE === "true") {
+    return NextResponse.rewrite(new URL("/$maintenance.html", request.url));
+  }
+
   // Match subdomains and rewrite to the project preview route
   // For example, `https://0123456789.preview.leopardjs.com/example.html` will be rewritten to
   // `https://leopardjs.com/$preview/0123456789/example.html`
