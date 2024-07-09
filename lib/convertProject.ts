@@ -34,8 +34,8 @@ ${content}`;
   }
 }
 
-export function exportProjectWithBufferAssetsToZip(project: Project): JSZip {
-  const converted = project.toLeopard({});
+export async function exportProjectWithBufferAssetsToZip(project: Project): Promise<JSZip> {
+  const converted = await project.toLeopard({});
   postProcessLeopardFiles(converted);
 
   const zip = new JSZip();
@@ -65,7 +65,7 @@ export function exportProjectWithBufferAssetsToZip(project: Project): JSZip {
 export async function exportProjectWithURLAssetsToCodeSandbox(
   project: Project,
 ): Promise<string> {
-  const converted = project.toLeopard({});
+  const converted = await project.toLeopard({});
   postProcessLeopardFiles(converted);
 
   let files: { [name: string]: { content: string; isBinary: boolean } } = {};
