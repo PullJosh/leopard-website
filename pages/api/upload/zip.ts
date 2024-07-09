@@ -27,7 +27,7 @@ export default async function uploadToZip(
       },
     });
 
-    const convertedZip = exportProjectWithBufferAssetsToZip(project);
+    const convertedZip = await exportProjectWithBufferAssetsToZip(project);
     const buffer = await convertedZip.generateAsync({ type: "nodebuffer" });
     res.setHeader("Content-Type", "application/zip");
     res.setHeader("Content-Disposition", "attachment; filename=converted.zip");

@@ -37,7 +37,7 @@ export default async function convertToLeopardWebsite(
       },
     });
 
-    const converted = project.toLeopard();
+    const converted = await project.toLeopard();
 
     let assetUploadPromises = [];
     let alreadyUploadedAssetNames: Set<string> = new Set();
