@@ -21,14 +21,6 @@ export async function middleware(request: NextRequest) {
         ),
       );
     }
-
-    // Any other subdomains are invalid
-    if (subdomains.length > 0) {
-      // Redirect to the root domain
-      return NextResponse.redirect(
-        new URL("/", process.env.NEXT_PUBLIC_BASE_URL),
-      );
-    }
   }
 
   // Block URLs begining with $. We will use that as our convention for paths
@@ -38,6 +30,17 @@ export async function middleware(request: NextRequest) {
     request.nextUrl.pathname.startsWith("$") || // I have no idea if the non-/ version is needed here but I'm including it to be on the safe side
     request.nextUrl.pathname.startsWith("/$")
   ) {
+    // Exception: If unsafe same-domain previews are enabled, allow
+    // $preview paths to be loaded directly
+    if (process.env.NEXT_PUBLIC_UNSAFE_SAME_DOMAIN_PREVIEWS === "true") {
+      if (
+        request.nextUrl.pathname.startsWith("$preview") ||
+        request.nextUrl.pathname.startsWith("/$preview")
+      ) {
+        return NextResponse.next();
+      }
+    }
+
     // Return a 404 for any requests to these paths
     return NextResponse.error();
   }
