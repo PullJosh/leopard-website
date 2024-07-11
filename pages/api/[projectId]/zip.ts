@@ -3,6 +3,10 @@ import fetch from "node-fetch";
 import { Project } from "sb-edit";
 import { exportProjectWithBufferAssetsToZip } from "../../../lib/convertProject";
 
+export const config = {
+  maxDuration: 60, // Allow running for up to 1 minute (the max) on Vercel
+};
+
 export default async function convertToZip(
   req: NextApiRequest,
   res: NextApiResponse,

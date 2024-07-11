@@ -12,6 +12,10 @@ import {
   USER_SIZE_LIMIT,
 } from "../../../lib/sizeLimits";
 
+export const config = {
+  maxDuration: 60, // Allow running for up to 1 minute (the max) on Vercel
+};
+
 interface Asset {
   buffer: Buffer;
   contentType?: string;
