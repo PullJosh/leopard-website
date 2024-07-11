@@ -2,6 +2,10 @@ import { NextRequest } from "next/server";
 import prisma from "../../../../lib/prisma";
 import { getAssetURL } from "../../../../lib/previewURLs";
 
+// Use "Edge" runtime on Vercel. Ideally this will be faster.
+export const runtime =
+  process.env.NODE_ENV === "development" ? "nodejs" : "edge";
+
 export async function GET(
   req: NextRequest,
   {
