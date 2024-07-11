@@ -21,14 +21,6 @@ export async function middleware(request: NextRequest) {
         ),
       );
     }
-
-    // Any other subdomains are invalid
-    if (subdomains.length > 0) {
-      // Redirect to the root domain
-      return NextResponse.redirect(
-        new URL("/", process.env.NEXT_PUBLIC_BASE_URL),
-      );
-    }
   }
 
   // Block URLs begining with $. We will use that as our convention for paths
