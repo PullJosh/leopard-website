@@ -26,7 +26,6 @@ export default async function ProfilePage({ params: { username } }: Props) {
     where: {
       username: {
         equals: username,
-        mode: "insensitive",
       },
     },
     include: {
@@ -195,7 +194,6 @@ export async function generateMetadata(
     where: {
       username: {
         equals: username,
-        mode: "insensitive",
       },
     },
     select: { username: true },

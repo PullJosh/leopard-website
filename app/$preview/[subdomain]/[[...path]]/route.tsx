@@ -21,7 +21,6 @@ export async function GET(
     where: {
       projectId: {
         equals: subdomain,
-        mode: "insensitive",
       },
       path: path.join("/"),
     },

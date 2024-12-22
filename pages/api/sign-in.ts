@@ -33,7 +33,6 @@ export default async function signIn(
             some: {
               address: {
                 equals: email_or_username,
-                mode: "insensitive",
               },
             },
           },
@@ -43,7 +42,6 @@ export default async function signIn(
         where: {
           username: {
             equals: email_or_username,
-            mode: "insensitive",
           },
         },
       });

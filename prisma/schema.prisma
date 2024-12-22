@@ -6,22 +6,16 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_DATABASE_URL")
-}
-
-enum Role {
-  ADMIN
-  USER
+  provider = "sqlite"
+  url      = "file:./database.db"
 }
 
 model User {
   id            String         @id @default(cuid())
-  username      String         @unique
+  username      String         @unique // Case-insensitive (COLLATE NOCASE manually added to migration file)
   passwordHash  String
   birthdayMonth DateTime?
-  role          Role           @default(USER)
+  role          String         @default("USER") // "ADMIN" or "USER"
   emails        EmailAddress[]
   sessions      Session[]
   projects      Project[]
@@ -40,7 +34,7 @@ model Session {
 
 model EmailAddress {
   id                 String    @id @default(cuid())
-  address            String
+  address            String // Case-insensitive (COLLATE NOCASE manually added to migration file)
   userId             String
   user               User      @relation(fields: [userId], references: [id])
   verified           Boolean   @default(false)

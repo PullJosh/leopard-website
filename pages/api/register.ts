@@ -67,7 +67,6 @@ export default async function register(
     where: {
       username: {
         equals: username,
-        mode: "insensitive",
       },
     },
   });
@@ -83,7 +82,6 @@ export default async function register(
     where: {
       address: {
         equals: email,
-        mode: "insensitive",
       },
     },
   });
