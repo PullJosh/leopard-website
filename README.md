@@ -4,7 +4,6 @@
 
 First, make a `.env` file. Copy the contents of `.env.template` and fill it in with the necessary details. To do so, you will need:
 
-- A postgres database
 - An AWS account with two S3 buckets, one for project assets and one for project assets which are being used for uploads to CodeSandbox.
 
 Next, we need to make it possible to use subdomains on `localhost`. By default, this is not possible, but we can set up our computer to make any .test URL, such as http://localhost.test/ or even http://any-subdomain.anything.test/, map to 127.0.0.1, the localhost IP address.
@@ -15,3 +14,35 @@ To do this, install dnsmasq using [these instructions](https://gist.github.com/o
 - Create a file `/etc/resolver/test` that contains the content `nameserver 127.0.0.1`. You will most likely need to create the `/etc/resolver` directory yourself.
 
 Once you set the above settings and run dnsmasq, you will be able to visit _any_ .test URL and it will always map to localhost. In particular, you can run `npm run dev` and then visit http://localhost.test:3000/ and it will take you to the Leopard dev server. This is good because it works just like normal `localhost:3000` except now you can also use subdomains.
+
+## Running on DigitalOcean Droplet
+
+**Basic setup:** Spin up a DigitalOcean Droplet (or equivalent server).
+Use [this tutorial from DigitalOcean](https://www.digitalocean.com/community/developer-center/deploying-a-next-js-application-on-a-digitalocean-droplet#step-5-setting-up-pm2-process-manager) to...
+
+- Set up SSH access to the droplet
+- Configure Nginx to accept requests on port `:80` (the default for internet traffic) and forward them to `localhost:3000`, where the Next.js app will run
+
+Then, `git clone` the repository. Just like running locally, you will need to make a copy of `.env.template` into `.env`:
+
+```bash
+cd leopard-website
+cp .env.template .env
+```
+
+Then, edit the file to add access info for two AWS S3 buckets.
+
+After this, you will be able to `npm install` and `npm run build` and then `npm start` to start the server. **Note that you will need to make some configuration changes, detailed below, if your server is resource-limited.**
+
+Once you have confirmed that `npm start` works, return to [the previously-linked tutorial](https://www.digitalocean.com/community/developer-center/deploying-a-next-js-application-on-a-digitalocean-droplet#step-5-setting-up-pm2-process-manager) to...
+
+- Set up PM2 to automatically restart the server if it ever stops
+
+### Configuration for resource-limited servers
+
+I am running the website on a cheap droplet ($4/month), which is resource-limited. It has 512 MB memory and 10 GB disk. Installing dependencies and building with these limited resources required some configuration changes:
+
+- Before installing dependencies, [add a swap file](https://stackoverflow.com/a/49269092/2205195) to compensate for limited RAM
+- When building, use the command `npm run build-server` (as opposed to `npm run build`), which sets the `-max-old-space-size` option.
+
+Builds are slow and could be much faster on a more powerful server, but they are also very rare and I'd rather configure the server to be appropriate for 99% of its use, which is serving the website, not building the code. (Alternatively, it is possible on DigitalOcean to temporarily scale up the RAM and compute and then spin it back down while preserving the file system.)

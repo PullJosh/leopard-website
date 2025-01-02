@@ -1,4 +1,5 @@
 node_modules
+README.private.md
 .next
 .env.local
 .env
