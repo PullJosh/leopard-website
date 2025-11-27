@@ -38,6 +38,45 @@ Once you have confirmed that `npm start` works, return to [the previously-linked
 
 - Set up PM2 to automatically restart the server if it ever stops
 
+**Domain name configuration:** The domain name should have a bunch of A records that each point to the droplet's IP address.
+
+| **Type** |  **Host**  | **Value**  |
+| :------: | :--------: | :--------: |
+|    A     |     @      | DROPLET_IP |
+|    A     |    www     | DROPLET_IP |
+|    A     |     \*     | DROPLET_IP |
+|    A     | \*.preview | DROPLET_IP |
+
+Make sure your nginx server block configuration, at `/etc/nginx/sites-available/[name-you-chose]`, is set to accept both domains:
+
+```
+server {
+  listen 80;
+  server_name YOUR_DOMAIN.com www.YOUR_DOMAIN.com;
+  # ...
+}
+```
+
+Finally, make sure the `.env` file has `NEXT_PUBLIC_BASE_URL` set to `https://YOUR_DOMAIN.com` (without a trailing slash). Note that when you change the `.env` file, you must re-build the code for your changes to take effect.
+
+**Add SSL (https):** Follow [this tutorial](https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-22-04#step-4-obtaining-an-ssl-certificate) to install and configure certbot which will obtain and automatically renew SSL certificates from Let's Encrypt, and set up the Nginx plugin that enforces redirects from http to https.
+
+**Set up an admin user on the Leopard website:** To set up an admin user on the Leopard website, you can register as a normal user and then update your role in the database. Updating the role can be done using the sqlite command line tool, [sqlite3](https://www.sqlite.org/cli.html), which can be installed by running `sudo apt update` followed by `sudo apt install sqlite3`.
+
+Once the sqlite command-line tool is installed, you can run the following commands to interact with the database:
+
+```
+cd ~/leopard-website/prisma
+sqlite3
+
+# Within the sqlite3 tool:
+sqlite> .open database.db
+sqlite> .tables # List all the tables in the database
+sqlite> .mode column # Make the output for SQL queries more visually appealing
+sqlite> SELECT * FROM User;
+sqlite> UPDATE User SET role="ADMIN" WHERE username="PullJosh"; # (or whichever username you want to make an admin)
+```
+
 ### Configuration for resource-limited servers
 
 I am running the website on a cheap droplet ($4/month), which is resource-limited. It has 512 MB memory and 10 GB disk. Installing dependencies and building with these limited resources required some configuration changes:
