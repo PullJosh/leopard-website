@@ -9,6 +9,7 @@ import {
 import { useSession } from "../components/SessionProvider";
 import { FormErrorMessage } from "./FormErrorMessage";
 import { FormField } from "./FormField";
+import { GoingAwayNotice } from "./GoingAwayNotice";
 
 interface RegisterFormProps {
   email: string;
@@ -31,6 +32,13 @@ export function RegisterForm({
   birthday,
   setBirthday,
 }: RegisterFormProps) {
+  return (
+    <>
+      <GoingAwayNotice />
+      <p className="mt-4 text-center">New registration has been disabled.</p>
+    </>
+  );
+
   const [error, setError] = useState<string | null>(null);
 
   const age = useMemo(

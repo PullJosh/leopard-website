@@ -2,6 +2,7 @@ import { Dispatch, SetStateAction, useMemo, useState } from "react";
 import { useSession } from "../components/SessionProvider";
 import { FormField } from "./FormField";
 import { FormErrorMessage } from "./FormErrorMessage";
+import { GoingAwayNotice } from "./GoingAwayNotice";
 
 interface SignInFormProps {
   username: string;
@@ -58,6 +59,8 @@ export function SignInForm({
           });
       }}
     >
+      <GoingAwayNotice />
+
       {error && <FormErrorMessage>{error}</FormErrorMessage>}
 
       <FormField

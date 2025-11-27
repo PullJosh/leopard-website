@@ -305,7 +305,8 @@ export function NavUserInfo() {
       >
         <button
           onClick={() => openAccountModal("register")}
-          className="rounded-md bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700 active:bg-indigo-800"
+          className="rounded-md bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700 active:bg-indigo-800 disabled:cursor-not-allowed disabled:opacity-50"
+          disabled={true}
         >
           Register
         </button>

@@ -4,6 +4,7 @@ import Center from "../../../components/Center";
 import { SettingsForm } from "../../../components/SettingsForm";
 import { UnscrapableEmailLink } from "../../../components/UnscrapableEmailLink";
 import { getUser, sessionTokenCookieName } from "../../../lib/getUser";
+import { GoingAwayNotice } from "../../../components/GoingAwayNotice";
 
 export default async function SettingsPage() {
   const token = cookies().get(sessionTokenCookieName)?.value;
@@ -16,6 +17,7 @@ export default async function SettingsPage() {
   return (
     <div className="my-8">
       <Center>
+        <GoingAwayNotice className="mb-8" />
         <h1 className="mb-4 text-3xl font-semibold">Settings</h1>
         <div className="mb-4 rounded-md bg-gray-300 px-4 py-2 text-sm text-gray-800">
           <strong className="font-semibold">

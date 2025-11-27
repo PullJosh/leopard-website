@@ -11,6 +11,7 @@ import prisma from "../../../../lib/prisma";
 import { relativeDateStr } from "../../../../lib/fuzzyDate";
 import { cookies } from "next/headers";
 import { getUser, sessionTokenCookieName } from "../../../../lib/getUser";
+import { GoingAwayNotice } from "../../../../components/GoingAwayNotice";
 
 interface Props {
   params: {
@@ -59,6 +60,7 @@ export default async function ProfilePage({ params: { username } }: Props) {
     <>
       <div className="my-8">
         <div className="mx-auto max-w-4xl px-8">
+          <GoingAwayNotice className="mb-8" />
           <div className="grid grid-cols-[auto,1fr] grid-rows-[auto] gap-x-8">
             <div className="w-44">
               <div className="h-44 w-44 overflow-hidden rounded-lg">

@@ -48,12 +48,14 @@ const conversionMenuItems: {
   label: string;
   icon?: React.ReactNode;
   tag?: string;
+  disabled?: boolean;
 }[] = [
   {
     output: "leopard-website",
     allowedTypes: ["url"],
     label: "Leopard Editor",
-    tag: "Alpha",
+    tag: "Going Away Soon",
+    disabled: true,
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -614,7 +616,8 @@ export default function ConvertBox() {
                         disabled={
                           loading ||
                           !project ||
-                          !item.allowedTypes.includes(project.type)
+                          !item.allowedTypes.includes(project.type) ||
+                          item.disabled
                         }
                         onClick={() => {
                           if (project) {

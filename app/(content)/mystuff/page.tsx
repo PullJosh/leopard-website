@@ -14,6 +14,7 @@ import {
 } from "../../../lib/sizeLimits";
 import classNames from "classnames";
 import { PatreonIcon } from "../../../components/icons/Patreon";
+import { GoingAwayNotice } from "../../../components/GoingAwayNotice";
 
 export const metadata = {
   title: "My Stuff",
@@ -69,6 +70,7 @@ export default async function MyStuff() {
   return (
     <div className="my-8">
       <div className="mx-auto max-w-4xl px-8">
+        <GoingAwayNotice className="mb-8" />
         <h1 className="mb-4 text-3xl font-semibold">My Stuff</h1>
         <div className="grid grid-cols-[3fr,1fr] gap-8">
           {/* Main Content */}
